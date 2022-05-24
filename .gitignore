@@ -1,0 +1,7 @@
+*.o
+bin/
+*.swp
+*~
+tree
+con
+send_rs232
