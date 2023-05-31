@@ -9,6 +9,14 @@ make distclean
 make install
 make uninstall
 ```
+## Global Installation
+
+```bash
+make 
+sudo make install DESTDIR=/usr
+```
+
+
 ## Specific Example for BLM
 
 `/srv/librablmOpt` is the nfs folder where the BLM can access as `PATH`.

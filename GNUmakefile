@@ -69,7 +69,8 @@ install:
 distclean: clean
 
 uninstall:
-	$(RM) -v $(DESTDIR)/$(BINDIR)/*
+	$(RM) -v $(DESTDIR)/$(BINDIR)/$(TRG1)
+	$(RM) -v $(DESTDIR)/$(BINDIR)/$(TRG2)
 
 PRINT.%:
 	@echo $* = $($*)
