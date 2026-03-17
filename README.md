@@ -13,7 +13,7 @@ make uninstall
 
 ```bash
 make 
-sudo make install DESTDIR=/usr
+sudo make install DESTDIR=/usr/local
 ```
 
 
