@@ -48,7 +48,7 @@ CXXFLAGS += -Wno-psabi
 
 #------------------------------------------------------------
 
-all: $(TRG1) $(TRG2) 
+all: $(TRG1) $(TRG2)
 
 $(TRG1): $(OBJS1)
 	$(LINK.cc) $^ -o $@
@@ -75,4 +75,11 @@ uninstall:
 PRINT.%:
 	@echo $* = $($*)
 	@echo $*\'s origin is $(origin $*)
+
+test: $(TRG1)
+	$(MAKE) -C tests/helpers
+	-bash tests/run-all-tests.bash
+
+test-clean:
+	$(MAKE) -C tests/helpers clean
 
