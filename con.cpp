@@ -368,15 +368,16 @@ int main(int ac, char *av[])
                 if (log_file)
                     PERR("Log file have to be specified only once\n");
                 log_file = fopen(av[i], "a");
-                fprintf(log_file, "\n\n\n*****     New CON session");
                 if (!log_file)
                     PERR("File \"%s\" open error: %s\n", av[i], strerror(errno));
-                 t = time(NULL);
-                 tmp = localtime(&t);
-                 if (tmp &&  strftime(outstr, sizeof(outstr)-1, "%a, %d %b %y %T %z", tmp))
-                     fprintf(log_file, ", started at %s     *****\n\n\n", outstr);
-                 else
-                     fprintf(log_file, "     *****\n\n\n");
+                fprintf(log_file, "\n\n\n*****     New CON session");
+
+                t = time(NULL);
+                tmp = localtime(&t);
+                if (tmp &&  strftime(outstr, sizeof(outstr)-1, "%a, %d %b %y %T %z", tmp))
+                    fprintf(log_file, ", started at %s     *****\n\n\n", outstr);
+                else
+                    fprintf(log_file, "     *****\n\n\n");
             }
             else if (!strcmp(av[i], "n")  ||  !strcmp(av[i], "nocolor"))
             {
