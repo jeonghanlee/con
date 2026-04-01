@@ -113,6 +113,18 @@ Test data includes embedded ANSI color codes (`\033[0;31m` red, `\033[0m` reset)
 
 ---
 
+### test-throughput
+
+Validates high-volume data processing and filtering efficiency.
+
+| Scenario | Expected |
+|----------|----------|
+| 100,000 lines (approx. 10MB) IOC logs with ANSI colors | Log size < Original size (filtered) |
+| Performance measurement | Throughput $\ge 10 \text{ MB/s}$ |
+| High-speed UDS streaming | Process stability and log integrity |
+
+---
+
 ## Shared Utilities (`test-common.bash`)
 
 | Function | Description |

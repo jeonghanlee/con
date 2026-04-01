@@ -5,7 +5,7 @@ Integration tests for the `con` console utility, focused on UNIX Domain Socket (
 ## Prerequisites
 
 * `con` binary compiled in the repository root (`make`)
-* **socat** (preferred) or **echo_server** (compiled automatically as fallback)
+* `socat` (preferred) or `echo_server` (compiled automatically as fallback)
 
 ## Running Tests
 
