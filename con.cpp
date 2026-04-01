@@ -23,6 +23,7 @@
 #include <sys/un.h>
 #include <time.h>
 #include <unistd.h>
+#include <vector>
 
 #include "tty.h"
 
@@ -155,14 +156,25 @@ int writen(int fd, const void *ptr, int nbytes)
 enum Pstate { REGULAR, COLOR, CRNL };
 static Pstate log_pstate = REGULAR;
 static int    cr_count = 0;
-void log(const unsigned char *buf, const int buf_cnt, bool filter_colors)
+
+/*
+ * Write data to the log file efficiently.
+ * If color filtering is enabled, it buffers the filtered characters
+ * into a single chunk to minimize fwrite() lock/unlock overhead.
+ */
+void write_log(const unsigned char *buf, const int buf_cnt, bool filter_colors)
 {
     if (!log_file)
         return;
 
     if (filter_colors)
     {
-        for (int i=0; i<buf_cnt; i++)
+        // Use a vector as a dynamic buffer to accumulate filtered data.
+        // Reserving capacity upfront prevents costly memory reallocations.
+        std::vector<unsigned char> out_buf;
+        out_buf.reserve(buf_cnt);
+
+        for (int i = 0; i < buf_cnt; i++)
         {
             switch(log_pstate)
             {
@@ -175,7 +187,7 @@ void log(const unsigned char *buf, const int buf_cnt, bool filter_colors)
                     cr_count++;
                 }
                 else
-                    fwrite(&buf[i], 1, 1, log_file);
+                    out_buf.push_back(buf[i]);
                 break;
             case COLOR:
                 if (buf[i] == 'm')
@@ -186,28 +198,33 @@ void log(const unsigned char *buf, const int buf_cnt, bool filter_colors)
                     cr_count++;
                 else if (buf[i] == '\n')
                 {
-                    fwrite(&buf[i], 1, 1, log_file);
+                    out_buf.push_back(buf[i]);
                     cr_count = 0;
                 }
                 else
                 {
-                    for (int j=0; j<cr_count; j++)
-                        fwrite("\r", 1, 1, log_file);
-                    fwrite(&buf[i], 1, 1, log_file);
+                    for (int j = 0; j < cr_count; j++)
+                        out_buf.push_back('\r');
+                    out_buf.push_back(buf[i]);
                     cr_count = 0;
                 }
                 log_pstate = REGULAR;
                 break;
             }
         }
+        if (!out_buf.empty()) {
+            fwrite(out_buf.data(), 1, out_buf.size(), log_file);
+        }
     }
     else
+    {
         fwrite(buf, buf_cnt, 1, log_file);
+    }
 }
 
 void con_core(int cli_fd, const char *cli_name, int term_fd, const char *term_name, bool filter_colors)
 {
-    const int            MAXBUF = 1024;
+    const int            MAXBUF = 8192;
     static unsigned char buf[MAXBUF];
     static int           term_cnt = 0;
     fd_set               rds;
@@ -278,7 +295,7 @@ void con_core(int cli_fd, const char *cli_name, int term_fd, const char *term_na
                     RERR("\r\n\"%s\" write error: %s\n", term_name, strerror(errno));
             }
             if (log_file)
-                log(buf, buf_cnt, filter_colors);
+                write_log(buf, buf_cnt, filter_colors);
         }
         if (FD_ISSET(term_fd, &rds))
         {
@@ -295,7 +312,7 @@ void con_core(int cli_fd, const char *cli_name, int term_fd, const char *term_na
             if (writen(cli_fd, buf, buf_cnt) != buf_cnt)
                 RERR("\r\n\"%s\" write error: %s\n", cli_name, strerror(errno));
             if (log_file)
-                log(buf, buf_cnt, filter_colors);
+                write_log(buf, buf_cnt, filter_colors);
        }
     }
 }
@@ -538,8 +555,9 @@ int main(int ac, char *av[])
                 if (listen(tty1, 1) < 0)
                     PERR("listen: %s", strerror(errno));
 
-                tty1_name = (char *)malloc(strlen(TargetCon) + 16);
-                snprintf(tty1_name, 32, "Unix domain server %s", TargetCon);
+                size_t name_len = strlen(TargetCon) + 32;
+                tty1_name = (char *)malloc(name_len);
+                snprintf(tty1_name, name_len, "Unix domain server %s", TargetCon);
                 if (!quiet_flag)
                     fprintf(stderr, "\r\n%s wating for connection, use Cntrl/%c to exit\r\n", tty1_name, exitChr+0x40);
                 for (;;)
