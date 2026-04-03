@@ -6,3 +6,4 @@ tree
 con
 send_rs232
 tests/helpers/echo_server
+*.log

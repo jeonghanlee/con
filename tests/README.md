@@ -28,6 +28,7 @@ Note: `make test` returns a non-zero exit code upon any suite failure to support
 | `test-uds-connect` | UDS client connect and disconnect operations |
 | `test-uds-echo` | Data round-trip integrity via echo server |
 | `test-uds-exit` | Default and custom exit key triggers |
+| `test-uds-readonly` | `-r` read-only mode input suppression |
 | `test-log-output` | `-l` and `-a` log file persistence |
 | `test-color-filter` | `-n` ANSI escape sequence stripping |
 | `test-throughput` | High-load stress test and processing throughput |

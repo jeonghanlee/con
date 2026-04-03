@@ -87,6 +87,17 @@ Validates exit key behavior for both default and custom configurations.
 
 ---
 
+### test-uds-readonly
+
+Validates that `-r` (read-only) mode suppresses all keyboard input to the remote end while maintaining exit key functionality. Uses the echo server as a verification mechanism — in normal mode, typed input is echoed back; in readonly mode, it must not appear in the output.
+
+| Scenario | Expected |
+|----------|----------|
+| Keyboard input not forwarded to echo server | Output does not contain test string |
+| Exit key (`Ctrl-A`) still triggers clean exit | Clean exit without error |
+
+---
+
 ### test-log-output
 
 Validates the `-l` (overwrite) and `-a` (append) log file flags.

@@ -127,7 +127,7 @@ function start_echo_server {
     local sock_path="$1"
 
     if [[ "${ECHO_SERVER_MODE}" == "socat" ]]; then
-        socat UNIX-LISTEN:"${sock_path}",fork EXEC:cat &
+        socat UNIX-LISTEN:"${sock_path}",fork EXEC:cat 2>/dev/null &
         ECHO_SERVER_PID=$!
     elif [[ "${ECHO_SERVER_MODE}" == "echo_server" ]]; then
         "${HELPERS_DIR}/echo_server" "${sock_path}" &

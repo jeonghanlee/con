@@ -26,6 +26,15 @@ con -c /tmp/unix-domain-socket
 
 To detach, `ctrl-a`.  The commands (`CTRL-t`, `CTRL-x`) of `procServ` works well, however, `CTRL-r` doesn't work. The exit of the connection is `CTRL-a` by default.
 
+## Read-only Monitoring
+
+To observe an IOC console without sending any keyboard input:
+```bash
+con -r -c /tmp/unix-domain-socket
+```
+
+To detach, `ctrl-a`.
+
 
 ## Testing
 

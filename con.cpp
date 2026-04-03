@@ -27,8 +27,9 @@
 
 #include "tty.h"
 
-#define PERR(args...) do { fprintf(stderr, args); finish(1); } while(0)
-#define RERR(args...) do { fprintf(stderr, args); return;    } while(0)
+#define PERR(...) do { fprintf(stderr, __VA_ARGS__); finish(1); } while(0)
+#define RERR(...) do { fprintf(stderr, __VA_ARGS__); return;    } while(0)
+
 
 Tty             *tty = 0;
 int             tty1 = -1;
@@ -36,6 +37,7 @@ char            *tty1_name = 0;
 const char      *tty2_name = "/dev/tty";
 unsigned char   exitChr = '\001';
 bool            echo_flag = false;
+bool            readonly_flag = false;
 bool            hexa_flag = false;
 bool            hexa_ascii_flag = false;
 int             hexa_inline = 16;
@@ -44,42 +46,47 @@ FILE            *log_file = NULL;
 
 void usage(const char *s)
 {
-    const char *msg =
-        "Usage:\n"
-        "\t%s [SWITCHES] {tty_device | path_to_local_socket | [host]:port}\n"
+    fprintf(stderr, "Usage:\n\t%s [SWITCHES] {tty_device | path_to_local_socket | [host]:port}\n", s);
+    fputs(
         "\n"
         "The tool can be used in a few different modes:\n"
         "\n"
-        "1. Communicaton program to serial line (like minicom):\n"
-        "       %s [-t] [-b BAUDRATE] TERM_DEVICE\n"
+        "1. Communication program to serial line (like minicom):\n"
+        "       con [-t] [-b BAUDRATE] TERM_DEVICE\n"
         "   Example:\n"
-        "       %s -b 115200 /dev/ttyUSB0\n"
-        "       %s -x ctrl/b /dev/ttyS0\n"
+        "       con -b 115200 /dev/ttyUSB0\n"
+        "       con -x ctrl/b /dev/ttyS0\n"
         "\n"
-        "2. Communicaton program to TCP socket in a client mode:\n"
-        "       %s -c ADDR:PORT\n"
+        "2. Communication program to TCP socket in a client mode:\n"
+        "       con -c ADDR:PORT\n"
         "   Example:\n"
-        "       %s -c www.something.org:80\n"
-        "       %s -c 192.168.2.100:8080\n"
+        "       con -c www.something.org:80\n"
+        "       con -c 192.168.2.100:8080\n"
         "\n"
-        "3. Communicaton program to TCP socket in a server mode):\n"
-        "       %s -s :PORT\n"
+        "3. Communication program to TCP socket in a server mode:\n"
+        "       con -s :PORT\n"
         "   Example:\n"
-        "       %s -s :8080\n"
+        "       con -s :8080\n"
         "\n"
-        "4. Communicaton program to UNIX socket in a client mode:\n"
-        "       %s -c SOCKET_PATH\n"
+        "4. Communication program to UNIX socket in a client mode:\n"
+        "       con -c SOCKET_PATH\n"
         "   Example:\n"
-        "       %s -c /tmp/my_named_socket\n"
+        "       con -c /tmp/my_named_socket\n"
         "\n"
-        "5. Communicaton program to UNIX socket in a server mode:\n"
-        "       %s -s SOCKET_PATH\n"
+        "5. Communication program to UNIX socket in a server mode:\n"
+        "       con -s SOCKET_PATH\n"
         "   Example:\n"
-        "       %s -s /tmp/my_named_socket\n"
+        "       con -s /tmp/my_named_socket\n"
+        "\n"
+        "6. Read-only monitoring (observe without sending input):\n"
+        "       con -r -c SOCKET_PATH\n"
+        "   Example:\n"
+        "       con -r -c /tmp/my_named_socket\n"
         "\n"
         "SWITCHES may be:\n"
         "\t-h[elp]             - Print help message.\n"
         "\t-e[cho]             - Echo keyboard input locally.\n"
+        "\t-r[eadonly]         - Read-only mode, keyboard input is not sent\n"
         "\t-l[og] FILENAME     - Log everything to specified file, file be overwritten\n"
         "\t-a[ppend] FILENAME  - Appends all logs to specified file\n"
         "\t-n[ocolor]          - Filter out colors and CRNL sequences in a log file\n"
@@ -91,16 +98,15 @@ void usage(const char *s)
         "\t-q                  - Be quiet\n"
         "\n"
         "Switches specific for tty_device:\n"
-        "\t-t[erm]             - Work as serial communicaton program. The is a default\n"
+        "\t-t[erm]             - Work as serial communication program. This is a default\n"
         "\t                      mode. Note that \"-b\" switch assumes \"-t\"\n"
         "\t-b[aud] <baud_rate> - Set the baud rate for target connection.\n"
         "\n"
         "Switches specific for socket connection:\n"
         "\t-s[erver]           - Accept connection to socket as server.\n"
         "\t-c[lient]           - Connection to socket as client.\n"
-        ;
-    fprintf(stderr, msg, s, s, s, s,    s, s, s, s,    s, s, s, s,    s);
-    exit (1);
+        , stderr);
+    exit(1);
 }
 
 void finish(int stat = 0)
@@ -307,13 +313,16 @@ void con_core(int cli_fd, const char *cli_name, int term_fd, const char *term_na
                 RERR("\r\n\"%s\" EOF\n", term_name);
             if (buf_cnt == 1  &&  *buf == exitChr)
                 break;
-            if (echo_flag  &&  writen(term_fd, buf, buf_cnt) != buf_cnt)
-                RERR("\r\n\"%s\" write error: %s\n", term_name, strerror(errno));
-            if (writen(cli_fd, buf, buf_cnt) != buf_cnt)
-                RERR("\r\n\"%s\" write error: %s\n", cli_name, strerror(errno));
-            if (log_file)
-                write_log(buf, buf_cnt, filter_colors);
-       }
+            if (!readonly_flag)
+            {
+                if (echo_flag  &&  writen(term_fd, buf, buf_cnt) != buf_cnt)
+                    RERR("\r\n\"%s\" write error: %s\n", term_name, strerror(errno));
+                if (writen(cli_fd, buf, buf_cnt) != buf_cnt)
+                    RERR("\r\n\"%s\" write error: %s\n", cli_name, strerror(errno));
+                if (log_file)
+                    write_log(buf, buf_cnt, filter_colors);
+            }
+        }
     }
 }
 
@@ -390,6 +399,10 @@ int main(int ac, char *av[])
             else if (!strcmp(av[i], "q")  ||  !strcmp(av[i], "quiet"))
             {
                 quiet_flag = true;
+            }
+            else if (!strcmp(av[i], "r")  ||  !strcmp(av[i], "readonly"))
+            {
+                readonly_flag = true;
             }
             else if (!strcmp(av[i], "X")  ||  !strcmp(av[i], "hexa"))
             {
