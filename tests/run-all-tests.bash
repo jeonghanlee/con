@@ -95,6 +95,7 @@ _run_test "UDS Read-only"   "${SC_TOP}/test-uds-readonly.bash"
 _run_test "Log Output"      "${SC_TOP}/test-log-output.bash"
 _run_test "Color Filter"    "${SC_TOP}/test-color-filter.bash"
 _run_test "Throughput Stress" "${SC_TOP}/test-throughput.bash"
+_run_test "UDS Peer Disconnect" "${SC_TOP}/test-uds-peer-disconnect.bash"
 
 # --- Print Global Summary ---
 print_divider

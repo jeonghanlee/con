@@ -32,5 +32,6 @@ Note: `make test` returns a non-zero exit code upon any suite failure to support
 | `test-log-output` | `-l` and `-a` log file persistence |
 | `test-color-filter` | `-n` ANSI escape sequence stripping |
 | `test-throughput` | High-load stress test and processing throughput |
+| `test-uds-peer-disconnect` | Peer disconnect detection via `poll()`/`POLLRDHUP` |
 
 For system architecture and functional specifications, see [TEST_DETAILS.md](TEST_DETAILS.md).

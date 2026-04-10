@@ -23,6 +23,7 @@
 #include <sys/un.h>
 #include <time.h>
 #include <unistd.h>
+#include <poll.h>
 
 #include "tty.h"
 
@@ -230,27 +231,27 @@ void con_core(int cli_fd, const char *cli_name, int term_fd, const char *term_na
     const int            MAXBUF = 8192;
     static unsigned char buf[MAXBUF];
     static int           term_cnt = 0;
-    fd_set               rds;
-    fd_set               except_ds;
-    int                  num = (cli_fd > term_fd ? cli_fd : term_fd) + 1;
+    struct pollfd pfds[2];
+    pfds[0].fd     = cli_fd;
+    pfds[0].events = POLLIN | POLLRDHUP;
+    pfds[1].fd     = term_fd;
+    pfds[1].events = POLLIN | POLLRDHUP;
+
     for (;;)
     {
-        FD_ZERO(&rds);
-        FD_ZERO(&except_ds);
-        FD_SET(cli_fd, &rds);
-        FD_SET(term_fd, &rds);
-        FD_SET(cli_fd, &except_ds);
-        FD_SET(term_fd, &except_ds);
+        if (poll(pfds, 2, -1) < 0)
+        {
+            if (errno == EINTR)
+                continue;
+            RERR("poll failure: %s\n", strerror(errno));
+        }
 
-        if (select(num, &rds, 0, &except_ds, 0) < 0)
-            RERR("select failure: %s\n", strerror(errno));
-
-        if (FD_ISSET(cli_fd, &except_ds))
+        if (pfds[0].revents & (POLLERR | POLLNVAL))
             RERR("\r\n\"%s\" error\n", cli_name);
-        if (FD_ISSET(term_fd, &except_ds))
+        if (pfds[1].revents & (POLLERR | POLLNVAL))
             RERR("\r\n\"%s\" error\n", term_name);
 
-        if (FD_ISSET(cli_fd, &rds))
+        if (pfds[0].revents & (POLLIN | POLLHUP | POLLRDHUP))
         {
             // From client to terminal
             int buf_cnt = readn(cli_fd, buf, MAXBUF);
@@ -300,7 +301,8 @@ void con_core(int cli_fd, const char *cli_name, int term_fd, const char *term_na
             if (log_file)
                 write_log(buf, buf_cnt, filter_colors);
         }
-        if (FD_ISSET(term_fd, &rds))
+
+        if (pfds[1].revents & (POLLIN | POLLHUP | POLLRDHUP))
         {
             // From terminal to client
             int buf_cnt = readn(term_fd, buf, MAXBUF);
@@ -573,14 +575,19 @@ int main(int ac, char *av[])
                     fprintf(stderr, "\r\n%s wating for connection, use Cntrl/%c to exit\r\n", tty1_name, exitChr+0x40);
                 for (;;)
                 {
-                    fd_set  rds;
+                    struct pollfd apfds[2];
+                    apfds[0].fd     = tty1;
+                    apfds[0].events = POLLIN;
+                    apfds[1].fd     = tty2;
+                    apfds[1].events = POLLIN;
 
-                    FD_ZERO(&rds);
-                    FD_SET(tty1, &rds);
-                    FD_SET(tty2, &rds);
-                    if (select((tty1 > tty2 ? tty1 : tty2) + 1, &rds, 0, 0, 0) < 0)
-                        PERR("select failure: %s\n", strerror(errno));
-                    if (FD_ISSET(tty1, &rds))
+                    if (poll(apfds, 2, -1) < 0)
+                    {
+                        if (errno == EINTR)
+                            continue;
+                        PERR("poll failure: %s\n", strerror(errno));
+                    }
+                    if (apfds[0].revents & POLLIN)
                     {
                         struct sockaddr_un  cli_unix_addr;
                         int                 clilen = sizeof(cli_unix_addr);
@@ -602,7 +609,7 @@ int main(int ac, char *av[])
                         if (!quiet_flag)
                             fprintf(stderr, "\r\n\r\n%s wating for connection, use Cntrl/%c to exit\r\n", tty1_name, exitChr+0x40);
                     }
-                    if (FD_ISSET(tty2, &rds))
+                    if (apfds[1].revents & POLLIN)
                     {
                         unsigned char ch;
                         int buf_cnt = read(tty2, &ch, 1);
@@ -656,14 +663,19 @@ int main(int ac, char *av[])
                     fprintf(stderr, "\r\n%s wating for connection, use Cntrl/%c to exit\r\n", tty1_name, exitChr+0x40);
                 for (;;)
                 {
-                    fd_set  rds;
+                    struct pollfd apfds[2];
+                    apfds[0].fd     = tty1;
+                    apfds[0].events = POLLIN;
+                    apfds[1].fd     = tty2;
+                    apfds[1].events = POLLIN;
 
-                    FD_ZERO(&rds);
-                    FD_SET(tty1, &rds);
-                    FD_SET(tty2, &rds);
-                    if (select((tty1 > tty2 ? tty1 : tty2) + 1, &rds, 0, 0, 0) < 0)
-                        PERR("select failure: %s\n", strerror(errno));
-                    if (FD_ISSET(tty1, &rds))
+                    if (poll(apfds, 2, -1) < 0)
+                    {
+                        if (errno == EINTR)
+                            continue;
+                        PERR("poll failure: %s\n", strerror(errno));
+                    }
+                    if (apfds[0].revents & POLLIN)
                     {
                         struct sockaddr_in  cli_inet_addr;
                         int                 clilen = sizeof(cli_inet_addr);
@@ -691,7 +703,7 @@ int main(int ac, char *av[])
                         if (!quiet_flag)
                             fprintf(stderr, "\r\n\r\n%s wating for connection, use Cntrl/%c to exit\r\n", tty1_name, exitChr+0x40);
                     }
-                    if (FD_ISSET(tty2, &rds))
+                    if (apfds[1].revents & POLLIN)
                     {
                         unsigned char ch;
                         int buf_cnt = read(tty2, &ch, 1);

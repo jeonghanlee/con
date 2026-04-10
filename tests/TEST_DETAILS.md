@@ -136,6 +136,18 @@ Validates high-volume data processing and filtering efficiency.
 
 ---
 
+### test-uds-peer-disconnect
+
+Validates that `con` detects peer disconnection promptly without relying on a `read()` returning 0. Exercises the `POLLRDHUP` event path introduced with the `select()` to `poll()` migration.
+
+| Scenario | Expected |
+|----------|----------|
+| Server sends data then closes socket | EOF detected, exits within 3s |
+| Received data before disconnect | Output contains payload |
+| EOF message reported | Output contains "EOF" |
+| Abrupt peer kill (SIGKILL) | Exits without hanging (< 5s) |
+
+
 ## Shared Utilities (`test-common.bash`)
 
 | Function | Description |
