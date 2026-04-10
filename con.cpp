@@ -242,6 +242,7 @@ void con_core(int cli_fd, const char *cli_name, int term_fd, const char *term_na
     const int            MAXBUF = 8192;
     static unsigned char buf[MAXBUF];
     static int           term_cnt = 0;
+    static char          hex_buf[MAXBUF * 16];
     struct pollfd pfds[2];
     pfds[0].fd     = cli_fd;
     pfds[0].events = POLLIN | POLLRDHUP;
@@ -272,37 +273,40 @@ void con_core(int cli_fd, const char *cli_name, int term_fd, const char *term_na
                 RERR("\r\n\"%s\" EOF\n", cli_name);
             if (hexa_ascii_flag)
             {
-                for (int i=0; i<buf_cnt; i++)
+                int hex_cnt = 0;
+                for (int i = 0; i < buf_cnt; i++)
                 {
-                    char xbuf[16];
-                    sprintf(xbuf, "0x%02x [%c]   ", buf[i]&0xff, buf[i] >= ' ' && buf[i] <= '~' ? buf[i] : '.');
-                    if (writen(term_fd, xbuf, strlen(xbuf)) != (int)strlen(xbuf))
-                        RERR("\r\n\"%s\" write error: %s\n", term_name, strerror(errno));
+                    hex_cnt += sprintf(hex_buf + hex_cnt, "0x%02x [%c]   ",
+                                       buf[i] & 0xff,
+                                       buf[i] >= ' ' && buf[i] <= '~' ? buf[i] : '.');
                     term_cnt++;
                     if (term_cnt == hexa_ascii_inline)
                     {
-                        if (writen(term_fd, "\r\n", 2) != 2)
-                            RERR("\r\n\"%s\" write error: %s\n", term_name, strerror(errno));
+                        hex_buf[hex_cnt++] = '\r';
+                        hex_buf[hex_cnt++] = '\n';
                         term_cnt = 0;
                     }
                 }
+                if (writen(term_fd, hex_buf, hex_cnt) != hex_cnt)
+                    RERR("\r\n\"%s\" write error: %s\n", term_name, strerror(errno));
             }
             else if (hexa_flag)
             {
-                for (int i=0; i<buf_cnt; i++)
+                int hex_cnt = 0;
+                for (int i = 0; i < buf_cnt; i++)
                 {
-                    char xbuf[8];
-                    sprintf(xbuf, "0x%02x ", buf[i]&0xff);
-                    if (writen(term_fd, xbuf, strlen(xbuf)) != (int)strlen(xbuf))
-                        RERR("\r\n\"%s\" write error: %s\n", term_name, strerror(errno));
+                    hex_cnt += sprintf(hex_buf + hex_cnt, "0x%02x ",
+                                       buf[i] & 0xff);
                     term_cnt++;
                     if (term_cnt == hexa_inline)
                     {
-                        if (writen(term_fd, "\r\n", 2) != 2)
-                            RERR("\r\n\"%s\" write error: %s\n", term_name, strerror(errno));
+                        hex_buf[hex_cnt++] = '\r';
+                        hex_buf[hex_cnt++] = '\n';
                         term_cnt = 0;
                     }
                 }
+                if (writen(term_fd, hex_buf, hex_cnt) != hex_cnt)
+                    RERR("\r\n\"%s\" write error: %s\n", term_name, strerror(errno));
             }
             else
             {

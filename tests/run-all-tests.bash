@@ -94,6 +94,7 @@ _run_test "UDS Exit Key"    "${SC_TOP}/test-uds-exit.bash"
 _run_test "UDS Read-only"   "${SC_TOP}/test-uds-readonly.bash"
 _run_test "Log Output"      "${SC_TOP}/test-log-output.bash"
 _run_test "Color Filter"    "${SC_TOP}/test-color-filter.bash"
+_run_test "Hexa Output"     "${SC_TOP}/test-hexa-output.bash"
 _run_test "Throughput Stress" "${SC_TOP}/test-throughput.bash"
 _run_test "UDS Peer Disconnect" "${SC_TOP}/test-uds-peer-disconnect.bash"
 

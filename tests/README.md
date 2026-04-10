@@ -31,6 +31,7 @@ Note: `make test` returns a non-zero exit code upon any suite failure to support
 | `test-uds-readonly` | `-r` read-only mode input suppression |
 | `test-log-output` | `-l` and `-a` log file persistence |
 | `test-color-filter` | `-n` ANSI escape sequence stripping |
+| `test-hexa-output` | `-X` and `-Y` hex output format and data integrity |
 | `test-throughput` | High-load stress test and processing throughput |
 | `test-uds-peer-disconnect` | Peer disconnect detection via `poll()`/`POLLRDHUP` |
 

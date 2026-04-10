@@ -124,6 +124,17 @@ Test data includes embedded ANSI color codes (`\033[0;31m` red, `\033[0m` reset)
 
 ---
 
+### test-hexa-output
+
+Validates the `-X` (hex bytes) and `-Y` (hex + ASCII) output modes. These modes use batch-buffered writes to minimize system call overhead.
+
+| Scenario | Expected |
+|----------|----------|
+| `-X` with printable bytes | Output contains `0x41`, `0x42` |
+| `-Y` with printable bytes | Output contains `0x41` and `[A]` |
+| `-X` with non-printable byte (0xff) | Output contains `0xff` |
+| `-Y` with non-printable byte | ASCII column shows `[.]` |
+
 ### test-throughput
 
 Validates high-volume data processing and filtering efficiency.
