@@ -43,7 +43,16 @@ SRCS2  = send_rs232.cpp tty.cpp str_utils.cpp
 OBJS1=$(addsuffix .o,$(basename $(SRCS1)))
 OBJS2=$(addsuffix .o,$(basename $(SRCS2)))
 
-CXXFLAGS += -O5 -Wall -fno-exceptions -W -Werror
+
+CON_VERSION ?= 0.5.0
+CON_GIT_HASH := $(shell git rev-parse --short HEAD 2>/dev/null || printf "unknown")
+CON_GIT_DIRTY := $(shell git diff-index --quiet HEAD -- 2>/dev/null || printf '%s' "-dirty")
+CON_BUILD_DATE := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+CXXFLAGS += -O5 -Wall -fno-exceptions -W -Werror \
+    -DCON_VERSION=\"$(CON_VERSION)\" \
+    -DCON_GIT_HASH=\"$(CON_GIT_HASH)$(CON_GIT_DIRTY)\" \
+    -DCON_BUILD_DATE=\"$(CON_BUILD_DATE)\"
 CXXFLAGS += -Wno-psabi
 
 #------------------------------------------------------------
@@ -56,7 +65,7 @@ $(TRG1): $(OBJS1)
 $(TRG2): $(OBJS2)
 	$(LINK.cc) $^ -o $@
 
-%.o: %.cpp
+%.o: %.cpp GNUmakefile
 	$(COMPILE.cc) $(OUTPUT_OPTION) $<
 
 clean:

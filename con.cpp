@@ -27,6 +27,16 @@
 
 #include "tty.h"
 
+#ifndef CON_VERSION
+#define CON_VERSION "unknown"
+#endif
+#ifndef CON_GIT_HASH
+#define CON_GIT_HASH "unknown"
+#endif
+#ifndef CON_BUILD_DATE
+#define CON_BUILD_DATE "unreleased"
+#endif
+
 #define PERR(...) do { fprintf(stderr, __VA_ARGS__); finish(1); } while(0)
 #define RERR(...) do { fprintf(stderr, __VA_ARGS__); return;    } while(0)
 
@@ -96,6 +106,7 @@ void usage(const char *s)
         "\t                      or in a \"control-a\", \"cntrl/a\" or \"ctrl/a\" form\n"
         "\t                      Default is \"cntrl/a\".\n"
         "\t-q                  - Be quiet\n"
+        "\t-V                  - Print version information and exit.\n"
         "\n"
         "Switches specific for tty_device:\n"
         "\t-t[erm]             - Work as serial communication program. This is a default\n"
@@ -466,6 +477,14 @@ int main(int ac, char *av[])
             {
                 cli_flag = true;
                 socket_flag = true;
+            }
+            else if (!strcmp(av[i], "V") || !strcmp(av[i], "version")
+                     || !strcmp(av[i], "-version"))
+            {
+                fprintf(stdout, "con version %s (%s)\n",
+                        CON_VERSION, CON_GIT_HASH);
+                fprintf(stdout, "build date: %s\n", CON_BUILD_DATE);
+                exit(0);
             }
             else if (!strcmp(av[i], "h")  ||  !strcmp(av[i], "help"))
             {
