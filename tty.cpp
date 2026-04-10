@@ -190,6 +190,8 @@ void Tty::close(const int tid)
 
 void Tty::do_close(const int entry)
 {
+    if (tty_h[entry] < 0)
+        return;
     if (isatty(tty_h[entry]))
         tcsetattr(tty_h[entry], TCSANOW, &defaults[entry]);
     ::close(tty_h[entry]);
