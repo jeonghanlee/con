@@ -34,5 +34,6 @@ Note: `make test` returns a non-zero exit code upon any suite failure to support
 | `test-hexa-output` | `-X` and `-Y` hex output format and data integrity |
 | `test-throughput` | High-load stress test and processing throughput |
 | `test-uds-peer-disconnect` | Peer disconnect detection via `poll()`/`POLLRDHUP` |
+| `manual-test-diag-hotkey` | `Ctrl-T` diagnostic hotkey with pause/resume (interactive) |
 
 For system architecture and functional specifications, see [TEST_DETAILS.md](TEST_DETAILS.md).

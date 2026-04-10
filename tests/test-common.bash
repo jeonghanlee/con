@@ -23,6 +23,14 @@ declare -g ECHO_SERVER_PID=""
 declare -g CON_BIN="${CON_BIN:-${SC_TOP}/../con}"
 declare -g HELPERS_DIR="${HELPERS_DIR:-${SC_TOP}/helpers}"
 
+if [[ -z "${ECHO_SERVER_MODE}" ]]; then
+    if command -v socat >/dev/null 2>&1; then
+        ECHO_SERVER_MODE="socat"
+    elif [[ -x "${HELPERS_DIR}/echo_server" ]]; then
+        ECHO_SERVER_MODE="echo_server"
+    fi
+fi
+
 function _log {
     local level="$1"
     local message="$2"

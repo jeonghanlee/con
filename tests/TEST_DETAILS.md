@@ -135,6 +135,7 @@ Validates the `-X` (hex bytes) and `-Y` (hex + ASCII) output modes. These modes 
 | `-X` with non-printable byte (0xff) | Output contains `0xff` |
 | `-Y` with non-printable byte | ASCII column shows `[.]` |
 
+
 ### test-throughput
 
 Validates high-volume data processing and filtering efficiency.
@@ -157,6 +158,31 @@ Validates that `con` detects peer disconnection promptly without relying on a `r
 | Received data before disconnect | Output contains payload |
 | EOF message reported | Output contains "EOF" |
 | Abrupt peer kill (SIGKILL) | Exits without hanging (< 5s) |
+
+### manual-test-diag-hotkey (Manual)
+
+Validates the `Ctrl-T` diagnostic hotkey that reports receive buffer status with pause/resume. Ctrl-T (`0x14`) is consumed by PTY line discipline in `script(1)`, so automated testing is not feasible.
+
+```bash
+bash tests/manual-test-diag-hotkey.bash          # echo mode
+bash tests/manual-test-diag-hotkey.bash --flood   # flood mode
+```
+
+| Scenario | Expected |
+|----------|----------|
+| `Ctrl-T` in idle session | `con recv buffer: 0 / N bytes (0%) - NORMAL` |
+| `Ctrl-T` during flood | `con recv buffer: N / M bytes (X%)` with pause |
+| Any key after pause | Resumes data flow |
+| `Ctrl-T` not forwarded | Remote does not receive `0x14` |
+| `Ctrl-T` in readonly mode | Diagnostic output still works |
+
+Buffer status levels:
+
+| Level | Threshold | Action |
+|-------|-----------|--------|
+| NORMAL | < 50% | No action required |
+| HIGH | 50-80% | Check remote for output flood, consider `con -r` |
+| CRITICAL | > 80% | Remote output may block, disconnect or reduce output rate |
 
 
 ## Shared Utilities (`test-common.bash`)

@@ -48,6 +48,7 @@ const char      *tty2_name = "/dev/tty";
 unsigned char   exitChr = '\001';
 bool            echo_flag = false;
 bool            readonly_flag = false;
+unsigned char   diagChr = '\024';
 bool            hexa_flag = false;
 bool            hexa_ascii_flag = false;
 int             hexa_inline = 16;
@@ -106,6 +107,7 @@ void usage(const char *s)
         "\t                      or in a \"control-a\", \"cntrl/a\" or \"ctrl/a\" form\n"
         "\t                      Default is \"cntrl/a\".\n"
         "\t-q                  - Be quiet\n"
+        "\tCtrl-T              - Diagnostic: show receive buffer queue depth\n"
         "\t-V                  - Print version information and exit.\n"
         "\n"
         "Switches specific for tty_device:\n"
@@ -327,6 +329,64 @@ void con_core(int cli_fd, const char *cli_name, int term_fd, const char *term_na
                 RERR("\r\n\"%s\" EOF\n", term_name);
             if (buf_cnt == 1  &&  *buf == exitChr)
                 break;
+            if (buf_cnt == 1 && *buf == diagChr)
+            {
+                int pending = 0;
+                int rcvbuf = 0;
+                socklen_t optlen = sizeof(rcvbuf);
+                char diag_buf[512];
+                int diag_len;
+
+                if (ioctl(cli_fd, FIONREAD, &pending) == 0)
+                {
+                    if (getsockopt(cli_fd, SOL_SOCKET, SO_RCVBUF, &rcvbuf, &optlen) < 0)
+                        rcvbuf = 0;
+                    if (rcvbuf > 0)
+                    {
+                        int pct = (int)((long)pending * 100 / rcvbuf);
+                        const char *level;
+                        const char *action;
+                        if (pct > 80)
+                        {
+                            level = "CRITICAL";
+                            action = "\r\n[diag] action: remote output may block, disconnect or reduce output rate"
+                                     "\r\n[diag] action: if EPICS IOC, restart IOC or check procServ crash-loop";
+                        }
+                        else if (pct > 50)
+                        {
+                            level = "HIGH";
+                            action = "\r\n[diag] action: check remote for output flood, consider read-only mode (con -r)"
+                                     "\r\n[diag] action: if EPICS IOC, check for device driver errors or crash-loop";
+                        }
+                        else
+                        {
+                            level = "NORMAL";
+                            action = "";
+                        }
+                        diag_len = snprintf(diag_buf, sizeof(diag_buf),
+                                            "\r\n\r\n[diag] con recv buffer: %d / %d bytes (%d%%) - %s%s"
+                                            "\r\n[diag] paused -- press any key to resume\r\n",
+                                            pending, rcvbuf, pct, level, action);
+                    }
+                    else
+                        diag_len = snprintf(diag_buf, sizeof(diag_buf),
+                                            "\r\n\r\n[diag] con recv buffer: %d bytes pending"
+                                            "\r\n[diag] paused -- press any key to resume\r\n",
+                                            pending);
+                }
+                else
+                    diag_len = snprintf(diag_buf, sizeof(diag_buf),
+                                        "\r\n\r\n[diag] ioctl(FIONREAD): %s"
+                                        "\r\n[diag] paused -- press any key to resume\r\n",
+                                        strerror(errno));
+                writen(term_fd, diag_buf, diag_len);
+                if (log_file)
+                    fwrite(diag_buf, 1, diag_len, log_file);
+                pfds[0].fd = -1;
+                readn(term_fd, buf, 1);
+                pfds[0].fd = cli_fd;
+                continue;
+            }
             if (!readonly_flag)
             {
                 if (echo_flag  &&  writen(term_fd, buf, buf_cnt) != buf_cnt)
@@ -555,7 +615,7 @@ int main(int ac, char *av[])
             int        one=1;
             const int  name_l = sizeof(((struct hostent*)0)->h_name) + 1;
             char       name[name_l];
-            name[name_l-1] = 0;
+            memset(name, 0, name_l);
 
             char *p = strchr(TargetCon, ':');
             if (!p)
@@ -568,7 +628,7 @@ int main(int ac, char *av[])
                 int                 servlen;
                 const int           addr_l = sizeof(((struct sockaddr_un*)0)->sun_path) + 1;
                 char                addr[addr_l];
-                addr[addr_l-1] = 0;
+                memset(addr, 0, addr_l);
 
                 // Open a TCP socket (an Internet stream socket).
                 if ((tty1 = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
@@ -704,7 +764,7 @@ int main(int ac, char *av[])
                         int                 clilen = sizeof(cli_inet_addr);
                         const int           addr_l = 16;  // Max inet_ntoa()
                         char                addr[addr_l];
-                        addr[addr_l-1] = 0;
+                        memset(addr, 0, addr_l);
 
                         int new_sock = accept(tty1, (struct sockaddr *)&cli_inet_addr, (socklen_t *)&clilen);
                         if (new_sock < 0)
