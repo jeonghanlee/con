@@ -23,7 +23,6 @@
 #include <sys/un.h>
 #include <time.h>
 #include <unistd.h>
-#include <vector>
 
 #include "tty.h"
 
@@ -175,10 +174,8 @@ void write_log(const unsigned char *buf, const int buf_cnt, bool filter_colors)
 
     if (filter_colors)
     {
-        // Use a vector as a dynamic buffer to accumulate filtered data.
-        // Reserving capacity upfront prevents costly memory reallocations.
-        std::vector<unsigned char> out_buf;
-        out_buf.reserve(buf_cnt);
+        unsigned char out_buf[buf_cnt];
+        int out_cnt = 0;
 
         for (int i = 0; i < buf_cnt; i++)
         {
@@ -193,7 +190,7 @@ void write_log(const unsigned char *buf, const int buf_cnt, bool filter_colors)
                     cr_count++;
                 }
                 else
-                    out_buf.push_back(buf[i]);
+                    out_buf[out_cnt++] = buf[i];
                 break;
             case COLOR:
                 if (buf[i] == 'm')
@@ -204,23 +201,23 @@ void write_log(const unsigned char *buf, const int buf_cnt, bool filter_colors)
                     cr_count++;
                 else if (buf[i] == '\n')
                 {
-                    out_buf.push_back(buf[i]);
+                    out_buf[out_cnt++] = buf[i];
                     cr_count = 0;
                 }
                 else
                 {
                     for (int j = 0; j < cr_count; j++)
-                        out_buf.push_back('\r');
-                    out_buf.push_back(buf[i]);
+                        out_buf[out_cnt++] = '\r';
+                    out_buf[out_cnt++] = buf[i];
                     cr_count = 0;
                 }
                 log_pstate = REGULAR;
                 break;
             }
         }
-        if (!out_buf.empty()) {
-            fwrite(out_buf.data(), 1, out_buf.size(), log_file);
-        }
+
+        if (out_cnt > 0)
+            fwrite(out_buf, 1, out_cnt, log_file);
     }
     else
     {
