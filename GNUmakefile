@@ -44,7 +44,7 @@ OBJS1=$(addsuffix .o,$(basename $(SRCS1)))
 OBJS2=$(addsuffix .o,$(basename $(SRCS2)))
 
 
-CON_VERSION ?= 0.5.0
+CON_VERSION ?= 1.0.0
 CON_GIT_HASH := $(shell git rev-parse --short HEAD 2>/dev/null || printf "unknown")
 CON_GIT_DIRTY := $(shell git diff-index --quiet HEAD -- 2>/dev/null || printf '%s' "-dirty")
 CON_BUILD_DATE := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
