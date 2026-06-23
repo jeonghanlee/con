@@ -400,6 +400,29 @@ void con_core(int cli_fd, const char *cli_name, int term_fd, const char *term_na
     }
 }
 
+// Classify a connection target as TCP host:port or a UNIX socket path.
+// Returns a pointer to the host/port separator colon for a TCP target, or
+// NULL for a UNIX socket path. A target containing '/' is a UNIX path
+// regardless of any ':' (issue #4: a socket path may contain a colon);
+// otherwise the first ':' separates host:port only when the text after it is
+// a number under the same strtol(..., 0) the TCP branch uses, so no currently
+// valid host:port target is reclassified.
+static char *tcp_separator(char *target)
+{
+    if (!target || !*target)
+        return NULL;
+    if (strchr(target, '/'))
+        return NULL;
+    char *p = strchr(target, ':');
+    if (!p || !*(p + 1))
+        return NULL;
+    char *end;
+    (void) strtol(p + 1, &end, 0);
+    if (*end)
+        return NULL;
+    return p;
+}
+
 int main(int ac, char *av[])
 {
     int                  TargetBaud = 0, nparams=0;
@@ -589,7 +612,7 @@ int main(int ac, char *av[])
             // Starts with ':' - most probably server
             srv_flag = true;
         else if (strchr(TargetCon, ':'))
-            // Contains ':' - most probably client
+            // Contains ':' - currently selected as server (not client); see issue #21
             srv_flag = true;
         else
             PERR("\'%s\" is ambiguous - server or client flag must be specified\n", TargetCon);
@@ -617,7 +640,7 @@ int main(int ac, char *av[])
             char       name[name_l];
             memset(name, 0, name_l);
 
-            char *p = strchr(TargetCon, ':');
+            char *p = tcp_separator(TargetCon);
             if (!p)
             {
                 /*
@@ -802,7 +825,7 @@ int main(int ac, char *av[])
         }
         else if (cli_flag)
         {
-            char *p = strchr(TargetCon, ':');
+            char *p = tcp_separator(TargetCon);
             if (!p)
             {
                 /*
