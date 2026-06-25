@@ -19,7 +19,7 @@ con's primary mode, attaching to a procServ UNIX-domain socket); the UDS server
 and peripheral items are deferred to `Backlog`. Version is `1.1.0-dev`
 (`GNUmakefile` CON_VERSION).
 
-**Next session entry point:** M3 (#6, U7) — M1 (#4, U3) and M2 (#5, U6) done. Work order M1-M4 + M5 gate, set
+**Next session entry point:** M4 (#7, H2) — M1 (#4, U3), M2 (#5, U6), M3 (#6, U7) done. Work order M1-M4 + M5 gate, set
 2026-06-16: standalone U3 (M1) and H2 (M4) are independent; the co-located
 sun_path pair M2 (U6 validation) then M3 (U7 SUN_LEN) — M3 rides M2 because
 both edit con.cpp:841-842 (client) / 667-668 (server). The cycle test plan is
@@ -42,9 +42,9 @@ for sub status; this register mirrors it.
 | M2 | 1.1.0 | #5 U6 sun_path over 108B silently truncated | Bug | Done | Guard at con.cpp:670 (server) / 849 (client) rejects a path of sizeof(sun_path) bytes or more. Committed ce10568 on release-1.1.0; Closes #5 fires at release merge. |
 | M2.T1 | 1.1.0 | -c/-s to a >108B path errors instead of truncating | Test sub | Done | test-uds-sun-path-guard.bash: over-length -c/-s exit non-zero, print the guard message, and (server) create no socket node. |
 | M2.T2 | 1.1.0 | UDS suite green | Test sub | Done | make test 12/12 suites green on release-1.1.0 (ce10568). |
-| M3 | 1.1.0 | #6 U7 servlen non-standard vs SUN_LEN | Refactor | Open | con.cpp:842 (client), 668 (server); switch to SUN_LEN; rides M2 (same lines). refactor, P3-low, area/uds. |
-| M3.T1 | 1.1.0 | connect/echo behaviorally identical with SUN_LEN | Test sub | Open | — |
-| M3.T3 | 1.1.0 | re-run M2.T2 (same lines edited) | Test sub | Open | — |
+| M3 | 1.1.0 | #6 U7 servlen non-standard vs SUN_LEN | Refactor | Done | servlen = SUN_LEN(&serv_addr) at con.cpp:679 (server) / 858 (client); a file-scope static_assert pins offsetof(sun_path) == sizeof(sun_family). Behavior identical. Committed e118961; Closes #6 fires at release merge. |
+| M3.T1 | 1.1.0 | connect/echo behaviorally identical with SUN_LEN | Test sub | Done | before/after full-suite diff: all PASS/FAIL verdicts identical (only timing noise). |
+| M3.T3 | 1.1.0 | re-run M2.T2 (same lines edited) | Test sub | Done | full UDS suite green on release-1.1.0 (e118961), incl. the 107-byte boundary. |
 | M4 | 1.1.0 | #7 H2 Ctrl-T diagChr vs exitChr collision, no guard | Enhancement | Open | con.cpp:330 (precedence), 51 (diagChr); warn or reject when -x resolves to diagChr. enhancement, P3-low, area/uds. |
 | M4.T1 | 1.1.0 | -x ctrl/t warns or rejects collision (manual: 0x14 PTY-consumed) | Test sub | Open | — |
 | M4.T2 | 1.1.0 | exit-key suite green (test-uds-exit) | Test sub | Open | — |
@@ -52,7 +52,7 @@ for sub status; this register mirrors it.
 | M5.T1 | 1.1.0 | batch re-run of M1-M4 change-specific verifications on the final tree | Test sub | Open | — |
 | M5.T2 | 1.1.0 | full tests/run-all-tests.bash green; -V reports 1.1.0 | Test sub | Open | — |
 
-**Tally:** milestones Open 3 (2 work + 1 gate) · Done 2 · test subs Open 5 · Done 4
+**Tally:** milestones Open 2 (1 work + 1 gate) · Done 3 · test subs Open 3 · Done 6
 
 ## Milestone 1.1.0
 
