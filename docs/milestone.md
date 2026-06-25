@@ -19,7 +19,7 @@ con's primary mode, attaching to a procServ UNIX-domain socket); the UDS server
 and peripheral items are deferred to `Backlog`. Version is `1.1.0-dev`
 (`GNUmakefile` CON_VERSION).
 
-**Next session entry point:** M2 (#5, U6) — M1 (#4, U3) done. Work order M1-M4 + M5 gate, set
+**Next session entry point:** M3 (#6, U7) — M1 (#4, U3) and M2 (#5, U6) done. Work order M1-M4 + M5 gate, set
 2026-06-16: standalone U3 (M1) and H2 (M4) are independent; the co-located
 sun_path pair M2 (U6 validation) then M3 (U7 SUN_LEN) — M3 rides M2 because
 both edit con.cpp:841-842 (client) / 667-668 (server). The cycle test plan is
@@ -39,9 +39,9 @@ for sub status; this register mirrors it.
 | M1 | 1.1.0 | #4 U3 UDS path containing ':' misrouted to TCP | Coherence + bug | Done | tcp_separator() at con.cpp:805/620 routes a '/'-bearing or non-numeric-port target as UNIX; 591-593 comment aligned to code. Scope held to #4; -u flag / 588 / 577 / test-suite repair split to Backlog #20-23. Closes #4 (fires at release merge). |
 | M1.T1 | 1.1.0 | -c to a colon-bearing path connects as UDS, not TCP | Test sub | Done | test-uds-connect colon block: echo round-trip + no Invalid port, client and -s. |
 | M1.T2 | 1.1.0 | UDS client suite green (connect/echo/exit/readonly/peer-disconnect) | Test sub | Done | make test 11/11 suites green on release-1.1.0. |
-| M2 | 1.1.0 | #5 U6 sun_path over 108B silently truncated | Bug | Open | con.cpp:841 (client), 667 (server); reject over-length path with an error. enhancement, P1, area/uds. |
-| M2.T1 | 1.1.0 | -c/-s to a >108B path errors instead of truncating | Test sub | Open | — |
-| M2.T2 | 1.1.0 | UDS suite green | Test sub | Open | — |
+| M2 | 1.1.0 | #5 U6 sun_path over 108B silently truncated | Bug | Done | Guard at con.cpp:670 (server) / 849 (client) rejects a path of sizeof(sun_path) bytes or more. Committed ce10568 on release-1.1.0; Closes #5 fires at release merge. |
+| M2.T1 | 1.1.0 | -c/-s to a >108B path errors instead of truncating | Test sub | Done | test-uds-sun-path-guard.bash: over-length -c/-s exit non-zero, print the guard message, and (server) create no socket node. |
+| M2.T2 | 1.1.0 | UDS suite green | Test sub | Done | make test 12/12 suites green on release-1.1.0 (ce10568). |
 | M3 | 1.1.0 | #6 U7 servlen non-standard vs SUN_LEN | Refactor | Open | con.cpp:842 (client), 668 (server); switch to SUN_LEN; rides M2 (same lines). refactor, P3-low, area/uds. |
 | M3.T1 | 1.1.0 | connect/echo behaviorally identical with SUN_LEN | Test sub | Open | — |
 | M3.T3 | 1.1.0 | re-run M2.T2 (same lines edited) | Test sub | Open | — |
@@ -52,7 +52,7 @@ for sub status; this register mirrors it.
 | M5.T1 | 1.1.0 | batch re-run of M1-M4 change-specific verifications on the final tree | Test sub | Open | — |
 | M5.T2 | 1.1.0 | full tests/run-all-tests.bash green; -V reports 1.1.0 | Test sub | Open | — |
 
-**Tally:** milestones Open 4 (3 work + 1 gate) · Done 1 · test subs Open 7 · Done 2
+**Tally:** milestones Open 3 (2 work + 1 gate) · Done 2 · test subs Open 5 · Done 4
 
 ## Milestone 1.1.0
 
