@@ -12,6 +12,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <signal.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,6 +40,11 @@
 
 #define PERR(...) do { fprintf(stderr, __VA_ARGS__); finish(1); } while(0)
 #define RERR(...) do { fprintf(stderr, __VA_ARGS__); return;    } while(0)
+
+// SUN_LEN(&a) equals the former strlen(sun_path) + sizeof(sun_family) only when
+// sun_path begins exactly at the end of sun_family with no padding (M3/#6).
+static_assert(offsetof(struct sockaddr_un, sun_path) == sizeof(((struct sockaddr_un *)0)->sun_family),
+              "SUN_LEN identity (M3/#6): sun_path offset must equal sun_family size");
 
 
 Tty             *tty = 0;
@@ -670,7 +676,7 @@ int main(int ac, char *av[])
                 if (strlen(TargetCon) >= sizeof(serv_addr.sun_path))
                     PERR("UNIX socket path exceeds %d bytes: \"%s\"\n", (int)(sizeof(serv_addr.sun_path) - 1), TargetCon);
                 strncpy(serv_addr.sun_path, TargetCon, sizeof(serv_addr.sun_path)-1);
-                servlen = strlen(serv_addr.sun_path) + sizeof(serv_addr.sun_family);
+                servlen = SUN_LEN(&serv_addr);
                 unlink(serv_addr.sun_path);
                 if (bind(tty1, (struct sockaddr *)&serv_addr, servlen) < 0)
                     PERR("bind: %s", strerror(errno));
@@ -849,7 +855,7 @@ int main(int ac, char *av[])
                 if (strlen(TargetCon) >= sizeof(serv_addr.sun_path))
                     PERR("UNIX socket path exceeds %d bytes: \"%s\"\n", (int)(sizeof(serv_addr.sun_path) - 1), TargetCon);
                 strncpy(serv_addr.sun_path, TargetCon, sizeof(serv_addr.sun_path)-1);
-                servlen = strlen(serv_addr.sun_path) + sizeof(serv_addr.sun_family);
+                servlen = SUN_LEN(&serv_addr);
 
                 // Open a UNIX socket
                 if ( (tty1 = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
