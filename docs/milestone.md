@@ -22,7 +22,7 @@ and peripheral items are deferred to `Backlog`. Version is `1.1.0-dev`
 **Next session entry point:** M2 (#5, U6) — M1 (#4, U3) done. Work order M1-M4 + M5 gate, set
 2026-06-16: standalone U3 (M1) and H2 (M4) are independent; the co-located
 sun_path pair M2 (U6 validation) then M3 (U7 SUN_LEN) — M3 rides M2 because
-both edit con.cpp:818-819 (client) / 644-645 (server). The cycle test plan is
+both edit con.cpp:841-842 (client) / 667-668 (server). The cycle test plan is
 [`testplan_1.1.0.md`](testplan_1.1.0.md).
 
 ## Active Register
@@ -39,10 +39,10 @@ for sub status; this register mirrors it.
 | M1 | 1.1.0 | #4 U3 UDS path containing ':' misrouted to TCP | Coherence + bug | Done | tcp_separator() at con.cpp:805/620 routes a '/'-bearing or non-numeric-port target as UNIX; 591-593 comment aligned to code. Scope held to #4; -u flag / 588 / 577 / test-suite repair split to Backlog #20-23. Closes #4 (fires at release merge). |
 | M1.T1 | 1.1.0 | -c to a colon-bearing path connects as UDS, not TCP | Test sub | Done | test-uds-connect colon block: echo round-trip + no Invalid port, client and -s. |
 | M1.T2 | 1.1.0 | UDS client suite green (connect/echo/exit/readonly/peer-disconnect) | Test sub | Done | make test 11/11 suites green on release-1.1.0. |
-| M2 | 1.1.0 | #5 U6 sun_path over 108B silently truncated | Bug | Open | con.cpp:818 (client), 644 (server); reject over-length path with an error. enhancement, P1, area/uds. |
+| M2 | 1.1.0 | #5 U6 sun_path over 108B silently truncated | Bug | Open | con.cpp:841 (client), 667 (server); reject over-length path with an error. enhancement, P1, area/uds. |
 | M2.T1 | 1.1.0 | -c/-s to a >108B path errors instead of truncating | Test sub | Open | — |
 | M2.T2 | 1.1.0 | UDS suite green | Test sub | Open | — |
-| M3 | 1.1.0 | #6 U7 servlen non-standard vs SUN_LEN | Refactor | Open | con.cpp:819 (client), 645 (server); switch to SUN_LEN; rides M2 (same lines). refactor, P3-low, area/uds. |
+| M3 | 1.1.0 | #6 U7 servlen non-standard vs SUN_LEN | Refactor | Open | con.cpp:842 (client), 668 (server); switch to SUN_LEN; rides M2 (same lines). refactor, P3-low, area/uds. |
 | M3.T1 | 1.1.0 | connect/echo behaviorally identical with SUN_LEN | Test sub | Open | — |
 | M3.T3 | 1.1.0 | re-run M2.T2 (same lines edited) | Test sub | Open | — |
 | M4 | 1.1.0 | #7 H2 Ctrl-T diagChr vs exitChr collision, no guard | Enhancement | Open | con.cpp:330 (precedence), 51 (diagChr); warn or reject when -x resolves to diagChr. enhancement, P3-low, area/uds. |
@@ -64,8 +64,8 @@ U6. The client path is already hardened by 1.0.0 (`-r`, the Ctrl-T diagnostic,
 | Issue | Title | Priority | Notes |
 | --- | --- | --- | --- |
 | [#4](https://github.com/jeonghanlee/con/issues/4) (M1) | UDS path containing ':' is misrouted to TCP | bug, P1 | con.cpp:805-806, 588-595. A UDS path with a colon parses as host:port and fails; the auto-detect comment ("client") contradicts the code (server). Disambiguate path vs host:port. |
-| [#5](https://github.com/jeonghanlee/con/issues/5) (M2) | sun_path silently truncated past 108 bytes | enhancement, P1 | con.cpp:818 (also 644). strncpy bounds at sizeof(sun_path)-1 with no overflow signal; an over-length path connects to a different path silently. Reject with an error. |
-| [#6](https://github.com/jeonghanlee/con/issues/6) (M3) | servlen computed non-standardly vs SUN_LEN | refactor, P3-low | con.cpp:819 (also 645). Hand-rolled length works only because sun_family is the first member; switch to SUN_LEN. Rides M2 (same lines). |
+| [#5](https://github.com/jeonghanlee/con/issues/5) (M2) | sun_path silently truncated past 108 bytes | enhancement, P1 | con.cpp:841 (also 667). strncpy bounds at sizeof(sun_path)-1 with no overflow signal; an over-length path connects to a different path silently. Reject with an error. |
+| [#6](https://github.com/jeonghanlee/con/issues/6) (M3) | servlen computed non-standardly vs SUN_LEN | refactor, P3-low | con.cpp:842 (also 668). Hand-rolled length works only because sun_family is the first member; switch to SUN_LEN. Rides M2 (same lines). |
 | [#7](https://github.com/jeonghanlee/con/issues/7) (M4) | Ctrl-T diagnostic key can collide with the exit key | enhancement, P3-low | con.cpp:330, 51. -x ctrl/t makes exitChr == diagChr; exit wins by precedence and the diagnostic is silently disabled. Warn or reject the collision. |
 
 ## Backlog

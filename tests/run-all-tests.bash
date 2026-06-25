@@ -97,6 +97,7 @@ _run_test "Color Filter"    "${SC_TOP}/test-color-filter.bash"
 _run_test "Hexa Output"     "${SC_TOP}/test-hexa-output.bash"
 _run_test "Throughput Stress" "${SC_TOP}/test-throughput.bash"
 _run_test "UDS Peer Disconnect" "${SC_TOP}/test-uds-peer-disconnect.bash"
+_run_test "UDS sun_path Guard" "${SC_TOP}/test-uds-sun-path-guard.bash"
 
 # --- Print Global Summary ---
 print_divider

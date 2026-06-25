@@ -664,6 +664,11 @@ int main(int ac, char *av[])
                 // Bind our local address so that the client can send to us.
                 memset((char *) &serv_addr, 0, sizeof(serv_addr));
                 serv_addr.sun_family = AF_UNIX;
+                // sun_path length is bounded here, in servlen (M3/#6), and at the
+                // client connect site (~841); keep all sizeof(serv_addr.sun_path)
+                // uses in agreement when any one changes.
+                if (strlen(TargetCon) >= sizeof(serv_addr.sun_path))
+                    PERR("UNIX socket path exceeds %d bytes: \"%s\"\n", (int)(sizeof(serv_addr.sun_path) - 1), TargetCon);
                 strncpy(serv_addr.sun_path, TargetCon, sizeof(serv_addr.sun_path)-1);
                 servlen = strlen(serv_addr.sun_path) + sizeof(serv_addr.sun_family);
                 unlink(serv_addr.sun_path);
@@ -838,6 +843,11 @@ int main(int ac, char *av[])
                 // Fill the "serv_addr" structure
                 memset((char *) &serv_addr, 0, sizeof(serv_addr));
                 serv_addr.sun_family      = AF_UNIX;
+                // sun_path length is bounded here, in servlen (M3/#6), and at the
+                // server bind site (~667); keep all sizeof(serv_addr.sun_path)
+                // uses in agreement when any one changes.
+                if (strlen(TargetCon) >= sizeof(serv_addr.sun_path))
+                    PERR("UNIX socket path exceeds %d bytes: \"%s\"\n", (int)(sizeof(serv_addr.sun_path) - 1), TargetCon);
                 strncpy(serv_addr.sun_path, TargetCon, sizeof(serv_addr.sun_path)-1);
                 servlen = strlen(serv_addr.sun_path) + sizeof(serv_addr.sun_family);
 
