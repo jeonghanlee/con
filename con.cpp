@@ -560,6 +560,21 @@ int main(int ac, char *av[])
                         finish(1);
                     }
                 }
+                // M4 (#7): a configurable exit key must not shadow the fixed
+                // diagnostic key (diagChr, 0x14 Ctrl-T). The poll loop tests
+                // exitChr before diagChr, so an equal exit key silently disables
+                // the diagnostic. diagChr is a compile-time constant parsed
+                // before this point; if it ever becomes configurable, move this
+                // check to after all options are parsed. Comparing the finalized
+                // byte (not the input text) also catches numeric truncation,
+                // e.g. -x 0x114 wrapping to 0x14.
+                if (exitChr == diagChr)
+                {
+                    fprintf(stderr, "Exit character 0x%02X conflicts with the "
+                            "built-in diagnostic key (Ctrl-T, 0x14); choose a "
+                            "different exit character.\n", exitChr);
+                    finish(1);
+                }
             }
             else if (!strcmp(av[i], "s")  ||  !strcmp(av[i], "server"))
             {

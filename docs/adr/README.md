@@ -10,6 +10,7 @@ outlives the working session that produced it.
 | ADR | Title | Status | Scope |
 | --- | --- | --- | --- |
 | [0001](0001-uds-sun-path-guard-placement.md) | UDS sun_path length guard: placement at the copy site | Accepted (2026-06-24) | Where the over-length UNIX-domain socket path guard lives (M2 / #5). |
+| [0002](0002-exit-diagnostic-key-collision-reject.md) | Exit/diagnostic key collision: reject at parse time | Accepted (2026-06-26) | How con handles an exit key equal to the fixed diagnostic key (M4 / #7). |
 
 ## Where decision rationale lives
 
