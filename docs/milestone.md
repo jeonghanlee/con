@@ -19,10 +19,11 @@ con's primary mode, attaching to a procServ UNIX-domain socket); the UDS server
 and peripheral items are deferred to `Backlog`. Version is `1.1.0-dev`
 (`GNUmakefile` CON_VERSION).
 
-**Next session entry point:** M4 (#7, H2) — M1 (#4, U3), M2 (#5, U6), M3 (#6, U7) done. Work order M1-M4 + M5 gate, set
-2026-06-16: standalone U3 (M1) and H2 (M4) are independent; the co-located
-sun_path pair M2 (U6 validation) then M3 (U7 SUN_LEN) — M3 rides M2 because
-both edit con.cpp:841-842 (client) / 667-668 (server). The cycle test plan is
+**Next session entry point:** M5 release gate — M1 (#4, U3), M2 (#5, U6),
+M3 (#6, U7), M4 (#7, H2) all done and committed (M4 = `9fcf724`). M5 runs after
+M1-M4: a batch re-run of the change-specific verifications on the final tree,
+full suite green, and `-V` reporting 1.1.0; it gates the master merge, the
+1.1.0 tag, and the version bump. The cycle test plan is
 [`testplan_1.1.0.md`](testplan_1.1.0.md).
 
 ## Active Register
@@ -45,14 +46,14 @@ for sub status; this register mirrors it.
 | M3 | 1.1.0 | #6 U7 servlen non-standard vs SUN_LEN | Refactor | Done | servlen = SUN_LEN(&serv_addr) at con.cpp:679 (server) / 858 (client); a file-scope static_assert pins offsetof(sun_path) == sizeof(sun_family). Behavior identical. Committed e118961; Closes #6 fires at release merge. |
 | M3.T1 | 1.1.0 | connect/echo behaviorally identical with SUN_LEN | Test sub | Done | before/after full-suite diff: all PASS/FAIL verdicts identical (only timing noise). |
 | M3.T3 | 1.1.0 | re-run M2.T2 (same lines edited) | Test sub | Done | full UDS suite green on release-1.1.0 (e118961), incl. the 107-byte boundary. |
-| M4 | 1.1.0 | #7 H2 Ctrl-T diagChr vs exitChr collision, no guard | Enhancement | Open | con.cpp:330 (precedence), 51 (diagChr); warn or reject when -x resolves to diagChr. enhancement, P3-low, area/uds. |
-| M4.T1 | 1.1.0 | -x ctrl/t warns or rejects collision (manual: 0x14 PTY-consumed) | Test sub | Open | — |
-| M4.T2 | 1.1.0 | exit-key suite green (test-uds-exit) | Test sub | Open | — |
+| M4 | 1.1.0 | #7 H2 Ctrl-T diagChr vs exitChr collision, no guard | Enhancement | Done | Guard at con.cpp:571 rejects an -x value whose finalized byte equals diagChr (0x14); the finalized-byte compare also catches numeric truncation (-x 0x114). ADR 0002 records the reject decision. Committed 9fcf724; Closes #7 fires at release merge. |
+| M4.T1 | 1.1.0 | -x ctrl/t warns or rejects collision (manual: 0x14 PTY-consumed) | Test sub | Done | test-error-handling.bash: -x ctrl/t, -x 0x14, -x 0x114 exit non-zero with the conflict message; non-colliding -x ctrl/a not flagged. Parse-time guard, so no PTY needed and the runtime keypress is moot (rejected before start). |
+| M4.T2 | 1.1.0 | exit-key suite green (test-uds-exit) | Test sub | Done | make test 12/12 suites green on release-1.1.0 (9fcf724). |
 | M5 | 1.1.0 | release gate (no GitHub issue; testplan_1.1.0 "Release Gate") | Release gate | Open | Runs after M1-M4; gates the master merge, 1.1.0 tag, and version bump. |
 | M5.T1 | 1.1.0 | batch re-run of M1-M4 change-specific verifications on the final tree | Test sub | Open | — |
 | M5.T2 | 1.1.0 | full tests/run-all-tests.bash green; -V reports 1.1.0 | Test sub | Open | — |
 
-**Tally:** milestones Open 2 (1 work + 1 gate) · Done 3 · test subs Open 3 · Done 6
+**Tally:** milestones Open 1 (gate M5) · Done 4 · test subs Open 2 (M5) · Done 8
 
 ## Milestone 1.1.0
 
