@@ -15,6 +15,11 @@
 # land in its own readn so buf_cnt == 1), hold 1.0s (capture the [diag] output).
 # timeout 5s bounds the ~3s writer. A local timed writer is used instead of
 # run_con because run_con writes the fifo once and cannot separate the two reads.
+#
+# Only echo mode (recv-q 0, NORMAL) is automated. Flood mode (recv-q > 0) stays
+# manual (manual-test-diag-hotkey.bash --flood): the poll loop drains the socket
+# (pfds[0]) before checking the keyboard (pfds[1]), so a fast host reads recv-q
+# as 0 regardless of load -- a structural race that retry cannot fix.
 set -e
 
 SC_RPATH="$(realpath "$0")"
