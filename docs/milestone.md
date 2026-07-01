@@ -19,12 +19,13 @@ con's primary mode, attaching to a procServ UNIX-domain socket); the UDS server
 and peripheral items are deferred to `Backlog`. Version is `1.1.0-dev`
 (`GNUmakefile` CON_VERSION).
 
-**Next session entry point:** M5 release gate — M1 (#4, U3), M2 (#5, U6),
-M3 (#6, U7), M4 (#7, H2) all done and committed (M4 = `9fcf724`). M5 runs after
-M1-M4: a batch re-run of the change-specific verifications on the final tree,
-full suite green, and `-V` reporting 1.1.0; it gates the master merge, the
-1.1.0 tag, and the version bump. The cycle test plan is
-[`testplan_1.1.0.md`](testplan_1.1.0.md).
+**Next session entry point:** M5 release gate, step 4 (version bump). Steps 1-3
+passed on the final tree (`5cad891`): the M1-M4 batch re-run and full suite are
+green on both backends (13/13), with the Ctrl-T diagnostic now automated
+(`tests/test-uds-diag.bash`, #24; the wrong "PTY-consumed" claim corrected).
+Remaining: bump `GNUmakefile` CON_VERSION `1.1.0-dev` -> `1.1.0` (so `-V` reports
+1.1.0), then the master merge, the `1.1.0` tag, milestone close, and the next dev
+cycle. The cycle test plan is [`testplan_1.1.0.md`](testplan_1.1.0.md).
 
 ## Active Register
 
