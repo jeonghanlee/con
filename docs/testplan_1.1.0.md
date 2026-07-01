@@ -20,9 +20,12 @@ Each milestone is verified in two layers:
    to the suites as permanent regression assets, not run as one-off checks.
 
 Suite baseline at cycle start: the UDS client suite (connect/echo/exit/readonly/
-peer-disconnect) is green and is the P1 verification baseline. Ctrl-T diagnostic
-coverage is manual only — `0x14` is consumed by the PTY line discipline under
-`script(1)`, so the H2 collision case cannot be automated.
+peer-disconnect) is green and is the P1 verification baseline. The Ctrl-T
+diagnostic hotkey is automated in `tests/test-uds-diag.bash` (issue #24): a
+solitary `0x14` read (`buf_cnt == 1`) fires the `[diag]` block under the
+`script(1)` PTY harness, with a marker echo first as launch proof. The
+interactive `manual-test-diag-hotkey.bash` remains for flood mode and visual
+inspection.
 
 The milestone register tracks each verification as `M<n>.T<k>` subs that map
 onto this plan: T1 = "Change-specific verification", T2 = "Suite coverage and
@@ -37,7 +40,7 @@ mirrored by the register.
 | M1 | U3 | `con -c /tmp/a:b.sock` against an echo server on that path connects as UDS (not "Invalid port"); the auto-detect comment matches the code after the fix. | New `test-uds-connect` case: a colon-bearing socket path connects and echoes. UDS client suite stays green. |
 | M2 | U6 | `con -c <path longer than sizeof(sun_path)-1>` errors with a clear message instead of silently connecting to the truncated path; a valid-length path is unaffected. | New error-suite case pinning the over-length rejection. UDS suite stays green. |
 | M3 | U7 | connect and echo round-trip identical before and after switching to `SUN_LEN`, both client and server. Re-runs M2's suite (same lines edited). | Covered by `test-uds-connect` / `test-uds-echo`; no new case required. |
-| M4 | H2 | `con -x ctrl/t -c <sock>` warns or rejects the exit/diagnostic key collision rather than silently disabling the diagnostic. Automation blocked (0x14 PTY-consumed); verified manually via `tests/manual-test-diag-hotkey.bash`. | New error-suite case for the `-x ctrl/t` rejection if the chosen design rejects at parse time (parse-time check is automatable; runtime is not). |
+| M4 | H2 | `con -x ctrl/t -c <sock>` warns or rejects the exit/diagnostic key collision rather than silently disabling the diagnostic. The collision rejection is automated at parse time (`test-error-handling.bash`); the Ctrl-T diagnostic hotkey itself is automated in `tests/test-uds-diag.bash` (#24). | New error-suite case for the `-x ctrl/t` rejection (parse-time, automatable) plus `test-uds-diag.bash` for the diagnostic; the manual test stays for flood and visual checks. |
 
 ## Dependency Re-run Matrix
 

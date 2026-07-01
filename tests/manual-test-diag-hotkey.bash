@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 #
 # Manual test for Ctrl-T diagnostic hotkey.
-# Ctrl-T (0x14) is consumed by PTY line discipline in automated tests,
-# so this must be verified interactively.
+# The diagnostic is automated in tests/test-uds-diag.bash (issue #24): a solitary
+# 0x14 read fires it. This interactive test remains for flood mode and visual
+# inspection of the [diag] output.
 #
 # Two modes:
 #   (default)  Echo server  - verify Ctrl-T output and key consumption

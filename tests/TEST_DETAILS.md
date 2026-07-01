@@ -161,7 +161,7 @@ Validates that `con` detects peer disconnection promptly without relying on a `r
 
 ### manual-test-diag-hotkey (Manual)
 
-Validates the `Ctrl-T` diagnostic hotkey that reports receive buffer status with pause/resume. Ctrl-T (`0x14`) is consumed by PTY line discipline in `script(1)`, so automated testing is not feasible.
+Validates the `Ctrl-T` diagnostic hotkey that reports receive buffer status with pause/resume. The diagnostic is automated in `test-uds-diag.bash` (issue #24) via a solitary `0x14` read (`buf_cnt == 1`); this interactive test remains for flood mode and visual inspection of the `[diag]` output.
 
 ```bash
 bash tests/manual-test-diag-hotkey.bash          # echo mode
