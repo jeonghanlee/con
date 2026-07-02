@@ -74,8 +74,9 @@ U6. The client path is already hardened by 1.0.0 (`-r`, the Ctrl-T diagnostic,
 
 Deferred to the `Backlog` GitHub milestone — UDS server and peripheral items,
 not in the 1.1.0 cycle. Each is an individual issue: U1 #8, U2 #9, U4 #10,
-B2/C2 #11, U5 #12, U8 #13, O2 #14, C1 #15, O3 #16, H1 #17, O1 #18, O4 #19.
-The former umbrella #3 was superseded by #8/#10/#11 and closed.
+B2/C2 #11, U5 #12, U8 #13, O2 #14, C1 #15, O3 #16, H1 #17, O1 #18, O4 #19;
+plus the test-harness item T1 #25 (surfaced by #24's investigation). The former
+umbrella #3 was superseded by #8/#10/#11 and closed.
 
 | ID | Topic | Work unit | Type | Priority | Notes |
 | --- | --- | --- | --- | --- | --- |
@@ -91,6 +92,7 @@ The former umbrella #3 was superseded by #8/#10/#11 and closed.
 | H1 | I/O core | static term_cnt not reset across server connections | bug | P3 | con.cpp:246; server+hexa only, cosmetic. |
 | O1 | str_utils library | dormant API; filter_colors duplicates write_log | refactor | P3 | str_utils.cpp:276 / con.cpp:184-240; Keep-as-library vs Discard. |
 | O4 | send_rs232 | CLI skeleton + baud parse duplicated con vs send_rs232 | refactor | P3 | con.cpp:413-567 / send_rs232.cpp:51-140; Generalize vs Keep-separate. |
+| T1 | Test harness | test-common.bash resolves CON_BIN to /../con when sourced standalone (SC_TOP unset) | bug | P3 | #25. SC_TOP set by each test-*.bash, not test-common; a bare-shell source leaves CON_BIN=/../con and con never runs. Only bites interactive/standalone sourcing, not run-all-tests. Root cause of #24's false "PTY-consumed" negative. |
 
 ## Examined-Keep Ledger
 
