@@ -18,10 +18,13 @@
 # is used instead of run_con because run_con writes the fifo once and cannot
 # separate the reads.
 #
-# Only echo mode (recv-q 0, NORMAL) is automated. Flood mode (recv-q > 0) stays
-# manual (manual-test-diag-hotkey.bash --flood): the poll loop drains the socket
-# (pfds[0]) before checking the keyboard (pfds[1]), so a fast host reads recv-q
-# as 0 regardless of load -- a structural race that retry cannot fix.
+# Only echo mode (recv-q 0, NORMAL) is automated here. Flood mode (recv-q > 0)
+# IS automatable -- the poll loop reads MAXBUF per cycle, not a full drain, so a
+# flood backlogs the queue (reproduced: a solitary 0x14 under a flood reported
+# recv-q 8192) -- but an unbounded flood writes GBs into the capture within
+# seconds, so the suite omits it pending a bounded design (kill the flood right
+# after the diag, or cap the capture). manual-test-diag-hotkey.bash --flood
+# remains the interactive check. Register K3 records the amended verdict.
 set -e
 
 SC_RPATH="$(realpath "$0")"
