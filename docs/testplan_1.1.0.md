@@ -63,7 +63,27 @@ Executed in order before the final 1.1.0 release:
    host with both echo-server backends (socat and the compiled `echo_server`).
 3. **Manual diagnostic** — `tests/manual-test-diag-hotkey.bash` (echo and
    `--flood`) for the Ctrl-T path, including the M4 collision check.
-4. **Version** — `GNUmakefile` CON_VERSION bumped to `1.1.0`; `con -V` reports
+4. **Downstream integration (#27)** — con's deployed role, verified with the
+   release candidate on the environment defined by `epics-ioc-runner`'s
+   `docs/testplan_multiuser.md` (its golden images, user fixtures, and
+   execution harness; commands live there, not here):
+   - Pin the candidate for **every** principal invocation by passing
+     `IOC_RUNNER_CON_TOOL=<absolute path to the candidate con>` through the
+     sudo boundary — the same per-invocation `env` idiom the harness uses for
+     `XDG_RUNTIME_DIR`. An operator-shell export or a PATH install is not
+     enough: `sudo -niu` resets the environment, and ioc-runner resolves con
+     from `IOC_RUNNER_CON_TOOL` or its fixed absolute paths, never from PATH.
+   - Before the scenarios, assert inside the console-holding principal's
+     context (opb in S4/S10) that the resolved con's `-V` reports the
+     candidate version and git hash.
+   - Run multiuser scenarios **S4** and **S10** with the candidate; both must
+     pass. (The automated lifecycle `attach` checks verify tool availability
+     only and never execute con — they are not con coverage.)
+   - **Two-con check**: attach two con clients to one running IOC, type from
+     both, and verify both sessions behave and detach cleanly — the shared
+     procServ console face the unit suites (including `test-uds-multi-client`,
+     whose echo peers are per-client) cannot reach.
+5. **Version** — `GNUmakefile` CON_VERSION bumped to `1.1.0`; `con -V` reports
    `1.1.0`.
 
 ## Added During Cycle
