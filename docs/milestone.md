@@ -94,14 +94,18 @@ The former umbrella #3 was superseded by #8/#10/#11 and closed.
 
 ## Examined-Keep Ledger
 
-Coherence-sweep findings examined and deliberately left as-is (2026-06-16
-sweep), carried forward so the next sweep closes them fast instead of
-re-opening the same seams.
+Coherence-sweep findings examined and deliberately left as-is, carried forward
+so the next sweep closes them fast instead of re-opening the same seams. K1-K2
+from the 2026-06-16 sweep; K3-K5 from the 1.1.0 diagnostic work (#24, #26),
+recorded 2026-07-01 so the same doors are not re-opened.
 
 | ID | Finding | Why Keep |
 | --- | --- | --- |
 | K1 | Printable-ASCII predicate `c>=' ' && c<='~'` duplicated (con.cpp:283, str_utils.cpp:121, send_rs232.cpp:239). | Range agrees; the substitute char differs by purpose ('.', `\xNN`, '?'). Principled divergence. |
 | K2 | exitChr parse (con.cpp:523-526) vs render (`exitChr+0x40`, multiple sites). | Inverse modulo case-folding; the two sides agree. |
+| K3 | Flood-mode diagnostic (recv-q > 0, HIGH/CRITICAL) is not automated (#24). | The poll loop drains the socket (pfds[0]) before checking the keyboard (pfds[1]), so a fast host reads recv-q 0 regardless of load -- a structural race retry cannot fix. Echo-mode (recv-q 0) is automated in test-uds-diag.bash; flood stays manual (manual-test-diag-hotkey.bash --flood). Do not re-attempt flood automation. |
+| K4 | con.cpp diagnostic pause/resume left unchanged by #24 and #26. | con.cpp:338 (pause) and 391-393 (resume) already work; #24/#26 added test coverage only, no code change. The diagnostic is test + doc work, not a con.cpp defect. |
+| K5 | FIONREAD-failure diagnostic branch (con.cpp:385) is not covered by test-uds-diag.bash. | The `[diag] ioctl(FIONREAD):` path cannot fire on a connected UNIX socket, so it is unreachable in the automated test; the test asserts the `[diag] con recv buffer:` prefix (the two reachable formats) only. |
 
 ## Notes
 

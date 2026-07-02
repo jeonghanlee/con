@@ -337,6 +337,9 @@ void con_core(int cli_fd, const char *cli_name, int term_fd, const char *term_na
                 break;
             if (buf_cnt == 1 && *buf == diagChr)
             {
+                // The "[diag] con recv buffer:" prefix in the messages below is
+                // asserted by tests/test-uds-diag.bash (grep -aF); keep it stable
+                // when editing the diagnostic output (#24, #26).
                 int pending = 0;
                 int rcvbuf = 0;
                 socklen_t optlen = sizeof(rcvbuf);
