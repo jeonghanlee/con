@@ -19,15 +19,14 @@ con's primary mode, attaching to a procServ UNIX-domain socket); the UDS server
 and peripheral items are deferred to `Backlog`. Version is `1.1.0-dev`
 (`GNUmakefile` CON_VERSION).
 
-**Next session entry point:** M5 release gate. The gate grew to five steps: the
-release-final-test pair landed as #27 (gate step 4, downstream integration with
-epics-ioc-runner, `596db8f`) and #28 (`test-uds-multi-client` + forking
-`echo_server`, `66fb088`), so the unit layer is now 14 suites. Remaining, in
-order: re-run gate steps 1-3 on the final tree; execute step 4 on the multiuser
-golden environment (rocky8/debian13 per `epics-ioc-runner`'s
-`testplan_multiuser.md` — candidate pinned via `IOC_RUNNER_CON_TOOL`, S4+S10 +
-the two-con check); then step 5 version bump (`1.1.0-dev` -> `1.1.0`), master
-merge, `1.1.0` tag, milestone close, next dev cycle. The cycle test plan is
+**Next session entry point:** M5 release gate, **step 5 only**. Steps 1-4 all
+passed 2026-07-02 on candidate `7dff13c` — unit layer 14/14 both backends
+(M5.T1), downstream integration 11/11 on both goldens (M5.T3, via
+`tests/release-gate4-downstream.bash`), diagnostic pause/resume automated and
+flood recv-q > 0 reproduced (K3). Remaining: bump `GNUmakefile` CON_VERSION
+`1.1.0-dev` -> `1.1.0` (closes M5.T2's -V check), then the release sequence —
+master merge (fires Closes #4/#7/#24/#26/#27/#28), annotated `1.1.0` tag,
+GitHub release, milestone close, next dev cycle. The cycle test plan is
 [`testplan_1.1.0.md`](testplan_1.1.0.md).
 
 ## Active Register
@@ -54,11 +53,11 @@ for sub status; this register mirrors it.
 | M4.T1 | 1.1.0 | -x ctrl/t rejects collision (parse-time); Ctrl-T diagnostic automated (#24) | Test sub | Done | test-error-handling.bash: -x ctrl/t, -x 0x14, -x 0x114 exit non-zero with the conflict message; non-colliding -x ctrl/a not flagged. Parse-time guard, so no PTY needed and the runtime keypress is moot (rejected before start). The Ctrl-T diagnostic itself is automated in test-uds-diag.bash: pause via a solitary 0x14 (#24), resume via a follow-up key (#26). |
 | M4.T2 | 1.1.0 | exit-key suite green (test-uds-exit) | Test sub | Done | make test 12/12 suites green on release-1.1.0 (9fcf724). |
 | M5 | 1.1.0 | release gate (no GitHub issue; testplan_1.1.0 "Release Gate", now 5 steps) | Release gate | Open | Runs after M1-M4. Hardened by #27 (step 4: downstream integration, 596db8f) and #28 (multi-client unit suite + forking echo_server, 66fb088); Closes #27/#28 fire at the release merge. Gates the master merge, 1.1.0 tag, and version bump. |
-| M5.T1 | 1.1.0 | batch re-run of M1-M4 change-specific verifications on the final tree | Test sub | Open | — |
-| M5.T2 | 1.1.0 | full tests/run-all-tests.bash green (14 suites incl. test-uds-multi-client); -V reports 1.1.0 | Test sub | Open | — |
-| M5.T3 | 1.1.0 | downstream integration (#27): multiuser S4+S10 + two-con check with the candidate pinned via IOC_RUNNER_CON_TOOL | Test sub | Open | Needs the multiuser golden environment (rocky8/debian13); testplan_1.1.0 gate step 4. |
+| M5.T1 | 1.1.0 | batch re-run of M1-M4 change-specific verifications on the final tree | Test sub | Done | 2026-07-02: full suite carries every M1-M4 change-specific case on the final tree (7dff13c): 14/14 suites, both backends (socat, echo_server). Gate step 3 evidence alongside: pause/resume automated in-suite; flood recv-q > 0 reproduced (8192 bytes; K3 amended, 7dff13c). |
+| M5.T2 | 1.1.0 | full tests/run-all-tests.bash green (14 suites incl. test-uds-multi-client); -V reports 1.1.0 | Test sub | Open | Suite half done 2026-07-02: 14/14 both backends on 7dff13c. -V 1.1.0 awaits the step-5 version bump. |
+| M5.T3 | 1.1.0 | downstream integration (#27): multiuser S4+S10 + two-con check with the candidate pinned via IOC_RUNNER_CON_TOOL | Test sub | Done | PASS 2026-07-02, both goldens (testbed-rocky8/debian13-iocrunner on alsucl-psrv3), 11/11 each via tests/release-gate4-downstream.bash. Candidate 1.1.0-dev 7dff13c at /opt/con-rc/con, pinned per principal invocation and asserted by -V inside opb's context (the stale con 1.0.0 on the fixed path was correctly bypassed). S10 layered access (opb attach OK; obs denied at conf resolution; inspect root-gated); two-con shared console verified both directions; S4 remove-under-attach ended opb's session in 0 s (EOF), socket dir and unit gone. Fixtures opa/opb/obs provisioned per run. |
 
-**Tally:** milestones Open 1 (gate M5) · Done 4 · test subs Open 3 (M5) · Done 8
+**Tally:** milestones Open 1 (gate M5) · Done 4 · test subs Open 1 (M5.T2, awaits the bump) · Done 10
 
 ## Milestone 1.1.0
 
