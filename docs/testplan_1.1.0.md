@@ -94,4 +94,27 @@ Executed in order before the final 1.1.0 release:
 Cases discovered during the work are recorded here with the date and the
 milestone that surfaced them.
 
-(none yet)
+- **2026-06-30 (#24, surfaced by the M4 collision work)** —
+  `tests/test-uds-diag.bash`: the Ctrl-T diagnostic automated under the
+  `script(1)` PTY harness (solitary `0x14`, marker echo as launch proof);
+  the wrong "PTY-consumed" claim corrected in five locations. Flood mode was
+  excluded at the time on a structural-race hypothesis — later amended, see
+  the 2026-07-02 entry.
+- **2026-06-30 (#26)** — the resume half added to `test-uds-diag.bash`: a
+  dedicated resume key, then a second marker asserted to echo AFTER the
+  `[diag]` line (order via `grep -aFn`, not mere presence).
+- **2026-07-02 (#28)** — `tests/test-uds-multi-client.bash`: two concurrent
+  con clients (concurrent-echo attribution, detach isolation, a read-only mix
+  with a process-liveness proof, collective EOF on server death via a
+  process-group kill); `tests/helpers/echo_server.cpp` extended to fork per
+  connection in its own process group.
+- **2026-07-02 (#27)** — Release Gate step 4 (downstream integration) and its
+  driver `tests/release-gate4-downstream.bash` (pin assert in the
+  console-holding principal, S10 probes, two-con shared-console check, S4
+  removal-under-attach); validated 11/11 on both goldens with the stale fixed-
+  path con correctly bypassed by the `IOC_RUNNER_CON_TOOL` pin.
+- **2026-07-02 (K3 amendment, #24 follow-up)** — the flood-mode verdict
+  reversed by reproduction: a solitary `0x14` under a flood reported
+  recv-q 8192 (> 0), so flood IS automatable; it stays out of the suite only
+  pending a bounded-capture design. Recorded in the register Examined-Keep
+  ledger (K3).
