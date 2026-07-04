@@ -97,9 +97,12 @@ gate therefore runs against a PINNED environment, never against "latest":
 - **Advancement.** On any upstream release or golden rebake — before the next
   con release — run gate step 4 with the CURRENT released con against the new
   environment (`GATE_DEPS_EXPECT=<new runner identity>` re-targets the runner
-  assertion; it never skips, and a set-but-empty value fails). All checks
-  green on BOTH goldens advances the pin: edit the driver values, append one
-  register ledger line, commit. Never advance without that run.
+  assertion; it never skips, and a set-but-empty value fails). For a rebake
+  that changes the OS or sudo identities, edit the per-golden pins in the
+  driver's working tree first and validate with THAT run — the pins and the
+  ledger line then commit together. All checks green on BOTH goldens advances
+  the pin: edit the driver values, append one register ledger line, commit.
+  Never advance without that run.
 - **Ledger line.** Each bump records: date, the new pinned identities, the
   upstream repository's commit hash, and the validating run. A changed
   upstream hash is also the tripwire to re-check that `testplan_multiuser.md`

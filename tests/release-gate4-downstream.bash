@@ -15,7 +15,7 @@
 #   - payload IOC "conrc" installed and running (softIoc shebang st.cmd in
 #     /opt/epics-iocs/conrc; ioc-runner generate + install + start as opa)
 #   - golden utilities assumed present, absence fails loud: script(1),
-#     timeout(1), git
+#     timeout(1); git is needed by the runner INSTALLER, not this driver
 # Usage: scp this file to the golden, then: ssh vmadmin@<golden> bash <file>
 # Exit status = number of failed checks.
 #
