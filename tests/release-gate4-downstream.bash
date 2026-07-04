@@ -17,10 +17,12 @@
 # Usage: scp this file to the golden, then: ssh vmadmin@<golden> bash <file>
 # Exit status = number of failed checks.
 #
-# Provenance: validated 2026-07-02, 11/11 PASS on both goldens
-# (testbed-rocky8-iocrunner-server, testbed-debian13-iocrunner-server),
-# candidate 1.1.0-dev 7dff13c; the stale con 1.0.0 on the fixed path was
-# correctly bypassed by the IOC_RUNNER_CON_TOOL pin.
+# Provenance: validated 2026-07-02 with candidate 7dff13c, 11/11 PASS on both
+# goldens (testbed-rocky8/debian13-iocrunner-server); the stale con 1.0.0 on
+# the fixed path was correctly bypassed by the IOC_RUNNER_CON_TOOL pin.
+# Re-validated 2026-07-04 with candidate d714c13 in a docs-only dry run, which
+# exposed the pin assert's hardcoded hash (false FAIL on any later candidate);
+# the assert is candidate-agnostic since.
 set -u
 CONRC=/opt/con-rc/con
 IOC=conrc
@@ -32,9 +34,15 @@ ok()  { echo "[ PASS ] $1"; pass=$((pass+1)); }
 bad() { echo "[ FAIL ] $1"; fail=$((fail+1)); }
 
 echo "==== PIN: candidate identity inside opb's context ===="
+# Candidate-agnostic: the reference is the staged binary itself, never a
+# hardcoded version string -- a hardcoded hash false-fails every later
+# candidate. The releaser eyeballs the printed identity against the intended
+# release version.
+CAND_V=$("$CONRC" -V 2>/dev/null | head -1)
 PIN_OUT=$(sudo -nu opb env IOC_RUNNER_CON_TOOL=$CONRC bash -c '"$IOC_RUNNER_CON_TOOL" -V' 2>&1 | head -1)
-echo "  opb sees: $PIN_OUT"
-case "$PIN_OUT" in *1.1.0-dev*7dff13c*) ok "opb-context con -V reports the candidate (1.1.0-dev 7dff13c)";; *) bad "opb-context con -V mismatch: $PIN_OUT";; esac
+echo "  staged candidate: $CAND_V"
+echo "  opb resolves:     $PIN_OUT"
+if [ -n "$CAND_V" ] && [ "$PIN_OUT" = "$CAND_V" ]; then ok "opb-context resolution matches the staged candidate ($CAND_V)"; else bad "opb-context mismatch: staged=$CAND_V opb=$PIN_OUT"; fi
 
 echo "==== S10: console socket access probes ===="
 # opb (ioc member) attach: hold ~2s, detach via Ctrl-A. Expect clean run, banner captured.
