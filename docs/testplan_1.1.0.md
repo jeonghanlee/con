@@ -55,6 +55,9 @@ re-run at the release gate closes everything against the released tree.
 
 ## Release Gate
 
+The gate's version-independent skeleton is maintained in
+[`release-gate.md`](release-gate.md); this section is the 1.1.0 instantiation.
+
 Executed in order before the final 1.1.0 release:
 
 1. **Cycle batch re-run** — all M1-M4 change-specific verifications against the

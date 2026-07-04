@@ -119,4 +119,7 @@ recorded 2026-07-01 so the same doors are not re-opened.
 - The cycle test plan is [`testplan_1.1.0.md`](testplan_1.1.0.md) — per-milestone
   verification, dependency re-run matrix, and release-gate sequence. Test plans
   are V&V artifacts, not milestone register items.
+- The release gate's version-independent definition is
+  [`release-gate.md`](release-gate.md); each cycle's test plan instantiates it
+  rather than forking it. Introduced after the 1.1.0 gate's first full run.
 - The 1.0.0 record is preserved in git history (commit `ff9ba8c`).
