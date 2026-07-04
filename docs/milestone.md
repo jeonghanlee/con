@@ -112,6 +112,17 @@ recorded 2026-07-01 so the same doors are not re-opened.
 | K4 | con.cpp diagnostic pause/resume left unchanged by #24 and #26. | con.cpp:338 (pause) and 391-393 (resume) already work; #24/#26 added test coverage only, no code change. The diagnostic is test + doc work, not a con.cpp defect. |
 | K5 | FIONREAD-failure diagnostic branch (con.cpp:385) is not covered by test-uds-diag.bash. | The `[diag] ioctl(FIONREAD):` path cannot fire on a connected UNIX socket, so it is unreachable in the automated test; the test asserts the `[diag] con recv buffer:` prefix (the two reachable formats) only. |
 
+## Gate Dependency Pin Ledger
+
+Append-only, one line per pin advancement. Process:
+[`release-gate.md`](release-gate.md) "Dependency pins and advancement";
+enforced values live in the DEPS preamble of
+`tests/release-gate4-downstream.bash`.
+
+| Date | Pinned runner identity | Upstream hash | Per-golden OS / sudo | Validating run |
+| --- | --- | --- | --- | --- |
+| 2026-07-04 | epics-ioc-runner version 1.2.0 (6c50604) | 6c50604 (tag 1.2.0) | rocky 8.10 / 1.9.5p2; debian 13 / 1.9.16p2 | Initial pin. Goldens updated in place from the unreproducible 1.2.0-dev (25f6adc-dirty) bake; gate step 4 rerun 15/15 on both goldens with con candidate 1.1.0-dev 42149b7; DEPS guard negative-tested (mismatch and set-but-empty both abort before scenarios). |
+
 ## Notes
 
 - The `Backlog` GitHub milestone holds the deferred items as individual issues

@@ -79,6 +79,38 @@ Executed in order, against the release candidate, before the final release:
    close, next dev cycle); its reference owns the sequence — this file does
    not restate it.
 
+## Dependency pins and advancement
+
+*(Introduced by the 1.1.0 cycle, dependency-pinning session.)*
+
+Step 4 executes on an environment owned by other repositories, and this
+driver is the seam's ONLY guard: the upstream gate is con-agnostic (its S4/S10
+assertions pass with the socat/nc fallback and record no con version). The
+gate therefore runs against a PINNED environment, never against "latest":
+
+- **Pin home.** The enforced values live in the driver's DEPS preamble
+  (`tests/release-gate4-downstream.bash`): ioc-runner `-V` first line, and
+  per-golden OS `VERSION_ID` + `sudo -V` first line (the sudoers-branch
+  discriminators the downstream plan itself pins). The driver asserts them
+  before any scenario and aborts on mismatch. This file owns the process;
+  the register's pin ledger records each bump.
+- **Advancement.** On any upstream release or golden rebake — before the next
+  con release — run gate step 4 with the CURRENT released con against the new
+  environment (`GATE_DEPS_EXPECT=<new runner identity>` re-targets the runner
+  assertion; it never skips, and a set-but-empty value fails). All checks
+  green on BOTH goldens advances the pin: edit the driver values, append one
+  register ledger line, commit. Never advance without that run.
+- **Ledger line.** Each bump records: date, the new pinned identities, the
+  upstream repository's commit hash, and the validating run. A changed
+  upstream hash is also the tripwire to re-check that `testplan_multiuser.md`
+  S4/S10 still mean what step 4 cites.
+- **Race tie-breaker.** A con release whose gate step 4 already passed ships
+  against the pin it passed with; the advancement to a newer upstream runs
+  AFTER that release, with the just-released con.
+- **Failure and retention.** If the new environment fails, the pin stays.
+  The pinned golden images are part of the pin: rebakes land in NEW image
+  filenames, and the pinned images are retained until the pin advances.
+
 ## Cycle-open checklist
 
 When a new cycle's `testplan_X.Y.Z.md` is drafted (release-cycle procedure),
