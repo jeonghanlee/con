@@ -1,0 +1,136 @@
+# con — Milestone Register
+
+Single, repository-local source of truth for milestone and carry-forward
+status. Every agent and contributor reads this file instead of chat history or
+memory. GitHub milestone state and issue `Closes`/`Refs` footers are
+authoritative; this register reconciles them into one readable view.
+
+**Mode:** remote-authoritative — GitHub issues carry the verification checkbox
+lists; this register mirrors them. Tracker: github.com/jeonghanlee/con.
+
+**Release convention:** one unified register, not a per-version file. On each
+release the register is cleared and restarted for the next cycle; the released
+milestone's full record is preserved in the matching git tag
+(`git show <tag>:docs/milestone.md`).
+
+**1.1.0 release target:** owner to set the GitHub `1.1.0` due date. 1.0.0 is
+released (commit `ff9ba8c`). This cycle hardens the UDS **client** path (P1 —
+con's primary mode, attaching to a procServ UNIX-domain socket); the UDS server
+and peripheral items are deferred to `Backlog`. Version is `1.1.0-dev`
+(`GNUmakefile` CON_VERSION).
+
+**Next session entry point:** M5 release gate, **step 5 only**. Steps 1-4 all
+passed 2026-07-02 on candidate `7dff13c` — unit layer 14/14 both backends
+(M5.T1), downstream integration 11/11 on both goldens (M5.T3, via
+`tests/release-gate4-downstream.bash`), diagnostic pause/resume automated and
+flood recv-q > 0 reproduced (K3). Remaining: bump `GNUmakefile` CON_VERSION
+`1.1.0-dev` -> `1.1.0` (closes M5.T2's -V check), then the release sequence —
+master merge (fires Closes #4/#7/#24/#26/#27/#28), annotated `1.1.0` tag,
+GitHub release, milestone close, next dev cycle. The cycle test plan is
+[`testplan_1.1.0.md`](testplan_1.1.0.md).
+
+## Active Register
+
+Each milestone row is followed by its verification subs (`M<n>.T<k>`):
+T1 = change-specific verification, T2 = suite/regression cases, T3 = re-run of
+an earlier milestone's verification on a shared surface. Sub procedures are in
+[`testplan_1.1.0.md`](testplan_1.1.0.md). Each issue carries the same subs as a
+checkbox list in its Verification section on GitHub — GitHub is authoritative
+for sub status; this register mirrors it.
+
+| M | Topic | Work unit | Type | Status | Evidence or next action |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| M1 | 1.1.0 | #4 U3 UDS path containing ':' misrouted to TCP | Coherence + bug | Done | tcp_separator() at con.cpp:805/620 routes a '/'-bearing or non-numeric-port target as UNIX; 591-593 comment aligned to code. Scope held to #4; -u flag / 588 / 577 / test-suite repair split to Backlog #20-23. Closes #4 (fires at release merge). |
+| M1.T1 | 1.1.0 | -c to a colon-bearing path connects as UDS, not TCP | Test sub | Done | test-uds-connect colon block: echo round-trip + no Invalid port, client and -s. |
+| M1.T2 | 1.1.0 | UDS client suite green (connect/echo/exit/readonly/peer-disconnect) | Test sub | Done | make test 11/11 suites green on release-1.1.0. |
+| M2 | 1.1.0 | #5 U6 sun_path over 108B silently truncated | Bug | Done | Guard at con.cpp:670 (server) / 849 (client) rejects a path of sizeof(sun_path) bytes or more. Committed ce10568 on release-1.1.0; Closes #5 fires at release merge. |
+| M2.T1 | 1.1.0 | -c/-s to a >108B path errors instead of truncating | Test sub | Done | test-uds-sun-path-guard.bash: over-length -c/-s exit non-zero, print the guard message, and (server) create no socket node. |
+| M2.T2 | 1.1.0 | UDS suite green | Test sub | Done | make test 12/12 suites green on release-1.1.0 (ce10568). |
+| M3 | 1.1.0 | #6 U7 servlen non-standard vs SUN_LEN | Refactor | Done | servlen = SUN_LEN(&serv_addr) at con.cpp:679 (server) / 858 (client); a file-scope static_assert pins offsetof(sun_path) == sizeof(sun_family). Behavior identical. Committed e118961; Closes #6 fires at release merge. |
+| M3.T1 | 1.1.0 | connect/echo behaviorally identical with SUN_LEN | Test sub | Done | before/after full-suite diff: all PASS/FAIL verdicts identical (only timing noise). |
+| M3.T3 | 1.1.0 | re-run M2.T2 (same lines edited) | Test sub | Done | full UDS suite green on release-1.1.0 (e118961), incl. the 107-byte boundary. |
+| M4 | 1.1.0 | #7 H2 Ctrl-T diagChr vs exitChr collision, no guard | Enhancement | Done | Guard at con.cpp:571 rejects an -x value whose finalized byte equals diagChr (0x14); the finalized-byte compare also catches numeric truncation (-x 0x114). ADR 0002 records the reject decision. Committed 9fcf724; Closes #7 fires at release merge. |
+| M4.T1 | 1.1.0 | -x ctrl/t rejects collision (parse-time); Ctrl-T diagnostic automated (#24) | Test sub | Done | test-error-handling.bash: -x ctrl/t, -x 0x14, -x 0x114 exit non-zero with the conflict message; non-colliding -x ctrl/a not flagged. Parse-time guard, so no PTY needed and the runtime keypress is moot (rejected before start). The Ctrl-T diagnostic itself is automated in test-uds-diag.bash: pause via a solitary 0x14 (#24), resume via a follow-up key (#26). |
+| M4.T2 | 1.1.0 | exit-key suite green (test-uds-exit) | Test sub | Done | make test 12/12 suites green on release-1.1.0 (9fcf724). |
+| M5 | 1.1.0 | release gate (no GitHub issue; testplan_1.1.0 "Release Gate", now 5 steps) | Release gate | Open | Runs after M1-M4. Hardened by #27 (step 4: downstream integration, 596db8f) and #28 (multi-client unit suite + forking echo_server, 66fb088); Closes #27/#28 fire at the release merge. Gates the master merge, 1.1.0 tag, and version bump. |
+| M5.T1 | 1.1.0 | batch re-run of M1-M4 change-specific verifications on the final tree | Test sub | Done | 2026-07-02: full suite carries every M1-M4 change-specific case on the final tree (7dff13c): 14/14 suites, both backends (socat, echo_server). Gate step 3 evidence alongside: pause/resume automated in-suite; flood recv-q > 0 reproduced (8192 bytes; K3 amended, 7dff13c). |
+| M5.T2 | 1.1.0 | full tests/run-all-tests.bash green (14 suites incl. test-uds-multi-client); -V reports 1.1.0 | Test sub | Open | Suite half done 2026-07-02: 14/14 both backends on 7dff13c. -V 1.1.0 awaits the step-5 version bump. |
+| M5.T3 | 1.1.0 | downstream integration (#27): multiuser S4+S10 + two-con check with the candidate pinned via IOC_RUNNER_CON_TOOL | Test sub | Done | PASS 2026-07-02, both goldens (testbed-rocky8/debian13-iocrunner on alsucl-psrv3), 11/11 each via tests/release-gate4-downstream.bash. Candidate 1.1.0-dev 7dff13c at /opt/con-rc/con, pinned per principal invocation and asserted by -V inside opb's context (the stale con 1.0.0 on the fixed path was correctly bypassed). S10 layered access (opb attach OK; obs denied at conf resolution; inspect root-gated); two-con shared console verified both directions; S4 remove-under-attach ended opb's session in 0 s (EOF), socket dir and unit gone. Fixtures opa/opb/obs provisioned per run. |
+
+**Tally:** milestones Open 1 (gate M5) · Done 4 · test subs Open 1 (M5.T2, awaits the bump) · Done 10
+
+## Milestone 1.1.0
+
+P1 — UDS client path hardening. GitHub milestone `1.1.0` (to be created). U3 and
+H2 are standalone; U6/U7 are a co-located pair (same sun_path lines), U7 riding
+U6. The client path is already hardened by 1.0.0 (`-r`, the Ctrl-T diagnostic,
+`poll()`/`POLLRDHUP`); these are the remaining client-path defects.
+
+| Issue | Title | Priority | Notes |
+| --- | --- | --- | --- |
+| [#4](https://github.com/jeonghanlee/con/issues/4) (M1) | UDS path containing ':' is misrouted to TCP | bug, P1 | con.cpp:805-806, 588-595. A UDS path with a colon parses as host:port and fails; the auto-detect comment ("client") contradicts the code (server). Disambiguate path vs host:port. |
+| [#5](https://github.com/jeonghanlee/con/issues/5) (M2) | sun_path silently truncated past 108 bytes | enhancement, P1 | con.cpp:841 (also 667). strncpy bounds at sizeof(sun_path)-1 with no overflow signal; an over-length path connects to a different path silently. Reject with an error. |
+| [#6](https://github.com/jeonghanlee/con/issues/6) (M3) | servlen computed non-standardly vs SUN_LEN | refactor, P3-low | con.cpp:842 (also 668). Hand-rolled length works only because sun_family is the first member; switch to SUN_LEN. Rides M2 (same lines). |
+| [#7](https://github.com/jeonghanlee/con/issues/7) (M4) | Ctrl-T diagnostic key can collide with the exit key | enhancement, P3-low | con.cpp:330, 51. -x ctrl/t makes exitChr == diagChr; exit wins by precedence and the diagnostic is silently disabled. Warn or reject the collision. |
+
+## Backlog
+
+Deferred to the `Backlog` GitHub milestone — UDS server and peripheral items,
+not in the 1.1.0 cycle. Each is an individual issue: U1 #8, U2 #9, U4 #10,
+B2/C2 #11, U5 #12, U8 #13, O2 #14, C1 #15, O3 #16, H1 #17, O1 #18, O4 #19;
+plus the test-harness item T1 #25 (surfaced by #24's investigation). The former
+umbrella #3 was superseded by #8/#10/#11 and closed.
+
+| ID | Topic | Work unit | Type | Priority | Notes |
+| --- | --- | --- | --- | --- | --- |
+| U1 | UDS server | destructive unlink of a non-socket + TOCTOU | bug | P2 (severity HIGH) | con.cpp:646-648; #3 B1. Guard via stat()/S_ISSOCK before unlink; check rc. |
+| U2 | UDS server | server leaves stale socket on exit | bug | P2 | finish() con.cpp:125-149; unlink own sun_path on exit (root cause of U1's pre-bind unlink). |
+| U4 | UDS server | peer authn SO_PEERCRED + socket-file perms | enhancement | P2 | con.cpp:634-648; #3 B3. Log PID/UID, set umask/fchmod. |
+| U5 | UDS server | SO_REUSEADDR no-op on AF_UNIX | refactor | P3 | con.cpp:638; dead call, symptom of O2. |
+| U8 | UDS server | typo "unkonown", read vs readn, int to socklen_t* | refactor | P3 | con.cpp:686, 698, 679. |
+| O2 | Structure | UNIX and TCP server accept loops near-identical | refactor | P3 | con.cpp:659-706 / 747-800; Generalize vs Keep. |
+| C1 | CLI | -l/-a missing-arg error says "baud rate" | bug | P3 | con.cpp:436, 450; fix message text. |
+| B2/C2 | Net resolve | gethostby* to getaddrinfo/getnameinfo (IPv6); hostname buffer sized by sizeof(ptr) | enhancement | P2 | con.cpp:774-779, 846-852; #3 B2. C2 = con.cpp:616, 777. |
+| O3 | I/O core | hexa-ascii / hexa output blocks duplicated | refactor | P3 | con.cpp:276-294 / 296-312; Generalize vs Keep. |
+| H1 | I/O core | static term_cnt not reset across server connections | bug | P3 | con.cpp:246; server+hexa only, cosmetic. |
+| O1 | str_utils library | dormant API; filter_colors duplicates write_log | refactor | P3 | str_utils.cpp:276 / con.cpp:184-240; Keep-as-library vs Discard. |
+| O4 | send_rs232 | CLI skeleton + baud parse duplicated con vs send_rs232 | refactor | P3 | con.cpp:413-567 / send_rs232.cpp:51-140; Generalize vs Keep-separate. |
+| T1 | Test harness | test-common.bash resolves CON_BIN to /../con when sourced standalone (SC_TOP unset) | bug | P3 | #25. SC_TOP set by each test-*.bash, not test-common; a bare-shell source leaves CON_BIN=/../con and con never runs. Only bites interactive/standalone sourcing, not run-all-tests. Root cause of #24's false "PTY-consumed" negative. |
+
+## Examined-Keep Ledger
+
+Coherence-sweep findings examined and deliberately left as-is, carried forward
+so the next sweep closes them fast instead of re-opening the same seams. K1-K2
+from the 2026-06-16 sweep; K3-K5 from the 1.1.0 diagnostic work (#24, #26),
+recorded 2026-07-01 so the same doors are not re-opened.
+
+| ID | Finding | Why Keep |
+| --- | --- | --- |
+| K1 | Printable-ASCII predicate `c>=' ' && c<='~'` duplicated (con.cpp:283, str_utils.cpp:121, send_rs232.cpp:239). | Range agrees; the substitute char differs by purpose ('.', `\xNN`, '?'). Principled divergence. |
+| K2 | exitChr parse (con.cpp:523-526) vs render (`exitChr+0x40`, multiple sites). | Inverse modulo case-folding; the two sides agree. |
+| K3 | Flood-mode diagnostic (recv-q > 0) is not YET automated (#24). | **Amended 2026-07-02.** The original verdict ("the poll loop drains the socket before the keyboard, so a fast host reads recv-q 0 -- structural race, do not re-attempt") was reasoned, never reproduced, and is false: the loop reads MAXBUF per cycle, not a full drain, so a flood backlogs the queue. Reproduced on this host: a solitary 0x14 under a yes-through-socat flood reported `recv buffer: 8192 / 212992 (3%) - NORMAL`. Flood IS automatable; it stays out of the suite only because an unbounded flood writes GBs into the PTY capture within seconds -- a bounded design (kill the flood right after the diag, or cap the capture) is needed before it becomes a suite case. Echo-mode stays the automated case; manual-test-diag-hotkey.bash --flood stays the interactive check. |
+| K4 | con.cpp diagnostic pause/resume left unchanged by #24 and #26. | con.cpp:338 (pause) and 391-393 (resume) already work; #24/#26 added test coverage only, no code change. The diagnostic is test + doc work, not a con.cpp defect. |
+| K5 | FIONREAD-failure diagnostic branch (con.cpp:385) is not covered by test-uds-diag.bash. | The `[diag] ioctl(FIONREAD):` path cannot fire on a connected UNIX socket, so it is unreachable in the automated test; the test asserts the `[diag] con recv buffer:` prefix (the two reachable formats) only. |
+
+## Gate Dependency Pin Ledger
+
+Append-only, one line per pin advancement. Process:
+[`release-gate.md`](release-gate.md) "Dependency pins and advancement";
+enforced values live in the DEPS preamble of
+`tests/release-gate4-downstream.bash`.
+
+| Date | Pinned runner identity | Upstream hash | Per-golden OS / sudo | Validating run |
+| --- | --- | --- | --- | --- |
+| 2026-07-04 | epics-ioc-runner version 1.2.0 (6c50604) | 6c50604 (tag 1.2.0) | rocky 8.10 / 1.9.5p2; debian 13 / 1.9.16p2 | Initial pin. Goldens updated in place from the unreproducible 1.2.0-dev (25f6adc-dirty) bake; gate step 4 rerun 15/15 on both goldens with con candidate 1.1.0-dev 42149b7; DEPS guard negative-tested (mismatch and set-but-empty both abort before scenarios). |
+
+## Notes
+
+- The `Backlog` GitHub milestone holds the deferred items as individual issues
+  #8-#19; the former umbrella #3 was superseded and closed.
+- The cycle test plan is [`testplan_1.1.0.md`](testplan_1.1.0.md) — per-milestone
+  verification, dependency re-run matrix, and release-gate sequence. Test plans
+  are V&V artifacts, not milestone register items.
+- The release gate's version-independent definition is
+  [`release-gate.md`](release-gate.md); each cycle's test plan instantiates it
+  rather than forking it. Introduced after the 1.1.0 gate's first full run.
+- The 1.0.0 record is preserved in git history (commit `ff9ba8c`).

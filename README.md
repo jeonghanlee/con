@@ -130,7 +130,9 @@ con -Y -c /run/procserv/myioc/control
 make test
 ```
 
-Manual diagnostic hotkey test:
+The Ctrl-T diagnostic hotkey is covered by `make test`
+(`tests/test-uds-diag.bash`). The interactive test below is for flood mode and
+visual inspection of the `[diag]` output:
 
 ```bash
 bash tests/manual-test-diag-hotkey.bash          # echo mode

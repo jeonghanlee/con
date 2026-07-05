@@ -1,0 +1,120 @@
+# con — Test Plan 1.1.0
+
+Cycle test plan for the 1.1.0 milestones M1-M4 (work order and issue references
+in [`milestone.md`](milestone.md)). Drafted at cycle start (2026-06-16); cases
+discovered during the work are added under "Added During Cycle". Before the
+final release this plan is executed in full and remains the cycle's verification
+record, preserved in the `1.1.0` tag.
+
+## Verification Layers
+
+Each milestone is verified in two layers:
+
+1. **Change-specific verification** — designed per milestone, with depth chosen
+   by blast radius: a static read, a targeted manual run, or a new automated
+   case driven through the `script(1)`/PTY harness in `tests/`.
+2. **Automated suites** — `tests/run-all-tests.bash` (the `test-*.bash` set:
+   error-handling, version, uds-connect, uds-echo, uds-exit, uds-readonly,
+   uds-peer-disconnect, log-output, color-filter, hexa-output, throughput).
+   Where an issue's acceptance criteria name concrete cases, the cases are added
+   to the suites as permanent regression assets, not run as one-off checks.
+
+Suite baseline at cycle start: the UDS client suite (connect/echo/exit/readonly/
+peer-disconnect) is green and is the P1 verification baseline. The Ctrl-T
+diagnostic hotkey is automated in `tests/test-uds-diag.bash` (issue #24): a
+solitary `0x14` read (`buf_cnt == 1`) fires the `[diag]` block under the
+`script(1)` PTY harness, with a marker echo first as launch proof. The
+interactive `manual-test-diag-hotkey.bash` remains for flood mode and visual
+inspection.
+
+The milestone register tracks each verification as `M<n>.T<k>` subs that map
+onto this plan: T1 = "Change-specific verification", T2 = "Suite coverage and
+new cases", T3 = the milestone's row in the Dependency Re-run Matrix. Sub status
+is authoritative in each issue's Verification checkbox list on GitHub and
+mirrored by the register.
+
+## Per-Milestone Verification
+
+| M | Issue | Change-specific verification | Suite coverage and new cases |
+| :--- | :--- | :--- | :--- |
+| M1 | U3 | `con -c /tmp/a:b.sock` against an echo server on that path connects as UDS (not "Invalid port"); the auto-detect comment matches the code after the fix. | New `test-uds-connect` case: a colon-bearing socket path connects and echoes. UDS client suite stays green. |
+| M2 | U6 | `con -c <path longer than sizeof(sun_path)-1>` errors with a clear message instead of silently connecting to the truncated path; a valid-length path is unaffected. | New error-suite case pinning the over-length rejection. UDS suite stays green. |
+| M3 | U7 | connect and echo round-trip identical before and after switching to `SUN_LEN`, both client and server. Re-runs M2's suite (same lines edited). | Covered by `test-uds-connect` / `test-uds-echo`; no new case required. |
+| M4 | H2 | `con -x ctrl/t -c <sock>` warns or rejects the exit/diagnostic key collision rather than silently disabling the diagnostic. The collision rejection is automated at parse time (`test-error-handling.bash`); the Ctrl-T diagnostic hotkey itself is automated in `tests/test-uds-diag.bash` (#24). | New error-suite case for the `-x ctrl/t` rejection (parse-time, automatable) plus `test-uds-diag.bash` for the diagnostic; the manual test stays for flood and visual checks. |
+
+## Dependency Re-run Matrix
+
+A milestone that passed individually can be invalidated by later work on a
+shared surface. The matrix schedules the re-verification points; the batch
+re-run at the release gate closes everything against the released tree.
+
+| Trigger | Re-run | Shared surface |
+| :--- | :--- | :--- |
+| M3 (U7) | M2.T2 (UDS suite) | sun_path / servlen lines con.cpp:818-819, 644-645 |
+| M1 (U3) | UDS client connect/echo | socket mode-detection shared with the client branch |
+
+## Release Gate
+
+The gate's version-independent skeleton is maintained in
+[`release-gate.md`](release-gate.md); this section is the 1.1.0 instantiation.
+
+Executed in order before the final 1.1.0 release:
+
+1. **Cycle batch re-run** — all M1-M4 change-specific verifications against the
+   final tree, the first state in which all four changes coexist.
+2. **Full suite** — `make test` (`tests/run-all-tests.bash`) green on the dev
+   host with both echo-server backends (socat and the compiled `echo_server`).
+3. **Manual diagnostic** — `tests/manual-test-diag-hotkey.bash` (echo and
+   `--flood`) for the Ctrl-T path, including the M4 collision check.
+4. **Downstream integration (#27)** — con's deployed role, verified with the
+   release candidate on the environment defined by `epics-ioc-runner`'s
+   `docs/testplan_multiuser.md` (its golden images, user fixtures, and
+   execution harness; commands live there, not here):
+   - Pin the candidate for **every** principal invocation by passing
+     `IOC_RUNNER_CON_TOOL=<absolute path to the candidate con>` through the
+     sudo boundary — the same per-invocation `env` idiom the harness uses for
+     `XDG_RUNTIME_DIR`. An operator-shell export or a PATH install is not
+     enough: `sudo -niu` resets the environment, and ioc-runner resolves con
+     from `IOC_RUNNER_CON_TOOL` or its fixed absolute paths, never from PATH.
+   - Before the scenarios, assert inside the console-holding principal's
+     context (opb in S4/S10) that the resolved con's `-V` reports the
+     candidate version and git hash.
+   - Run multiuser scenarios **S4** and **S10** with the candidate; both must
+     pass. (The automated lifecycle `attach` checks verify tool availability
+     only and never execute con — they are not con coverage.)
+   - **Two-con check**: attach two con clients to one running IOC, type from
+     both, and verify both sessions behave and detach cleanly — the shared
+     procServ console face the unit suites (including `test-uds-multi-client`,
+     whose echo peers are per-client) cannot reach.
+5. **Version** — `GNUmakefile` CON_VERSION bumped to `1.1.0`; `con -V` reports
+   `1.1.0`.
+
+## Added During Cycle
+
+Cases discovered during the work are recorded here with the date and the
+milestone that surfaced them.
+
+- **2026-06-30 (#24, surfaced by the M4 collision work)** —
+  `tests/test-uds-diag.bash`: the Ctrl-T diagnostic automated under the
+  `script(1)` PTY harness (solitary `0x14`, marker echo as launch proof);
+  the wrong "PTY-consumed" claim corrected in five locations. Flood mode was
+  excluded at the time on a structural-race hypothesis — later amended, see
+  the 2026-07-02 entry.
+- **2026-06-30 (#26)** — the resume half added to `test-uds-diag.bash`: a
+  dedicated resume key, then a second marker asserted to echo AFTER the
+  `[diag]` line (order via `grep -aFn`, not mere presence).
+- **2026-07-02 (#28)** — `tests/test-uds-multi-client.bash`: two concurrent
+  con clients (concurrent-echo attribution, detach isolation, a read-only mix
+  with a process-liveness proof, collective EOF on server death via a
+  process-group kill); `tests/helpers/echo_server.cpp` extended to fork per
+  connection in its own process group.
+- **2026-07-02 (#27)** — Release Gate step 4 (downstream integration) and its
+  driver `tests/release-gate4-downstream.bash` (pin assert in the
+  console-holding principal, S10 probes, two-con shared-console check, S4
+  removal-under-attach); validated 11/11 on both goldens with the stale fixed-
+  path con correctly bypassed by the `IOC_RUNNER_CON_TOOL` pin.
+- **2026-07-02 (K3 amendment, #24 follow-up)** — the flood-mode verdict
+  reversed by reproduction: a solitary `0x14` under a flood reported
+  recv-q 8192 (> 0), so flood IS automatable; it stays out of the suite only
+  pending a bounded-capture design. Recorded in the register Examined-Keep
+  ledger (K3).

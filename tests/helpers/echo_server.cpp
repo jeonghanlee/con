@@ -1,6 +1,13 @@
 /*
  * Minimal UNIX Domain Socket echo server for con integration tests.
- * Accepts a single connection, echoes all received data back, and exits on EOF.
+ *
+ * Accepts any number of connections, forking one child per client; each child
+ * echoes its own client's data back and exits on that client's EOF (#28).
+ * The server puts itself in its own process group (setpgid), so a suite can
+ * end the parent and every connection child with a single group signal -- the
+ * multi-client suite's server-death case relies on this. Suites end the
+ * server explicitly (stop_echo_server or a group kill); the parent no longer
+ * exits after the first client.
  */
 
 #include <sys/socket.h>
@@ -29,8 +36,14 @@ int main(int argc, char *argv[])
 
     sock_path = argv[1];
 
+    /* Own process group: one group signal reaches parent and children. A
+     * no-op when a caller already made this process a group leader (setsid). */
+    setpgid(0, 0);
+
     signal(SIGINT,  cleanup);
     signal(SIGTERM, cleanup);
+    /* Connection children are fire-and-forget; reap them automatically. */
+    signal(SIGCHLD, SIG_IGN);
 
     int srv = socket(AF_UNIX, SOCK_STREAM, 0);
     if (srv < 0) { perror("socket"); return 1; }
@@ -42,18 +55,30 @@ int main(int argc, char *argv[])
     unlink(sock_path);
 
     if (bind(srv, (struct sockaddr *)&addr, sizeof(addr)) < 0) { perror("bind"); return 1; }
-    if (listen(srv, 1) < 0) { perror("listen"); return 1; }
+    if (listen(srv, 8) < 0) { perror("listen"); return 1; }
 
-    int cli = accept(srv, NULL, NULL);
-    if (cli < 0) { perror("accept"); return 1; }
+    for (;;)
+    {
+        int cli = accept(srv, NULL, NULL);
+        if (cli < 0) { perror("accept"); return 1; }
 
-    char buf[4096];
-    int n;
-    while ((n = read(cli, buf, sizeof(buf))) > 0)
-        write(cli, buf, n);
+        pid_t pid = fork();
+        if (pid < 0) { perror("fork"); close(cli); continue; }
+        if (pid == 0)
+        {
+            /* Child: the parent alone owns the socket node. Reset the
+             * inherited handlers so a group signal cannot make a child run
+             * cleanup() and unlink the path the parent still listens on. */
+            signal(SIGINT,  SIG_DFL);
+            signal(SIGTERM, SIG_DFL);
+            close(srv);
 
-    close(cli);
-    close(srv);
-    unlink(sock_path);
-    return 0;
+            char buf[4096];
+            int n;
+            while ((n = read(cli, buf, sizeof(buf))) > 0)
+                write(cli, buf, n);
+            _exit(0);
+        }
+        close(cli);
+    }
 }

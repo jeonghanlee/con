@@ -12,6 +12,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <signal.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,6 +40,11 @@
 
 #define PERR(...) do { fprintf(stderr, __VA_ARGS__); finish(1); } while(0)
 #define RERR(...) do { fprintf(stderr, __VA_ARGS__); return;    } while(0)
+
+// SUN_LEN(&a) equals the former strlen(sun_path) + sizeof(sun_family) only when
+// sun_path begins exactly at the end of sun_family with no padding (M3/#6).
+static_assert(offsetof(struct sockaddr_un, sun_path) == sizeof(((struct sockaddr_un *)0)->sun_family),
+              "SUN_LEN identity (M3/#6): sun_path offset must equal sun_family size");
 
 
 Tty             *tty = 0;
@@ -331,6 +337,9 @@ void con_core(int cli_fd, const char *cli_name, int term_fd, const char *term_na
                 break;
             if (buf_cnt == 1 && *buf == diagChr)
             {
+                // The "[diag] con recv buffer:" prefix in the messages below is
+                // asserted by tests/test-uds-diag.bash (grep -aF); keep it stable
+                // when editing the diagnostic output (#24, #26).
                 int pending = 0;
                 int rcvbuf = 0;
                 socklen_t optlen = sizeof(rcvbuf);
@@ -398,6 +407,29 @@ void con_core(int cli_fd, const char *cli_name, int term_fd, const char *term_na
             }
         }
     }
+}
+
+// Classify a connection target as TCP host:port or a UNIX socket path.
+// Returns a pointer to the host/port separator colon for a TCP target, or
+// NULL for a UNIX socket path. A target containing '/' is a UNIX path
+// regardless of any ':' (issue #4: a socket path may contain a colon);
+// otherwise the first ':' separates host:port only when the text after it is
+// a number under the same strtol(..., 0) the TCP branch uses, so no currently
+// valid host:port target is reclassified.
+static char *tcp_separator(char *target)
+{
+    if (!target || !*target)
+        return NULL;
+    if (strchr(target, '/'))
+        return NULL;
+    char *p = strchr(target, ':');
+    if (!p || !*(p + 1))
+        return NULL;
+    char *end;
+    (void) strtol(p + 1, &end, 0);
+    if (*end)
+        return NULL;
+    return p;
 }
 
 int main(int ac, char *av[])
@@ -531,6 +563,21 @@ int main(int ac, char *av[])
                         finish(1);
                     }
                 }
+                // M4 (#7): a configurable exit key must not shadow the fixed
+                // diagnostic key (diagChr, 0x14 Ctrl-T). The poll loop tests
+                // exitChr before diagChr, so an equal exit key silently disables
+                // the diagnostic. diagChr is a compile-time constant parsed
+                // before this point; if it ever becomes configurable, move this
+                // check to after all options are parsed. Comparing the finalized
+                // byte (not the input text) also catches numeric truncation,
+                // e.g. -x 0x114 wrapping to 0x14.
+                if (exitChr == diagChr)
+                {
+                    fprintf(stderr, "Exit character 0x%02X conflicts with the "
+                            "built-in diagnostic key (Ctrl-T, 0x14); choose a "
+                            "different exit character.\n", exitChr);
+                    finish(1);
+                }
             }
             else if (!strcmp(av[i], "s")  ||  !strcmp(av[i], "server"))
             {
@@ -589,7 +636,7 @@ int main(int ac, char *av[])
             // Starts with ':' - most probably server
             srv_flag = true;
         else if (strchr(TargetCon, ':'))
-            // Contains ':' - most probably client
+            // Contains ':' - currently selected as server (not client); see issue #21
             srv_flag = true;
         else
             PERR("\'%s\" is ambiguous - server or client flag must be specified\n", TargetCon);
@@ -617,7 +664,7 @@ int main(int ac, char *av[])
             char       name[name_l];
             memset(name, 0, name_l);
 
-            char *p = strchr(TargetCon, ':');
+            char *p = tcp_separator(TargetCon);
             if (!p)
             {
                 /*
@@ -641,8 +688,13 @@ int main(int ac, char *av[])
                 // Bind our local address so that the client can send to us.
                 memset((char *) &serv_addr, 0, sizeof(serv_addr));
                 serv_addr.sun_family = AF_UNIX;
+                // sun_path length is bounded here, in servlen (M3/#6), and at the
+                // client connect site (~841); keep all sizeof(serv_addr.sun_path)
+                // uses in agreement when any one changes.
+                if (strlen(TargetCon) >= sizeof(serv_addr.sun_path))
+                    PERR("UNIX socket path exceeds %d bytes: \"%s\"\n", (int)(sizeof(serv_addr.sun_path) - 1), TargetCon);
                 strncpy(serv_addr.sun_path, TargetCon, sizeof(serv_addr.sun_path)-1);
-                servlen = strlen(serv_addr.sun_path) + sizeof(serv_addr.sun_family);
+                servlen = SUN_LEN(&serv_addr);
                 unlink(serv_addr.sun_path);
                 if (bind(tty1, (struct sockaddr *)&serv_addr, servlen) < 0)
                     PERR("bind: %s", strerror(errno));
@@ -802,7 +854,7 @@ int main(int ac, char *av[])
         }
         else if (cli_flag)
         {
-            char *p = strchr(TargetCon, ':');
+            char *p = tcp_separator(TargetCon);
             if (!p)
             {
                 /*
@@ -815,8 +867,13 @@ int main(int ac, char *av[])
                 // Fill the "serv_addr" structure
                 memset((char *) &serv_addr, 0, sizeof(serv_addr));
                 serv_addr.sun_family      = AF_UNIX;
+                // sun_path length is bounded here, in servlen (M3/#6), and at the
+                // server bind site (~667); keep all sizeof(serv_addr.sun_path)
+                // uses in agreement when any one changes.
+                if (strlen(TargetCon) >= sizeof(serv_addr.sun_path))
+                    PERR("UNIX socket path exceeds %d bytes: \"%s\"\n", (int)(sizeof(serv_addr.sun_path) - 1), TargetCon);
                 strncpy(serv_addr.sun_path, TargetCon, sizeof(serv_addr.sun_path)-1);
-                servlen = strlen(serv_addr.sun_path) + sizeof(serv_addr.sun_family);
+                servlen = SUN_LEN(&serv_addr);
 
                 // Open a UNIX socket
                 if ( (tty1 = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
