@@ -15,7 +15,10 @@ milestone's full record is preserved in the matching git tag
 
 **Current release:** 1.1.0 was released on 2026-07-04 (merge `0dfe4f2`, tag
 `1.1.0`). The current source sets `GNUmakefile` `CON_VERSION` to `1.1.0`;
-the UDS server and peripheral items remain deferred to `Backlog`.
+the UDS server and peripheral items remain deferred to `Backlog`. The standing
+client-first scope decision is recorded in [`CLOSED_DOORS.md`](CLOSED_DOORS.md):
+UDS server work is not assigned, moved, or reclassified unless the owner
+explicitly requests it.
 
 **Next session entry point:** **1.1.0 RELEASED 2026-07-04** (merge `0dfe4f2`
 --no-ff, annotated tag `1.1.0`, GitHub release published with curated notes,
@@ -97,6 +100,10 @@ observed `Verification Results`.
 | #28 | CLOSED | 1.1.0 | 2026-08-13T06:48:30Z |
 
 ## Backlog
+
+Standing scope decision: UDS server work remains in this section. Do not assign,
+move, or reclassify UDS server work without an explicit owner request. The next
+cycle prioritizes client-side work. See [`CLOSED_DOORS.md`](CLOSED_DOORS.md).
 
 Deferred to the `Backlog` GitHub milestone - UDS server and peripheral items,
 not in the 1.1.0 cycle. The release-independent backlog currently includes
