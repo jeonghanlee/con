@@ -15,10 +15,12 @@ milestone's full record is preserved in the matching git tag
 
 **Current release:** 1.1.0 was released on 2026-07-04 (merge `0dfe4f2`, tag
 `1.1.0`). The current source sets `GNUmakefile` `CON_VERSION` to `1.1.0`;
-the UDS server and peripheral items remain deferred to `Backlog`. The standing
-client-first scope decision is recorded in [`CLOSED_DOORS.md`](CLOSED_DOORS.md):
-UDS server work is not assigned, moved, or reclassified unless the owner
-explicitly requests it.
+the UDS server and peripheral items remain unassigned in the canonical
+`Backlog`. The standing client-first scope decision is recorded in
+[`CLOSED_DOORS.md`](CLOSED_DOORS.md): UDS server work is not assigned to an
+active release unless the owner explicitly requests it. The client-first
+review set is #16, #20, #22, #23, and #25; no next release milestone has been
+opened.
 
 **Next session entry point:** **1.1.0 RELEASED 2026-07-04** (merge `0dfe4f2`
 --no-ff, annotated tag `1.1.0`, GitHub release published with curated notes,
@@ -105,10 +107,19 @@ Standing scope decision: UDS server work remains in this section. Do not assign,
 move, or reclassify UDS server work without an explicit owner request. The next
 cycle prioritizes client-side work. See [`CLOSED_DOORS.md`](CLOSED_DOORS.md).
 
-Deferred to the `Backlog` GitHub milestone - UDS server and peripheral items,
-not in the 1.1.0 cycle. The release-independent backlog currently includes
-issues #8-#23 and #25; issue #24 is part of `1.1.0`. The former umbrella #3 was
-superseded by #8/#10/#11 and is closed.
+GitHub client-first classification observed 2026-08-13: UDS server-only,
+TCP server, and TCP client issues #8-#14, #17, and #21 remain `OPEN` in the
+`Closed Door` milestone with the `closed-door` label. UDS-client-containing
+issues #16, #20, #22, #23, and #25 remain eligible for client review in the
+`Backlog` milestone. Generic issues #15, #18, and #19 remain in `Backlog`
+without the `closed-door` label. Issue bodies and state were preserved.
+
+Deferred from the active release - UDS server and peripheral items remain in
+the canonical `Backlog`, while GitHub projects UDS server-only, TCP server, and
+TCP client issues #8-#14, #17, and #21 to `Closed Door`. UDS-client-containing
+issues #16, #20, #22, #23, and #25, plus generic issues #15, #18, and #19,
+remain in the GitHub `Backlog` milestone. Issue #24 is part of `1.1.0`. The
+former umbrella #3 was superseded by #8/#10/#11 and is closed.
 
 | ID | Topic | Work unit | Type | Priority | Notes |
 | --- | --- | --- | --- | --- | --- |
@@ -154,8 +165,10 @@ enforced values live in the DEPS preamble of
 
 ## Notes
 
-- The `Backlog` GitHub milestone holds the deferred items as individual issues
-  #8-#23 and #25; the former umbrella #3 was superseded and closed.
+- The canonical `Backlog` section retains all unassigned work. GitHub places
+  #8-#14, #17, and #21 in `Closed Door`, and keeps #15, #16, #18-#20, #22, #23,
+  and #25 in the `Backlog` milestone; the former umbrella #3 was superseded and
+  closed.
 - The cycle test plan is [`testplan_1.1.0.md`](testplan_1.1.0.md) — per-milestone
   verification, dependency re-run matrix, and release-gate sequence. Test plans
   are V&V artifacts, not milestone register items.
