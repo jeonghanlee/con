@@ -87,8 +87,7 @@ PRINT.%:
 
 test: $(TRG1)
 	$(MAKE) -C tests/helpers
-	-bash tests/run-all-tests.bash
+	bash tests/run-all-tests.bash
 
 test-clean:
 	$(MAKE) -C tests/helpers clean
-

@@ -17,7 +17,7 @@ set -e
 
 SC_RPATH="$(realpath "$0")"
 SC_TOP="${SC_RPATH%/*}"
-source "${SC_TOP}/test-common.bash"
+source "${SC_TOP}/common.bash"
 
 function _handle_exit {
     local exit_code=$?
@@ -34,10 +34,8 @@ print_sub_divider
 
 # The guard sits after con opens /dev/tty, so con must run under a
 # PTY to reach it. script(1) supplies the controlling terminal; -e returns the
-# child exit code (run_con in test-common.bash deliberately swallows it). No
-# input is needed: con exits at the guard before any read. The exit code is
-# captured inline below, not via a test-common.bash helper, to keep the shared
-# run_con contract unchanged.
+# child exit code. The commands below remain inline because the server case
+# requires a specific working directory and both cases assert the exact code.
 declare -g GUARD_RC=0
 declare -g GUARD_OUTPUT=""
 

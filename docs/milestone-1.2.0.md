@@ -14,9 +14,9 @@ Git upstream: `origin/release-1.2.0`
 Remote tracker: `github.com/jeonghanlee/con`, GitHub milestone `1.2.0` (#4)
 Default development verification host: `top`, Debian GNU/Linux 13.6, x86_64, repository binary `/data/gitsrc/con/con`
 
-Next session entry point: request M1 implementation authority for issue #23; after authorization, implement the accepted M1 plan and execute M1 / T1 through T4.
+Next session entry point: request Commit authority for the verified M1 changes; after a separately authorized commit and push, record landing evidence and reconcile issue #23 under separate Issue authority.
 
-Milestone tally: milestones Not started 4, Blocked 1, Complete 0; external gates Open 1, Complete 0; Ready milestones 1.
+Milestone tally: milestones Not started 3, In progress 1, Blocked 1, Complete 0; external gates Open 1, Complete 0; Ready milestones 0.
 
 Tracker reconciliation observed 2026-08-27T17:37:04Z: GitHub milestone `1.2.0` is open with four open issues and zero closed issues. Issue #16 is open in GitHub `Backlog` with labels `P3-low` and `refactor`. Issues #20, #22, #23, and #25 are open in `1.2.0`; their titles, labels, milestone assignments, assignee, and projected bodies match the canonical details.
 
@@ -27,7 +27,7 @@ Tracker reconciliation observed 2026-08-27T17:37:04Z: GitHub milestone `1.2.0` i
 | Group | ID | Work unit | Type | Status | Ready | Deps | Done when / Evidence |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | External | G1 | Confirm epics-ioc-runner 1.2.4 with released con 1.1.0 | External gate | Open | No | D4, D11 | Released con 1.1.0 passes the epics-ioc-runner 1.2.4 gate on both pinned goldens; [detail](#g1---confirm-epics-ioc-runner-124-with-released-con-110) |
-| Test integrity | M1 | Restore real test outcomes and auto-discovery (#23) | Milestone | Not started | Yes | D4, D5 | Real connection failures remain nonzero, valid UDS echo passes under each selected backend, every `test-*.bash` suite is discovered, and `make test` returns the runner status; [detail](#m1---restore-real-test-outcomes-and-auto-discovery-23) |
+| Test integrity | M1 | Restore real test outcomes and auto-discovery (#23) | Milestone | In progress | No | D4, D5 | Real connection failures remain nonzero, valid UDS echo passes under each selected backend, every `test-*.bash` suite is discovered, and `make test` returns the runner status; [detail](#m1---restore-real-test-outcomes-and-auto-discovery-23) |
 | Test integrity | M2 | Make common test setup safe when sourced standalone (#25) | Milestone | Not started | No | M1, D6 | A fresh shell resolves the real binary or fails clearly, and both suite backends pass; [detail](#m2---make-common-test-setup-safe-when-sourced-standalone-25) |
 | UDS client | M3 | Add an explicit UNIX transport flag (#20) | Milestone | Not started | No | M2, D7 | `-u` and `--unix` force AF_UNIX for client and server targets without changing flagless behavior; [detail](#m3---add-an-explicit-unix-transport-flag-20) |
 | UDS client | M4 | Reach colonless UDS paths through explicit UNIX mode (#22) | Milestone | Not started | No | M3, D7 | A colonless socket works through `-u` and serial auto-detection remains unchanged; [detail](#m4---reach-colonless-uds-paths-through-explicit-unix-mode-22) |
@@ -89,7 +89,7 @@ The release operator must confirm that released con 1.1.0 passes the epics-ioc-r
 Origin: 1.2.0 / M1
 Identity History: none
 GitHub Issue: [#23](https://github.com/jeonghanlee/con/issues/23)
-Status: Not started
+Status: In progress
 
 ##### Summary
 
@@ -119,7 +119,7 @@ Out of scope: changing con transport behavior, changing the released issue #4 fi
 
 Plan Status: accepted
 Plan Acceptance: owner approval and accepted third-person review findings in this conversation on 2026-08-26
-Implementation Authorization: none
+Implementation Authorization: owner approval in conversation on 2026-08-27
 Superseded Plan Artifacts: none
 
 1. Rename the shared helper to `tests/common.bash` and update all source sites without changing helper behavior yet.
@@ -143,14 +143,14 @@ Superseded Plan Artifacts: none
 
 | Label | Observed At | Environment | Result | Evidence |
 | --- | --- | --- | --- | --- |
-| T1 | Not run | Linux dev host | Pending | none |
-| T2 | Not run | Linux dev host | Pending | none |
-| T3 | Not run | Linux dev host | Pending | none |
-| T4 | Not run | Linux dev host | Pending | none |
+| T1 | 2026-08-27T18:08:29Z | `top`; Debian GNU/Linux 13.6; x86_64; repository `con` | Pass | The real `script(1)` PTY path against a missing UDS endpoint produced a nonzero `run_con` status under both explicit backends; each `test-uds-connect.bash` run returned 0 after the negative assertion passed. |
+| T2 | 2026-08-27T18:08:29Z | `top`; Debian GNU/Linux 13.6; x86_64; repository `con`; `socat` and compiled `tests/helpers/echo_server` | Pass | Fresh explicit `socat` and `echo_server` runs each completed the real payload round trip and exited 0; complete runner runs reported the requested backend and passed 14 of 14 suites. |
+| T3 | 2026-08-27T18:02:35Z | `top`; Debian GNU/Linux 13.6; x86_64 | Pass | A filename-derived expected list compared byte-for-byte with the runner's executed display-name order with `diff` status 0; all 14 `test-*.bash` files ran once and non-suite files were absent. |
+| T4 | 2026-08-27T18:05:57Z | `top`; Debian GNU/Linux 13.6; x86_64; GNU Make | Pass | `CON_TIMEOUT=0.1 make test` exercised the real PTY timeout path, reported 8 failed suites, and ended with the recipe's `Error 1`; normal `make test` then exited 0 with 14 of 14 suites passed. |
 
 ##### Closure Evidence
 
-- None.
+- 2026-08-27: first-person retrospective, independent third-person review, and second-person reader-seat review passed with no accepted findings outstanding. Repository landing and issue #23 closure remain pending under separate Git and GitHub authority.
 
 ##### GitHub Projection
 

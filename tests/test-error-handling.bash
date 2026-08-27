@@ -7,7 +7,7 @@ set -e
 
 SC_RPATH="$(realpath "$0")"
 SC_TOP="${SC_RPATH%/*}"
-source "${SC_TOP}/test-common.bash"
+source "${SC_TOP}/common.bash"
 
 function _handle_exit {
     local exit_code=$?

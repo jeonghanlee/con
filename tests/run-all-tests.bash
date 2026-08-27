@@ -29,15 +29,17 @@ declare -g -a GLOBAL_FAILED_SUITES=()
 # Exported for child test scripts
 export CON_BIN
 export HELPERS_DIR
-export ECHO_SERVER_MODE=""
 
 function print_divider {
     printf "${BLUE}%s${NC}\n" "===================================================================================================="
 }
 
 function _run_test {
-    local test_name="$1"
-    local test_script="$2"
+    local test_name
+    local test_script
+
+    test_name="$1"
+    test_script="$2"
 
     print_divider
     printf "${BLUE}[ RUN      ] %s${NC}\n" "${test_name}"
@@ -56,6 +58,80 @@ function _run_test {
     fi
 }
 
+function _command_is_executable {
+    local command_name
+    local command_path
+
+    command_name="$1"
+    command_path=$(command -v "${command_name}" 2>/dev/null) || return 1
+    [[ -x "${command_path}" ]]
+}
+
+function _resolve_echo_server_mode {
+    if [[ ! -v ECHO_SERVER_MODE ]]; then
+        if _command_is_executable socat; then
+            ECHO_SERVER_MODE="socat"
+        elif [[ -x "${HELPERS_DIR}/echo_server" ]]; then
+            ECHO_SERVER_MODE="echo_server"
+        else
+            printf "${RED}Error: Neither socat nor echo_server is available.${NC}\n" >&2
+            printf "Install socat or run: make -C tests/helpers\n" >&2
+            return 1
+        fi
+    fi
+
+    case "${ECHO_SERVER_MODE}" in
+        socat)
+            if ! _command_is_executable socat; then
+                printf "${RED}Error: ECHO_SERVER_MODE=socat is unavailable.${NC}\n" >&2
+                return 1
+            fi
+            ;;
+        echo_server)
+            if [[ ! -x "${HELPERS_DIR}/echo_server" ]]; then
+                printf "${RED}Error: ECHO_SERVER_MODE=echo_server is unavailable.${NC}\n" >&2
+                printf "Run: make -C tests/helpers\n" >&2
+                return 1
+            fi
+            ;;
+        "")
+            printf "${RED}Error: ECHO_SERVER_MODE cannot be empty.${NC}\n" >&2
+            return 1
+            ;;
+        *)
+            printf "${RED}Error: Unknown ECHO_SERVER_MODE: %s${NC}\n" "${ECHO_SERVER_MODE}" >&2
+            return 1
+            ;;
+    esac
+
+    export ECHO_SERVER_MODE
+}
+
+function _run_discovered_tests {
+    local test_script
+    local test_file
+    local test_name
+    local -a test_scripts
+
+    test_scripts=()
+    mapfile -d '' -t test_scripts < <(
+        find "${SC_TOP}" -maxdepth 1 -type f -name 'test-*.bash' -print0 | LC_ALL=C sort -z
+    )
+
+    if [[ ${#test_scripts[@]} -eq 0 ]]; then
+        printf "${RED}Error: No test-*.bash suites found in %s.${NC}\n" "${SC_TOP}" >&2
+        return 1
+    fi
+
+    for test_script in "${test_scripts[@]}"; do
+        test_file="${test_script##*/}"
+        test_name="${test_file#test-}"
+        test_name="${test_name%.bash}"
+        test_name="${test_name//-/ }"
+        _run_test "${test_name}" "${test_script}"
+    done
+}
+
 
 # --- Pre-flight Checks ---
 if [[ ! -x "${CON_BIN}" ]]; then
@@ -65,41 +141,13 @@ if [[ ! -x "${CON_BIN}" ]]; then
 fi
 
 # --- Resolve Echo Server Backend ---
-if command -v socat >/dev/null 2>&1; then
-    ECHO_SERVER_MODE="socat"
-elif [[ -x "${HELPERS_DIR}/echo_server" ]]; then
-    ECHO_SERVER_MODE="echo_server"
-else
-    printf "Building echo_server helper...\n"
-    make -C "${HELPERS_DIR}" >/dev/null 2>&1
-    if [[ -x "${HELPERS_DIR}/echo_server" ]]; then
-        ECHO_SERVER_MODE="echo_server"
-    else
-        printf "${RED}Error: Neither socat nor echo_server available.${NC}\n" >&2
-        printf "Install socat or run: make -C tests/helpers\n" >&2
-        exit 1
-    fi
-fi
-export ECHO_SERVER_MODE
+_resolve_echo_server_mode
 
 printf "Echo server backend: %s\n" "${ECHO_SERVER_MODE}"
 printf "con binary: %s\n\n" "${CON_BIN}"
 
 # --- Run All Tests ---
-_run_test "Error Handling"  "${SC_TOP}/test-error-handling.bash"
-_run_test "Version Output"  "${SC_TOP}/test-version.bash"
-_run_test "UDS Connect"     "${SC_TOP}/test-uds-connect.bash"
-_run_test "UDS Echo"        "${SC_TOP}/test-uds-echo.bash"
-_run_test "UDS Exit Key"    "${SC_TOP}/test-uds-exit.bash"
-_run_test "UDS Diagnostic"  "${SC_TOP}/test-uds-diag.bash"
-_run_test "UDS Multi-Client" "${SC_TOP}/test-uds-multi-client.bash"
-_run_test "UDS Read-only"   "${SC_TOP}/test-uds-readonly.bash"
-_run_test "Log Output"      "${SC_TOP}/test-log-output.bash"
-_run_test "Color Filter"    "${SC_TOP}/test-color-filter.bash"
-_run_test "Hexa Output"     "${SC_TOP}/test-hexa-output.bash"
-_run_test "Throughput Stress" "${SC_TOP}/test-throughput.bash"
-_run_test "UDS Peer Disconnect" "${SC_TOP}/test-uds-peer-disconnect.bash"
-_run_test "UDS sun_path Guard" "${SC_TOP}/test-uds-sun-path-guard.bash"
+_run_discovered_tests
 
 # --- Print Global Summary ---
 print_divider

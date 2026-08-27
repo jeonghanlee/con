@@ -9,17 +9,36 @@ This document describes each test suite, its scenarios, and the technical approa
 
 All UDS tests require an echo server that accepts a connection on a UNIX domain socket and reflects all received data back.
 
-**socat** (preferred, auto-detected):
+**socat**:
 ```bash
 socat UNIX-LISTEN:/path/to/sock,fork EXEC:cat
 ```
 
-**echo_server** (compiled C fallback, zero external dependencies):
+**echo_server** (compiled C backend, zero external dependencies):
 ```bash
 tests/helpers/echo_server /path/to/sock
 ```
 
-The test runner automatically selects the available backend.
+The master runner preserves an explicit `ECHO_SERVER_MODE=socat` or
+`ECHO_SERVER_MODE=echo_server` selection and rejects unavailable or unknown
+values. It auto-detects only when the variable is unset, preferring `socat`
+before the compiled backend. The `make test` target builds `echo_server` before
+starting the runner.
+
+---
+
+## Master Runner and PTY Status Flow
+
+`run-all-tests.bash` discovers regular files matching `tests/test-*.bash`,
+sorts their paths in C-locale filename order, and executes each file once.
+Display names are derived by removing the `test-` prefix and `.bash` suffix and
+replacing hyphens with spaces. Files outside the naming rule are not suites.
+
+`common.bash` drives `con` through a FIFO connected to the PTY allocated by
+`script(1)`. The `script -e` status or the outer `timeout` status is captured
+before feeder and FIFO cleanup, stored separately from `RUN_CON_OUTPUT`, and
+returned after cleanup. Each suite status flows through the master runner to
+the `make test` recipe.
 
 ---
 
@@ -55,12 +74,16 @@ Validates the `-V` flag output format. Requires the version feature to be implem
 
 ### test-uds-connect
 
-Validates basic UDS client connectivity. Starts an echo server, connects `con`, sends the exit character, and verifies clean disconnection.
+Validates observable UDS client connectivity and failure status. It sends a
+known payload through the real PTY path, verifies the echoed payload, and then
+connects through the same path to an endpoint that does not exist.
 
 | Scenario | Expected |
 |----------|----------|
-| Connect to valid UDS socket | Clean exit |
-| Socket file exists during connection | Pass |
+| Connect to valid UDS socket | Exit 0 |
+| Send a known payload | Output contains the same payload |
+| Connect to a missing UDS socket | Non-zero status survives PTY cleanup |
+| Use a UDS path containing `:` | Client echo and server bind stay on UNIX transport |
 
 ---
 
@@ -185,7 +208,7 @@ Buffer status levels:
 | CRITICAL | > 80% | Remote output may block, disconnect or reduce output rate |
 
 
-## Shared Utilities (`test-common.bash`)
+## Shared Utilities (`common.bash`)
 
 | Function | Description |
 |----------|-------------|
@@ -195,5 +218,5 @@ Buffer status levels:
 | `cleanup_tmpdir` | Remove temp directory and stop echo server |
 | `start_echo_server` | Launch socat or echo_server on a UDS path |
 | `stop_echo_server` | Kill background echo server process |
-| `run_con` | Execute `con` with PTY-based input via `script(1)` and FIFO |
+| `run_con` | Execute `con` through `script(1)` and FIFO, capture output, and return the real command or timeout status |
 | `print_summary` | Print pass/fail assertion summary |

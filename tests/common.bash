@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Shared utilities for con test scripts.
-# Source this file at the top of each test-*.bash script.
+# Source common.bash at the top of each test-*.bash script.
 
 declare -g RED='\033[0;31m'
 declare -g GREEN='\033[0;32m'
@@ -170,28 +170,64 @@ function stop_echo_server {
 # con reads from /dev/tty directly, so piped stdin does not reach it.
 # script(1) allocates a PTY that becomes the controlling terminal for con.
 # Usage: run_con <delay_before_input> <input_data> <con_args...>
-# Returns: captured stdout and stderr in global variable RUN_CON_OUTPUT
+# Returns: script(1), con, or timeout status; output is stored in RUN_CON_OUTPUT.
 declare -g RUN_CON_OUTPUT=""
 
-function run_con {
-    local delay="$1"
-    local input_data="$2"
-    shift 2
-    local con_args=("$@")
+function _feed_con_input {
+    local delay
+    local input_data
+    local input_length
+    local payload_length
+    local LC_ALL
 
-    local input_fifo="${TEST_TMPDIR}/con_input.fifo"
+    delay="$1"
+    input_data="$2"
+    LC_ALL=C
+
+    sleep "${delay}"
+    input_length=${#input_data}
+    if [[ ${input_length} -eq 0 ]]; then
+        return 0
+    fi
+
+    payload_length=$((input_length - 1))
+    if [[ ${payload_length} -gt 0 ]]; then
+        printf "%s" "${input_data:0:payload_length}"
+        sleep 0.1
+    fi
+    printf "%s" "${input_data:payload_length:1}"
+}
+
+function run_con {
+    local delay
+    local input_data
+    local input_fifo
+    local feeder_pid
+    local t_out
+    local run_status
+    local -a con_args
+
+    delay="$1"
+    input_data="$2"
+    shift 2
+    con_args=("$@")
+
+    input_fifo="${TEST_TMPDIR}/con_input.fifo"
     rm -f "${input_fifo}"
     mkfifo "${input_fifo}"
 
-    # Feed input with delay in background
-    (sleep "${delay}"; printf "%s" "${input_data}") > "${input_fifo}" &
-    local feeder_pid=$!
+    # Feed the final control byte separately so con reads it as an exit key.
+    _feed_con_input "${delay}" "${input_data}" > "${input_fifo}" &
+    feeder_pid=$!
 
     # Use dynamic timeout (default 5s) and capture stderr (2>&1) for debugging
-    local t_out="${CON_TIMEOUT:-5}"
-    RUN_CON_OUTPUT=$(timeout "${t_out}" script -q /dev/null -c "${CON_BIN} ${con_args[*]}" < "${input_fifo}" 2>&1 || true)
+    t_out="${CON_TIMEOUT:-5}"
+    run_status=0
+    RUN_CON_OUTPUT=$(timeout "${t_out}" script -q -e /dev/null -c "${CON_BIN} ${con_args[*]}" < "${input_fifo}" 2>&1) || run_status=$?
 
     kill "${feeder_pid}" 2>/dev/null || true
     wait "${feeder_pid}" 2>/dev/null || true
     rm -f "${input_fifo}"
+
+    return "${run_status}"
 }
