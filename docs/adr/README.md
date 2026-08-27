@@ -9,8 +9,8 @@ outlives the working session that produced it.
 
 | ADR | Title | Status | Scope |
 | --- | --- | --- | --- |
-| [0001](0001-uds-sun-path-guard-placement.md) | UDS sun_path length guard: placement at the copy site | Accepted (2026-06-24) | Where the over-length UNIX-domain socket path guard lives (M2 / #5). |
-| [0002](0002-exit-diagnostic-key-collision-reject.md) | Exit/diagnostic key collision: reject at parse time | Accepted (2026-06-26) | How con handles an exit key equal to the fixed diagnostic key (M4 / #7). |
+| [0001](0001-uds-sun-path-guard-placement.md) | UDS sun_path length guard: placement at the copy site | Accepted (2026-06-24) | Where the over-length UNIX-domain socket path guard lives (issue #5). |
+| [0002](0002-exit-diagnostic-key-collision-reject.md) | Exit/diagnostic key collision: reject at parse time | Accepted (2026-06-26) | How con handles an exit key equal to the fixed diagnostic key (issue #7). |
 
 ## Where decision rationale lives
 
@@ -20,8 +20,8 @@ matches the decision; each layer is in-repository (committed) and self-contained
 | Decision kind | Home |
 | --- | --- |
 | Architecture decision (alternatives weighed, lasting) | an ADR in this directory |
-| Per-milestone fix decision | the `docs/milestone.md` register row (rationale inline) + the GitHub issue body |
-| Cycle test approach | `docs/testplan_<version>.md` |
+| Per-milestone fix decision | the matching `docs/milestone-<release>.md` detail plus the GitHub issue body |
+| Cycle test approach | the final release detail in `docs/milestone-<release>.md` |
 
 A decision is promoted to an ADR when it is architecture-level: it weighs named
 alternatives, has lasting consequences, and benefits from a self-contained

@@ -33,7 +33,7 @@ verify_state "true" "${connect_ok}" "Connect and disconnect via UDS"
 
 stop_echo_server
 
-# --- M1 (#4): a UDS path containing ':' must route UNIX, not TCP ---
+# --- Issue #4: a UDS path containing ':' must route UNIX, not TCP ---
 print_sub_divider
 _log "INFO" "Colon-in-path disambiguation (issue #4)"
 
@@ -57,7 +57,8 @@ colon_client_no_tcp="true"
 if printf "%s" "${RUN_CON_OUTPUT}" | grep -q "Invalid port"; then colon_client_no_tcp="false"; fi
 verify_state "true" "${colon_client_no_tcp}" "Client: colon path not misrouted to TCP"
 
-# Server: -s to a colon path binds a UNIX socket node (symmetry, con.cpp:620).
+# Server: -s follows the same tcp_separator() classification and binds a UNIX
+# socket node.
 SRV_SOCK="${TEST_TMPDIR}/srv:listen.sock"
 run_con 0 "$(printf '\x01')" "-s ${SRV_SOCK}"
 

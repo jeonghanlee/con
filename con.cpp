@@ -42,9 +42,9 @@
 #define RERR(...) do { fprintf(stderr, __VA_ARGS__); return;    } while(0)
 
 // SUN_LEN(&a) equals the former strlen(sun_path) + sizeof(sun_family) only when
-// sun_path begins exactly at the end of sun_family with no padding (M3/#6).
+// sun_path begins exactly at the end of sun_family with no padding (issue #6).
 static_assert(offsetof(struct sockaddr_un, sun_path) == sizeof(((struct sockaddr_un *)0)->sun_family),
-              "SUN_LEN identity (M3/#6): sun_path offset must equal sun_family size");
+              "SUN_LEN identity (#6): sun_path offset must equal sun_family size");
 
 
 Tty             *tty = 0;
@@ -563,7 +563,7 @@ int main(int ac, char *av[])
                         finish(1);
                     }
                 }
-                // M4 (#7): a configurable exit key must not shadow the fixed
+                // Issue #7: a configurable exit key must not shadow the fixed
                 // diagnostic key (diagChr, 0x14 Ctrl-T). The poll loop tests
                 // exitChr before diagChr, so an equal exit key silently disables
                 // the diagnostic. diagChr is a compile-time constant parsed
@@ -688,9 +688,9 @@ int main(int ac, char *av[])
                 // Bind our local address so that the client can send to us.
                 memset((char *) &serv_addr, 0, sizeof(serv_addr));
                 serv_addr.sun_family = AF_UNIX;
-                // sun_path length is bounded here, in servlen (M3/#6), and at the
-                // client connect site (~841); keep all sizeof(serv_addr.sun_path)
-                // uses in agreement when any one changes.
+                // Keep this UNIX server guard/copy/SUN_LEN sequence aligned with
+                // the matching UNIX client sequence when the sun_path bound changes
+                // (issue #6).
                 if (strlen(TargetCon) >= sizeof(serv_addr.sun_path))
                     PERR("UNIX socket path exceeds %d bytes: \"%s\"\n", (int)(sizeof(serv_addr.sun_path) - 1), TargetCon);
                 strncpy(serv_addr.sun_path, TargetCon, sizeof(serv_addr.sun_path)-1);
@@ -867,9 +867,9 @@ int main(int ac, char *av[])
                 // Fill the "serv_addr" structure
                 memset((char *) &serv_addr, 0, sizeof(serv_addr));
                 serv_addr.sun_family      = AF_UNIX;
-                // sun_path length is bounded here, in servlen (M3/#6), and at the
-                // server bind site (~667); keep all sizeof(serv_addr.sun_path)
-                // uses in agreement when any one changes.
+                // Keep this UNIX client guard/copy/SUN_LEN sequence aligned with
+                // the matching UNIX server sequence when the sun_path bound changes
+                // (issue #6).
                 if (strlen(TargetCon) >= sizeof(serv_addr.sun_path))
                     PERR("UNIX socket path exceeds %d bytes: \"%s\"\n", (int)(sizeof(serv_addr.sun_path) - 1), TargetCon);
                 strncpy(serv_addr.sun_path, TargetCon, sizeof(serv_addr.sun_path)-1);

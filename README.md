@@ -2,15 +2,43 @@
 
 A lightweight console utility for serial devices, TCP sockets, and UNIX domain sockets. A minimal `minicom` replacement with zero UI overhead. For serial and TCP usage modes, see the original [README](README).
 
-This document covers UDS client features used for EPICS IOC console access via `procServ`.
+This document covers source build and installation, installed-path UDS verification, and UDS client features used for EPICS IOC console access via `procServ`.
 
 ## Build and Install
+
+Install the source acquisition, build, and UDS verification prerequisites for the target system.
+
+### Debian GNU/Linux 13
+
+```bash
+sudo apt-get update
+sudo apt-get install --yes build-essential coreutils git util-linux
+```
+
+### Rocky Linux 8.10
+
+```bash
+sudo dnf install --assumeyes gcc-c++ make coreutils git util-linux
+```
+
+From the released source root, build and install the binaries:
 
 ```bash
 make
 sudo make install DESTDIR=/usr/local
-con -V
+/usr/local/bin/con -V
 ```
+
+## Installed UDS Round Trip
+
+Build the shipped AF_UNIX echo server and run the UDS integration test against the installed binary. This is the default installed-path check on Debian GNU/Linux 13 and Rocky Linux 8.10.
+
+```bash
+make -C tests/helpers clean all
+CON_BIN=/usr/local/bin/con ECHO_SERVER_MODE=echo_server bash tests/test-uds-echo.bash
+```
+
+A successful run exits zero and reports `Echo server returned test string` as passed. The test creates and removes its temporary socket and stops the shipped echo server.
 
 ## UDS Client Connection
 

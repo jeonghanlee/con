@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
 #
-# Release-gate step 4 downstream driver -- testplan_1.1.0.md "Release Gate" (#27).
+# Downstream driver for the release gate defined by docs/release-gate.md (#27).
 #
 # Runs ON an epics-ioc-runner golden testbed as vmadmin (never on the dev host).
 # Verifies the con release candidate in its deployed role: pin assert inside the
 # console-holding principal (opb), multiuser S10 access probes, the two-con
 # shared-console check, and S4 removal-under-attach. Order matters: S4 removes
-# the IOC, so it runs last (testplan_multiuser.md Notes).
+# the IOC, so it runs last according to the pinned upstream runbook.
 #
-# Prerequisites on the golden (see epics-ioc-runner docs/testplan_multiuser.md
-# for the environment: golden images, fixtures, harness):
+# Prerequisites on the golden come from the pinned epics-ioc-runner runbook:
 #   - candidate con staged at /opt/con-rc/con (root-owned 755; scp + install)
 #   - fixture accounts opa/opb (group ioc) and obs, provisioned per run
 #   - payload IOC "conrc" installed and running (softIoc shebang st.cmd in
@@ -48,8 +47,9 @@ echo "==== DEPS: pinned environment identity ===="
 # This driver is the seam's ONLY guard (the upstream gate is con-agnostic), so
 # the environment is pinned and asserted before any scenario runs. Pin home =
 # these variables; the advancement process is docs/release-gate.md
-# "Dependency pins and advancement"; each bump lands one ledger line in
-# docs/milestone.md. For an advancement run, GATE_DEPS_EXPECT re-targets the
+# "Dependency pins and advancement". The released-con compatibility result
+# lands in the active G row; the local driver update and candidate evidence
+# land in the final release detail. For an advancement run, GATE_DEPS_EXPECT re-targets the
 # runner assertion to the declared NEW identity -- it never skips, and a
 # set-but-empty value fails.
 RUNNER_PIN="epics-ioc-runner version 1.2.0 (6c50604)"

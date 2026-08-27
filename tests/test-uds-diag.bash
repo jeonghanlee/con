@@ -2,18 +2,18 @@
 #
 # Ctrl-T diagnostic hotkey (0x14) automated test -- issues #24 (pause), #26 (resume).
 #
-# The diagnostic block fires when con reads a solitary 0x14 (buf_cnt == 1,
-# con.cpp:338). This was once believed un-automatable ("0x14 consumed by the PTY
+# The con_core() diagnostic branch fires when con reads a solitary 0x14
+# (buf_cnt == 1). This was once believed un-automatable ("0x14 consumed by the PTY
 # line discipline"); it is not. A local timed writer feeds, in ONE con session,
 # a marker (launch proof via echo round-trip), a solitary 0x14 (the diagnostic
 # pause), a resume key, then a second marker (resume proof). The first marker
 # disambiguates con-not-running from a regression; the second marker AFTER the
-# [diag] line proves the socket resumed (con.cpp:391-393).
+# [diag] line proves the socket resumed through the diagnostic pause/resume path.
 #
 # Timing is pinned: connect 1.5s (con must connect AND switch /dev/tty to raw
 # before input, else a dead socket cooked-echoes the marker), gap 0.5s (0x14 must
 # land in its own readn so buf_cnt == 1). The resume key is a dedicated space:
-# con.cpp:392 consumes exactly one byte to resume, so without it the next marker's
+# The pause path consumes exactly one byte to resume, so without it the next marker's
 # first char is swallowed. timeout 7s bounds the ~4s writer. A local timed writer
 # is used instead of run_con because run_con writes the fifo once and cannot
 # separate the reads.
@@ -24,7 +24,7 @@
 # recv-q 8192) -- but an unbounded flood writes GBs into the capture within
 # seconds, so the suite omits it pending a bounded design (kill the flood right
 # after the diag, or cap the capture). manual-test-diag-hotkey.bash --flood
-# remains the interactive check. Register K3 records the amended verdict.
+# remains the interactive check. The release gate records bounded flood evidence.
 set -e
 
 SC_RPATH="$(realpath "$0")"

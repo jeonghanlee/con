@@ -56,7 +56,7 @@ verify_exit_code "1" "${exit_code}" "Mutually exclusive -s and -c exits 1"
 exit_code=$(_run "${CON_BIN}" -t -c /tmp/test.sock)
 verify_exit_code "1" "${exit_code}" "Mutually exclusive -t and -c exits 1"
 
-# Exit-key collision with the built-in diagnostic key (Ctrl-T, 0x14) -- M4 (#7).
+# Issue #7: exit-key collision with the built-in diagnostic key (Ctrl-T, 0x14).
 # The guard fires during -x parsing, before con opens /dev/tty, so no PTY is
 # needed. It rejects any -x value whose finalized byte equals diagChr, in both
 # control and numeric forms, including a numeric value that truncates to 0x14.
