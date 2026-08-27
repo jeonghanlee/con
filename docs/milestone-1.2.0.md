@@ -14,7 +14,7 @@ Git upstream: none
 Remote tracker: `github.com/jeonghanlee/con`, GitHub milestone `1.2.0` (#4)
 Default development verification host: `top`, Debian GNU/Linux 13.6, x86_64, repository binary `/data/gitsrc/con/con`
 
-Next session entry point: obtain phase 6 planning-commit authority for this reviewed cycle plan; after that commit, reconcile the pending GitHub projections before requesting M1 implementation authority.
+Next session entry point: complete phase 7 GitHub reconciliation by moving issue #16 to `Backlog` without label changes and projecting canonical scope to issues #20, #22, #23, and #25; then request M1 implementation authority.
 
 Milestone tally: milestones Not started 4, Blocked 1, Complete 0; external gates Open 1, Complete 0; Ready milestones 1.
 
