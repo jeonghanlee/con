@@ -10,15 +10,15 @@ Release line: 1.2.0
 Milestone index: 1.2.0
 Canonical path: `docs/milestone-1.2.0.md`
 Canonical branch or ref: `release-1.2.0`
-Git upstream: none
+Git upstream: `origin/release-1.2.0`
 Remote tracker: `github.com/jeonghanlee/con`, GitHub milestone `1.2.0` (#4)
 Default development verification host: `top`, Debian GNU/Linux 13.6, x86_64, repository binary `/data/gitsrc/con/con`
 
-Next session entry point: complete phase 7 GitHub reconciliation by moving issue #16 to `Backlog` without label changes and projecting canonical scope to issues #20, #22, #23, and #25; then request M1 implementation authority.
+Next session entry point: request M1 implementation authority for issue #23; after authorization, implement the accepted M1 plan and execute M1 / T1 through T4.
 
 Milestone tally: milestones Not started 4, Blocked 1, Complete 0; external gates Open 1, Complete 0; Ready milestones 1.
 
-Tracker drift observed 2026-08-26T20:45:37Z: GitHub milestone `1.2.0` is open with five open issues. Issue #16 remains assigned there, but D3 requires phase 7 to move the still-open issue to GitHub `Backlog` without changing its labels or creating a canonical Backlog row. Linked issue bodies still use their legacy projection content; phase 7 must project the matching canonical details after the phase 6 planning commit.
+Tracker reconciliation observed 2026-08-27T17:37:04Z: GitHub milestone `1.2.0` is open with four open issues and zero closed issues. Issue #16 is open in GitHub `Backlog` with labels `P3-low` and `refactor`. Issues #20, #22, #23, and #25 are open in `1.2.0`; their titles, labels, milestone assignments, assignee, and projected bodies match the canonical details.
 
 ## Milestone
 
@@ -160,7 +160,7 @@ GitHub Milestone: `1.2.0`
 Observed State: open
 Observed Labels: `bug`, `P2-medium`
 Observed Milestone: `1.2.0`
-Last Compared: 2026-08-26T17:12:37Z; issue updated 2026-08-13T08:47:51Z
+Last Compared: 2026-08-27T17:37:04Z; issue updated 2026-08-27T17:15:33Z
 
 #### M2 - Make common test setup safe when sourced standalone (#25)
 
@@ -230,7 +230,7 @@ GitHub Milestone: `1.2.0`
 Observed State: open
 Observed Labels: `bug`, `P3-low`
 Observed Milestone: `1.2.0`
-Last Compared: 2026-08-26T17:12:37Z; issue updated 2026-08-13T08:47:57Z
+Last Compared: 2026-08-27T17:37:04Z; issue updated 2026-08-27T17:15:35Z
 
 #### M3 - Add an explicit UNIX transport flag (#20)
 
@@ -302,7 +302,7 @@ GitHub Milestone: `1.2.0`
 Observed State: open
 Observed Labels: `enhancement`, `P3-low`, `area/uds`
 Observed Milestone: `1.2.0`
-Last Compared: 2026-08-26T17:12:37Z; issue updated 2026-08-13T08:47:57Z
+Last Compared: 2026-08-27T17:37:04Z; issue updated 2026-08-27T17:15:35Z
 
 #### M4 - Reach colonless UDS paths through explicit UNIX mode (#22)
 
@@ -372,7 +372,7 @@ GitHub Milestone: `1.2.0`
 Observed State: open
 Observed Labels: `enhancement`, `P3-low`, `area/uds`
 Observed Milestone: `1.2.0`
-Last Compared: 2026-08-26T17:12:37Z; issue updated 2026-08-13T08:47:59Z
+Last Compared: 2026-08-27T17:37:04Z; issue updated 2026-08-27T17:15:33Z
 
 #### M5 - Release con 1.2.0
 
@@ -443,8 +443,8 @@ Labels: none
 GitHub Milestone: `1.2.0`
 Observed State: none
 Observed Labels: none
-Observed Milestone: open, five open issues and zero closed issues
-Last Compared: 2026-08-26T20:45:37Z; milestone updated 2026-08-13T08:47:59Z
+Observed Milestone: open, four open issues and zero closed issues
+Last Compared: 2026-08-27T17:37:04Z; milestone updated 2026-08-27T17:15:32Z
 
 ##### Integrated Verification
 
