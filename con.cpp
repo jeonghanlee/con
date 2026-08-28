@@ -86,14 +86,18 @@ void usage(const char *s)
         "       con -s :8080\n"
         "\n"
         "4. Communication program to UNIX socket in a client mode:\n"
-        "       con -c SOCKET_PATH\n"
+        "       con [-u] -c SOCKET_PATH\n"
         "   Example:\n"
         "       con -c /tmp/my_named_socket\n"
+        "       con -u -c cache:6379\n"
         "\n"
         "5. Communication program to UNIX socket in a server mode:\n"
-        "       con -s SOCKET_PATH\n"
+        "       con [-u] -s SOCKET_PATH\n"
+        "   Warning:\n"
+        "       Server mode removes an existing target path before binding.\n"
         "   Example:\n"
         "       con -s /tmp/my_named_socket\n"
+        "       con --unix -s listen:6380\n"
         "\n"
         "6. Read-only monitoring (observe without sending input):\n"
         "       con -r -c SOCKET_PATH\n"
@@ -124,6 +128,7 @@ void usage(const char *s)
         "Switches specific for socket connection:\n"
         "\t-s[erver]           - Accept connection to socket as server.\n"
         "\t-c[lient]           - Connection to socket as client.\n"
+        "\t-u, --unix          - Force UNIX socket transport; client/server selection is unchanged.\n"
         , stderr);
     exit(1);
 }
@@ -436,6 +441,7 @@ int main(int ac, char *av[])
 {
     int                  TargetBaud = 0, nparams=0;
     bool                 tty_flag=false, socket_flag=false, cli_flag=false, srv_flag=false, quiet_flag=false;
+    bool                 unix_flag=false;
     bool                 filter_colors = false;
     char                 *TargetCon = 0;
 
@@ -509,6 +515,12 @@ int main(int ac, char *av[])
             else if (!strcmp(av[i], "r")  ||  !strcmp(av[i], "readonly"))
             {
                 readonly_flag = true;
+            }
+            else if (!strcmp(av[i], "u") || !strcmp(av[i], "unix")
+                     || !strcmp(av[i], "-unix"))
+            {
+                unix_flag = true;
+                socket_flag = true;
             }
             else if (!strcmp(av[i], "X")  ||  !strcmp(av[i], "hexa"))
             {
@@ -664,7 +676,7 @@ int main(int ac, char *av[])
             char       name[name_l];
             memset(name, 0, name_l);
 
-            char *p = tcp_separator(TargetCon);
+            char *p = unix_flag ? NULL : tcp_separator(TargetCon);
             if (!p)
             {
                 /*
@@ -854,7 +866,7 @@ int main(int ac, char *av[])
         }
         else if (cli_flag)
         {
-            char *p = tcp_separator(TargetCon);
+            char *p = unix_flag ? NULL : tcp_separator(TargetCon);
             if (!p)
             {
                 /*

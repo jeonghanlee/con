@@ -48,6 +48,17 @@ Connect to a `procServ` IOC console:
 con -c /run/procserv/myioc/control
 ```
 
+Use `-u` or `--unix` when a socket path such as `cache:6379` would otherwise match the TCP `host:port` form:
+
+Warning: server mode removes an existing target path before binding. Use a socket path that does not already exist.
+
+```bash
+con -u -c cache:6379
+con --unix -s listen:6380
+```
+
+The option changes only the transport to UNIX. `-c` and `-s` still select client and server direction, and behavior without `-u` remains unchanged.
+
 Quiet mode suppresses connection banners:
 
 ```bash
@@ -140,6 +151,7 @@ con -Y -c /run/procserv/myioc/control
 | `-V`, `--version` | Print version, git hash, and build date |
 | `-h` | Print help message |
 | `-c` | Connect as UDS or TCP client |
+| `-u`, `--unix` | Force UNIX socket transport without changing client/server direction |
 | `-r` | Read-only mode |
 | `-q` | Suppress connection banners |
 | `-l FILE` | Log to file (overwrite) |

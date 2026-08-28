@@ -14,9 +14,9 @@ Git upstream: `origin/release-1.2.0`
 Remote tracker: `github.com/jeonghanlee/con`, GitHub milestone `1.2.0` (#4)
 Default development verification host: `top`, Debian GNU/Linux 13.6, x86_64, repository binary `/data/gitsrc/con/con`
 
-Next session entry point: implement the accepted and authorized M3 plan, then run M3 / T1 through T3 through the real shipped paths.
+Next session entry point: obtain commit/add authority for the reviewed M3 changes; after the commit, obtain push and issue authority to publish the branch and close issue #20.
 
-Milestone tally: milestones Not started 2, In progress 0, Blocked 1, Complete 2; external gates Open 1, Complete 0; Ready milestones 1.
+Milestone tally: milestones Not started 1, In progress 1, Blocked 1, Complete 2; external gates Open 1, Complete 0; Ready milestones 0.
 
 Tracker reconciliation observed 2026-08-28T01:55:57Z: GitHub milestone `1.2.0` is open with two open issues and two closed issues. Issue #16 is open in GitHub `Backlog` with labels `P3-low` and `refactor`. Issues #20 and #22 remain open in `1.2.0`; issues #23 and #25 are closed. Their titles, labels, milestone assignments, assignees, and live states match the canonical details; issues #23 and #25 record checked completion criteria and closure evidence.
 
@@ -29,7 +29,7 @@ Tracker reconciliation observed 2026-08-28T01:55:57Z: GitHub milestone `1.2.0` i
 | External | G1 | Confirm epics-ioc-runner 1.2.4 with released con 1.1.0 | External gate | Open | No | D4, D11 | Released con 1.1.0 passes the epics-ioc-runner 1.2.4 gate on both pinned goldens; [detail](#g1---confirm-epics-ioc-runner-124-with-released-con-110) |
 | Test integrity | M1 | Restore real test outcomes and auto-discovery (#23) | Milestone | Complete | No | D4, D5 | Real connection failures remain nonzero, valid UDS echo passes under each selected backend, every `test-*.bash` suite is discovered, and `make test` returns the runner status; [detail](#m1---restore-real-test-outcomes-and-auto-discovery-23) |
 | Test integrity | M2 | Make common test setup safe when sourced standalone (#25) | Milestone | Complete | No | M1, D6 | A fresh shell resolves the real binary or fails clearly, and both suite backends pass; [detail](#m2---make-common-test-setup-safe-when-sourced-standalone-25) |
-| UDS client | M3 | Add an explicit UNIX transport flag (#20) | Milestone | Not started | Yes | M2, D7 | `-u` and `--unix` force AF_UNIX for client and server targets without changing flagless behavior; [detail](#m3---add-an-explicit-unix-transport-flag-20) |
+| UDS client | M3 | Add an explicit UNIX transport flag (#20) | Milestone | In progress | No | M2, D7 | `-u` and `--unix` force AF_UNIX for client and server targets without changing flagless behavior; [detail](#m3---add-an-explicit-unix-transport-flag-20) |
 | UDS client | M4 | Reach colonless UDS paths through explicit UNIX mode (#22) | Milestone | Not started | No | M3, D7 | A colonless socket works through `-u` and serial auto-detection remains unchanged; [detail](#m4---reach-colonless-uds-paths-through-explicit-unix-mode-22) |
 | Release | M5 | Release con 1.2.0 | Milestone | Blocked | No | G1, M1, M2, M3, M4, D8 | Every Release Verification result passes and every separately authorized release action has immutable evidence; [detail](#m5---release-con-120) |
 
@@ -241,7 +241,7 @@ Last Compared: 2026-08-28T01:55:40Z; issue updated 2026-08-28T01:45:16Z
 Origin: 1.2.0 / M3
 Identity History: none
 GitHub Issue: [#20](https://github.com/jeonghanlee/con/issues/20)
-Status: Not started
+Status: In progress
 
 ##### Summary
 
@@ -290,13 +290,13 @@ Superseded Plan Artifacts: none
 
 | Label | Observed At | Environment | Result | Evidence |
 | --- | --- | --- | --- | --- |
-| T1 | Not run | Linux dev host | Pending | none |
-| T2 | Not run | Linux dev host | Pending | none |
-| T3 | Not run | Linux dev host | Pending | none |
+| T1 | 2026-08-28T09:00:51Z | `top`; Debian GNU/Linux 13; x86_64; repository `con`; compiled `echo_server` | Pass | Fresh `-u -c` and `--unix -c` runs against the relative numeric-tail path `cache:6379` each used the shipped AF_UNIX client path, returned its exact marker through the real echo server, and exited 0. |
+| T2 | 2026-08-28T09:00:51Z | `top`; Debian GNU/Linux 13; x86_64; repository `con` as server and peer | Pass | `-u -s listen:6380` created a UNIX socket node; a second shipped con process connected with `-u -c`, and the server PTY received the exact peer marker. Both processes exited 0. |
+| T3 | 2026-08-28T09:02:22Z | `top`; Debian GNU/Linux 13; x86_64; Bash 5.2.37; repository `con`; `socat`, compiled `echo_server`, and compiled `serial_pty` | Pass | `test-unix-flag.bash` passed 18 of 18 assertions through the real CLI, UDS, PTY serial, and TCP paths, including the requirement that the server path-removal warning precedes the server example in help. Explicit `socat` and `echo_server` full runs each reported the selected backend, discovered and passed 16 of 16 suites, and exited 0. |
 
 ##### Closure Evidence
 
-- None.
+- 2026-08-28: first-person retrospective and independent third-person review passed. The review cycle found that the new server example did not present the existing-target removal warning before the command; after the owner accepted the finding, help and README were corrected, the complete M3 verification was repeated, and the final second-person review passed with no remaining finding.
 
 ##### GitHub Projection
 

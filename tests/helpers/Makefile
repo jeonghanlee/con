@@ -1,15 +1,17 @@
-TRG = echo_server
-SRC = echo_server.cpp
+TRGS = echo_server serial_pty
 
 CXX ?= g++
 CXXFLAGS += -Wall -O2
 
-all: $(TRG)
+all: $(TRGS)
 
-$(TRG): $(SRC)
+echo_server: echo_server.cpp
+	$(CXX) $(CXXFLAGS) -o $@ $<
+
+serial_pty: serial_pty.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
 clean:
-	$(RM) $(TRG)
+	$(RM) $(TRGS)
 
 .PHONY: all clean

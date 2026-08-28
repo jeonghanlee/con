@@ -6,6 +6,7 @@ Integration tests for the `con` console utility, focused on UNIX Domain Socket (
 
 * `con` binary compiled in the repository root (`make`)
 * `socat` or the compiled `tests/helpers/echo_server`
+* Compiled `tests/helpers/serial_pty` for flagless serial regression
 
 ## Running Tests
 
@@ -47,6 +48,7 @@ compiled `echo_server`; an explicit value is preserved and validated.
 | `test-uds-peer-disconnect` | Peer disconnect detection via `poll()`/`POLLRDHUP` |
 | `test-uds-readonly` | `-r` read-only mode input suppression |
 | `test-uds-sun-path-guard` | UNIX socket path length boundary and rejection behavior |
+| `test-unix-flag` | Explicit UNIX override plus serial, UDS, and TCP compatibility |
 | `test-version` | `-V` flag output and exit code |
 
 For system architecture and functional specifications, see [TEST_DETAILS.md](TEST_DETAILS.md).

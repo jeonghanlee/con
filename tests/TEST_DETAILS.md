@@ -115,6 +115,22 @@ Validates data integrity through a UDS round-trip. Sends a known string through 
 
 ---
 
+### test-unix-flag
+
+Validates `-u` and `--unix` through the shipped client and server paths, then verifies that serial, flagless UDS, and TCP classification remain compatible. The compiled `serial_pty` helper creates a real PTY pair and prefixes data returned through its master endpoint so the serial round trip is observable.
+
+| Scenario | Expected |
+|----------|----------|
+| Connect with `-u -c` or `--unix -c` to a relative numeric-tail path | Real UDS echo succeeds |
+| Start with `-u -s` on a relative numeric-tail path and connect with shipped con | UNIX socket node is created and peer data reaches the server PTY |
+| Inspect help output | Both options are listed and the path removal warning precedes the server example |
+| Connect without socket flags to the compiled PTY slave | Flagless serial path returns the helper marker |
+| Connect with `-c` to an absolute UDS path | Existing UDS classification still echoes data |
+| Exercise explicit TCP client and server targets | Client reaches `connect()` and server binds cleanly |
+| Start a flagless `:0` target | Existing TCP server direction is unchanged |
+
+---
+
 ### test-uds-exit
 
 Validates exit key behavior for both default and custom configurations.
