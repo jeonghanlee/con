@@ -19,9 +19,21 @@ declare -g -a FAILED_DETAILS=()
 declare -g TEST_TMPDIR=""
 declare -g ECHO_SERVER_PID=""
 
-# Provide default paths if not exported by a master test runner
+# Derive the test directory when the helper is sourced without runner context.
+if [[ ! -v SC_TOP ]]; then
+    declare -g SC_TOP
+    SC_TOP="$(realpath "${BASH_SOURCE[0]}")"
+    SC_TOP="${SC_TOP%/*}"
+fi
+
+# Provide default paths if not exported by a master test runner.
 declare -g CON_BIN="${CON_BIN:-${SC_TOP}/../con}"
 declare -g HELPERS_DIR="${HELPERS_DIR:-${SC_TOP}/helpers}"
+
+if [[ ! -x "${CON_BIN}" ]]; then
+    printf "Error: con binary is not executable: %s\n" "${CON_BIN}" >&2
+    return 1
+fi
 
 if [[ -z "${ECHO_SERVER_MODE}" ]]; then
     if command -v socat >/dev/null 2>&1; then

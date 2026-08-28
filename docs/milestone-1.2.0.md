@@ -14,9 +14,9 @@ Git upstream: `origin/release-1.2.0`
 Remote tracker: `github.com/jeonghanlee/con`, GitHub milestone `1.2.0` (#4)
 Default development verification host: `top`, Debian GNU/Linux 13.6, x86_64, repository binary `/data/gitsrc/con/con`
 
-Next session entry point: request Implementation Authorization for the accepted M2 plan; after authorization, implement M2 and run M2 / T1 through T3 through the real shipped paths.
+Next session entry point: request Commit, Push, and Issue authority for the verified and reviewed M2 changes.
 
-Milestone tally: milestones Not started 3, In progress 0, Blocked 1, Complete 1; external gates Open 1, Complete 0; Ready milestones 1.
+Milestone tally: milestones Not started 2, In progress 1, Blocked 1, Complete 1; external gates Open 1, Complete 0; Ready milestones 0.
 
 Tracker reconciliation observed 2026-08-27T20:01:48Z: GitHub milestone `1.2.0` is open with three open issues and one closed issue. Issue #16 is open in GitHub `Backlog` with labels `P3-low` and `refactor`. Issues #20, #22, and #25 remain open in `1.2.0`; issue #23 is closed. Their titles, labels, milestone assignments, and assignee match the canonical details, and issue #23 records the verified M1 closure evidence.
 
@@ -28,7 +28,7 @@ Tracker reconciliation observed 2026-08-27T20:01:48Z: GitHub milestone `1.2.0` i
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | External | G1 | Confirm epics-ioc-runner 1.2.4 with released con 1.1.0 | External gate | Open | No | D4, D11 | Released con 1.1.0 passes the epics-ioc-runner 1.2.4 gate on both pinned goldens; [detail](#g1---confirm-epics-ioc-runner-124-with-released-con-110) |
 | Test integrity | M1 | Restore real test outcomes and auto-discovery (#23) | Milestone | Complete | No | D4, D5 | Real connection failures remain nonzero, valid UDS echo passes under each selected backend, every `test-*.bash` suite is discovered, and `make test` returns the runner status; [detail](#m1---restore-real-test-outcomes-and-auto-discovery-23) |
-| Test integrity | M2 | Make common test setup safe when sourced standalone (#25) | Milestone | Not started | Yes | M1, D6 | A fresh shell resolves the real binary or fails clearly, and both suite backends pass; [detail](#m2---make-common-test-setup-safe-when-sourced-standalone-25) |
+| Test integrity | M2 | Make common test setup safe when sourced standalone (#25) | Milestone | In progress | No | M1, D6 | A fresh shell resolves the real binary or fails clearly, and both suite backends pass; [detail](#m2---make-common-test-setup-safe-when-sourced-standalone-25) |
 | UDS client | M3 | Add an explicit UNIX transport flag (#20) | Milestone | Not started | No | M2, D7 | `-u` and `--unix` force AF_UNIX for client and server targets without changing flagless behavior; [detail](#m3---add-an-explicit-unix-transport-flag-20) |
 | UDS client | M4 | Reach colonless UDS paths through explicit UNIX mode (#22) | Milestone | Not started | No | M3, D7 | A colonless socket works through `-u` and serial auto-detection remains unchanged; [detail](#m4---reach-colonless-uds-paths-through-explicit-unix-mode-22) |
 | Release | M5 | Release con 1.2.0 | Milestone | Blocked | No | G1, M1, M2, M3, M4, D8 | Every Release Verification result passes and every separately authorized release action has immutable evidence; [detail](#m5---release-con-120) |
@@ -169,7 +169,7 @@ Last Compared: 2026-08-27T20:01:48Z; issue updated 2026-08-27T19:58:54Z
 Origin: 1.2.0 / M2
 Identity History: none
 GitHub Issue: [#25](https://github.com/jeonghanlee/con/issues/25)
-Status: Not started
+Status: In progress
 
 ##### Summary
 
@@ -196,7 +196,7 @@ Out of scope: changes to `con.cpp` or the issue #24 diagnostic behavior.
 
 Plan Status: accepted
 Plan Acceptance: owner approval and accepted third-person review findings in this conversation on 2026-08-26
-Implementation Authorization: none
+Implementation Authorization: owner approval in conversation on 2026-08-27
 Superseded Plan Artifacts: none
 
 1. Derive `SC_TOP` from `BASH_SOURCE[0]` only when it is absent, then resolve the default `CON_BIN` from that directory.
@@ -216,13 +216,13 @@ Superseded Plan Artifacts: none
 
 | Label | Observed At | Environment | Result | Evidence |
 | --- | --- | --- | --- | --- |
-| T1 | Not run | Linux dev host | Pending | none |
-| T2 | Not run | Linux dev host | Pending | none |
-| T3 | Not run | Linux dev host | Pending | none |
+| T1 | 2026-08-27T20:25:58Z | `top`; Debian GNU/Linux 13.6; x86_64; Bash 5.2.37; repository `con` | Pass | From a temporary directory outside the repository, a fresh `bash --noprofile --norc` process sourced the real `tests/common.bash` with `SC_TOP`, `CON_BIN`, and helper variables unset, resolved `/data/gitsrc/con/con`, executed its `-V` path, and exited 0. |
+| T2 | 2026-08-27T20:25:58Z | `top`; Debian GNU/Linux 13.6; x86_64; Bash 5.2.37; repository `tests/common.bash` | Pass | The real helper was sourced with `CON_BIN` set to a mode-0600 temporary file; sourcing returned 1 and identified the rejected path as not executable. The complete `test-common-path.bash` suite passed 5 of 5 assertions. |
+| T3 | 2026-08-27T20:25:58Z | `top`; Debian GNU/Linux 13.6; x86_64; repository `con`; `socat` and compiled `tests/helpers/echo_server` | Pass | Explicit `ECHO_SERVER_MODE=socat` and `ECHO_SERVER_MODE=echo_server` runs each reported the requested backend, executed all 15 discovered suites including `test-common-path.bash`, passed 15 of 15 suites, and exited 0. |
 
 ##### Closure Evidence
 
-- None.
+- 2026-08-27: first-person retrospective, independent third-person review, and second-person reader-seat review passed with no accepted findings outstanding. Repository landing and issue #25 closure remain pending under separate Git and GitHub authority.
 
 ##### GitHub Projection
 

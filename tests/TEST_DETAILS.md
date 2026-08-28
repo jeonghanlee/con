@@ -40,9 +40,26 @@ before feeder and FIFO cleanup, stored separately from `RUN_CON_OUTPUT`, and
 returned after cleanup. Each suite status flows through the master runner to
 the `make test` recipe.
 
+When a caller does not provide `SC_TOP`, `common.bash` derives the test
+directory from its own `BASH_SOURCE` path. It preserves a valid caller-provided
+`CON_BIN`, supplies the repository binary as the default, and rejects a final
+path that is not executable before test functions become available.
+
 ---
 
 ## Test Suite Details
+
+### test-common-path
+
+Validates shared-helper bootstrap behavior from a fresh shell whose working
+directory is outside the repository.
+
+| Scenario | Expected |
+|----------|----------|
+| Source `common.bash` without `SC_TOP` or `CON_BIN` | Resolve and execute the repository `con -V` path |
+| Source `common.bash` with a non-executable `CON_BIN` | Return 1 and identify the rejected path |
+
+---
 
 ### test-error-handling
 

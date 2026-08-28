@@ -34,6 +34,7 @@ compiled `echo_server`; an explicit value is preserved and validated.
 | Suite | Description |
 |-------|-------------|
 | `test-color-filter` | `-n` ANSI escape sequence stripping |
+| `test-common-path` | Standalone `common.bash` path resolution and non-executable binary rejection |
 | `test-error-handling` | CLI argument validation and error paths |
 | `test-hexa-output` | `-X` and `-Y` hex output format and data integrity |
 | `test-log-output` | `-l` log file persistence |
