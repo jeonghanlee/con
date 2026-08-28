@@ -14,11 +14,11 @@ Git upstream: `origin/release-1.2.0`
 Remote tracker: `github.com/jeonghanlee/con`, GitHub milestone `1.2.0` (#4)
 Default development verification host: `top`, Debian GNU/Linux 13.6, x86_64, repository binary `/data/gitsrc/con/con`
 
-Next session entry point: prepare the reviewed M4 commit, obtain separate commit and push authority, then reconcile and close issue #22 with issue authority.
+Next session entry point: complete the G1 two-golden run with released con 1.1.0, record its evidence, then proceed to M5.
 
-Milestone tally: milestones Not started 0, In progress 1, Blocked 1, Complete 3; external gates Open 1, Complete 0; Ready milestones 0.
+Milestone tally: milestones Not started 0, In progress 0, Blocked 1, Complete 4; external gates Open 1, Complete 0; Ready milestones 0.
 
-Tracker reconciliation observed 2026-08-28T09:17:22Z: GitHub milestone `1.2.0` is open with one open issue and three closed issues. Issue #16 is open in GitHub `Backlog` with labels `P3-low` and `refactor`. Issue #20 is closed in `1.2.0` with state reason `completed`; issue #22 remains open in `1.2.0`; issues #23 and #25 are closed. Their titles, labels, milestone assignments, assignees, and live states match the canonical details; issues #20, #23, and #25 record checked completion criteria and closure evidence.
+Tracker reconciliation observed 2026-08-28T17:34:41Z: GitHub milestone `1.2.0` is open with zero open issues and four closed issues. Issue #16 is open in GitHub `Backlog` with labels `P3-low` and `refactor`. Issues #20, #22, #23, and #25 are closed in `1.2.0` with state reason `completed`. Their titles, labels, milestone assignments, assignees, and live states match the canonical details; all four issues record checked completion criteria and closure evidence.
 
 ## Milestone
 
@@ -30,7 +30,7 @@ Tracker reconciliation observed 2026-08-28T09:17:22Z: GitHub milestone `1.2.0` i
 | Test integrity | M1 | Restore real test outcomes and auto-discovery (#23) | Milestone | Complete | No | D4, D5 | Real connection failures remain nonzero, valid UDS echo passes under each selected backend, every `test-*.bash` suite is discovered, and `make test` returns the runner status; [detail](#m1---restore-real-test-outcomes-and-auto-discovery-23) |
 | Test integrity | M2 | Make common test setup safe when sourced standalone (#25) | Milestone | Complete | No | M1, D6 | A fresh shell resolves the real binary or fails clearly, and both suite backends pass; [detail](#m2---make-common-test-setup-safe-when-sourced-standalone-25) |
 | UDS client | M3 | Add an explicit UNIX transport flag (#20) | Milestone | Complete | No | M2, D7 | `-u` and `--unix` force AF_UNIX for client and server targets without changing flagless behavior; [detail](#m3---add-an-explicit-unix-transport-flag-20) |
-| UDS client | M4 | Reach colonless UDS paths through explicit UNIX mode (#22) | Milestone | In progress | No | M3, D7 | A colonless socket works through `-u` and serial auto-detection remains unchanged; [detail](#m4---reach-colonless-uds-paths-through-explicit-unix-mode-22) |
+| UDS client | M4 | Reach colonless UDS paths through explicit UNIX mode (#22) | Milestone | Complete | No | M3, D7 | A colonless socket works through `-u` and serial auto-detection remains unchanged; [detail](#m4---reach-colonless-uds-paths-through-explicit-unix-mode-22) |
 | Release | M5 | Release con 1.2.0 | Milestone | Blocked | No | G1, M1, M2, M3, M4, D8 | Every Release Verification result passes and every separately authorized release action has immutable evidence; [detail](#m5---release-con-120) |
 
 ### Decisions
@@ -313,7 +313,7 @@ Last Compared: 2026-08-28T09:17:22Z; issue updated 2026-08-28T09:17:22Z; state r
 Origin: 1.2.0 / M4
 Identity History: none
 GitHub Issue: [#22](https://github.com/jeonghanlee/con/issues/22)
-Status: In progress
+Status: Complete
 
 ##### Summary
 
@@ -367,17 +367,18 @@ Superseded Plan Artifacts: none
 ##### Closure Evidence
 
 - 2026-08-28T16:53:36Z: the authorized local implementation matches the accepted M4 scope; `bash -n tests/test-unix-flag.bash` and `git diff --check` passed.
-- 2026-08-28T17:16:14Z: independent third-person review passed with no implementation finding. The owner accepted the second-person finding that the next entry point and review state were stale, and this update corrects both. Commit landing and issue #22 closure remain pending.
+- 2026-08-28T17:16:14Z: independent third-person review passed with no implementation finding. The owner accepted the second-person finding that the next entry point and review state were stale; the corrections landed with the implementation in commit `e3161f14cf5dc217fe85dfb37855910542ba9571`.
+- 2026-08-28T17:31:21Z: commit `e3161f14cf5dc217fe85dfb37855910542ba9571` is present on `origin/release-1.2.0`; issue #22 records checked completion criteria and verification results and is closed with state reason `completed`.
 
 ##### GitHub Projection
 
 Title: Colonless UDS socket path auto-detects as a serial tty
 Labels: `enhancement`, `P3-low`, `area/uds`
 GitHub Milestone: `1.2.0`
-Observed State: open
+Observed State: closed
 Observed Labels: `enhancement`, `P3-low`, `area/uds`
 Observed Milestone: `1.2.0`
-Last Compared: 2026-08-27T17:37:04Z; issue updated 2026-08-27T17:15:33Z
+Last Compared: 2026-08-28T17:34:41Z; issue updated 2026-08-28T17:31:21Z; state reason `completed`
 
 #### M5 - Release con 1.2.0
 
