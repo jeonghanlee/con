@@ -85,6 +85,19 @@ verify_state "true" "$(_output_contains "${RUN_CON_OUTPUT}" "${LONG_MARKER}")" "
 stop_echo_server
 ECHO_SERVER_MODE="${requested_echo_mode}"
 
+# A colonless target normally needs an explicit socket direction. The UNIX
+# override and client flag must select AF_UNIX without changing auto-detection.
+COLONLESS_SOCKET="colonless.sock"
+start_echo_server "${COLONLESS_SOCKET}"
+
+COLONLESS_MARKER="UNIX_COLONLESS_CLIENT_OK"
+colonless_status=0
+run_con 0.2 "$(printf '%s\n\x01' "${COLONLESS_MARKER}")" "-u -c ${COLONLESS_SOCKET} -q" || colonless_status=$?
+verify_exit_code "0" "${colonless_status}" "-u selects UNIX for a colonless client target"
+verify_state "true" "$(_output_contains "${RUN_CON_OUTPUT}" "${COLONLESS_MARKER}")" "Colonless UNIX client completes a real UDS echo"
+
+stop_echo_server
+
 # Run the shipped con server and client against a relative numeric-tail path.
 SERVER_SOCKET="listen:6380"
 SERVER_OUTPUT_FILE="${TEST_TMPDIR}/unix-server.out"

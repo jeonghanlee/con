@@ -48,7 +48,7 @@ compiled `echo_server`; an explicit value is preserved and validated.
 | `test-uds-peer-disconnect` | Peer disconnect detection via `poll()`/`POLLRDHUP` |
 | `test-uds-readonly` | `-r` read-only mode input suppression |
 | `test-uds-sun-path-guard` | UNIX socket path length boundary and rejection behavior |
-| `test-unix-flag` | Explicit UNIX override plus serial, UDS, and TCP compatibility |
+| `test-unix-flag` | Explicit UNIX override for colonless and numeric-tail paths plus transport compatibility |
 | `test-version` | `-V` flag output and exit code |
 
 For system architecture and functional specifications, see [TEST_DETAILS.md](TEST_DETAILS.md).

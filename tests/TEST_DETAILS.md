@@ -122,6 +122,7 @@ Validates `-u` and `--unix` through the shipped client and server paths, then ve
 | Scenario | Expected |
 |----------|----------|
 | Connect with `-u -c` or `--unix -c` to a relative numeric-tail path | Real UDS echo succeeds |
+| Connect with `-u -c` to a relative colonless path | Real UDS echo succeeds |
 | Start with `-u -s` on a relative numeric-tail path and connect with shipped con | UNIX socket node is created and peer data reaches the server PTY |
 | Inspect help output | Both options are listed and the path removal warning precedes the server example |
 | Connect without socket flags to the compiled PTY slave | Flagless serial path returns the helper marker |

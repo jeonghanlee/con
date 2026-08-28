@@ -48,11 +48,12 @@ Connect to a `procServ` IOC console:
 con -c /run/procserv/myioc/control
 ```
 
-Use `-u` or `--unix` when a socket path such as `cache:6379` would otherwise match the TCP `host:port` form:
+Use `-u` or `--unix` to select UNIX transport explicitly. This also handles a colonless socket name that flagless mode would treat as a serial target and a name such as `cache:6379` that would otherwise match the TCP `host:port` form:
 
 Warning: server mode removes an existing target path before binding. Use a socket path that does not already exist.
 
 ```bash
+con -u -c control.sock
 con -u -c cache:6379
 con --unix -s listen:6380
 ```
