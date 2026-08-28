@@ -14,11 +14,11 @@ Git upstream: `origin/release-1.2.0`
 Remote tracker: `github.com/jeonghanlee/con`, GitHub milestone `1.2.0` (#4)
 Default development verification host: `top`, Debian GNU/Linux 13.6, x86_64, repository binary `/data/gitsrc/con/con`
 
-Next session entry point: request Commit, Push, and Issue authority for the verified and reviewed M2 changes.
+Next session entry point: implement the accepted and authorized M3 plan, then run M3 / T1 through T3 through the real shipped paths.
 
-Milestone tally: milestones Not started 2, In progress 1, Blocked 1, Complete 1; external gates Open 1, Complete 0; Ready milestones 0.
+Milestone tally: milestones Not started 2, In progress 0, Blocked 1, Complete 2; external gates Open 1, Complete 0; Ready milestones 1.
 
-Tracker reconciliation observed 2026-08-27T20:01:48Z: GitHub milestone `1.2.0` is open with three open issues and one closed issue. Issue #16 is open in GitHub `Backlog` with labels `P3-low` and `refactor`. Issues #20, #22, and #25 remain open in `1.2.0`; issue #23 is closed. Their titles, labels, milestone assignments, and assignee match the canonical details, and issue #23 records the verified M1 closure evidence.
+Tracker reconciliation observed 2026-08-28T01:55:57Z: GitHub milestone `1.2.0` is open with two open issues and two closed issues. Issue #16 is open in GitHub `Backlog` with labels `P3-low` and `refactor`. Issues #20 and #22 remain open in `1.2.0`; issues #23 and #25 are closed. Their titles, labels, milestone assignments, assignees, and live states match the canonical details; issues #23 and #25 record checked completion criteria and closure evidence.
 
 ## Milestone
 
@@ -28,8 +28,8 @@ Tracker reconciliation observed 2026-08-27T20:01:48Z: GitHub milestone `1.2.0` i
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | External | G1 | Confirm epics-ioc-runner 1.2.4 with released con 1.1.0 | External gate | Open | No | D4, D11 | Released con 1.1.0 passes the epics-ioc-runner 1.2.4 gate on both pinned goldens; [detail](#g1---confirm-epics-ioc-runner-124-with-released-con-110) |
 | Test integrity | M1 | Restore real test outcomes and auto-discovery (#23) | Milestone | Complete | No | D4, D5 | Real connection failures remain nonzero, valid UDS echo passes under each selected backend, every `test-*.bash` suite is discovered, and `make test` returns the runner status; [detail](#m1---restore-real-test-outcomes-and-auto-discovery-23) |
-| Test integrity | M2 | Make common test setup safe when sourced standalone (#25) | Milestone | In progress | No | M1, D6 | A fresh shell resolves the real binary or fails clearly, and both suite backends pass; [detail](#m2---make-common-test-setup-safe-when-sourced-standalone-25) |
-| UDS client | M3 | Add an explicit UNIX transport flag (#20) | Milestone | Not started | No | M2, D7 | `-u` and `--unix` force AF_UNIX for client and server targets without changing flagless behavior; [detail](#m3---add-an-explicit-unix-transport-flag-20) |
+| Test integrity | M2 | Make common test setup safe when sourced standalone (#25) | Milestone | Complete | No | M1, D6 | A fresh shell resolves the real binary or fails clearly, and both suite backends pass; [detail](#m2---make-common-test-setup-safe-when-sourced-standalone-25) |
+| UDS client | M3 | Add an explicit UNIX transport flag (#20) | Milestone | Not started | Yes | M2, D7 | `-u` and `--unix` force AF_UNIX for client and server targets without changing flagless behavior; [detail](#m3---add-an-explicit-unix-transport-flag-20) |
 | UDS client | M4 | Reach colonless UDS paths through explicit UNIX mode (#22) | Milestone | Not started | No | M3, D7 | A colonless socket works through `-u` and serial auto-detection remains unchanged; [detail](#m4---reach-colonless-uds-paths-through-explicit-unix-mode-22) |
 | Release | M5 | Release con 1.2.0 | Milestone | Blocked | No | G1, M1, M2, M3, M4, D8 | Every Release Verification result passes and every separately authorized release action has immutable evidence; [detail](#m5---release-con-120) |
 
@@ -169,7 +169,7 @@ Last Compared: 2026-08-27T20:01:48Z; issue updated 2026-08-27T19:58:54Z
 Origin: 1.2.0 / M2
 Identity History: none
 GitHub Issue: [#25](https://github.com/jeonghanlee/con/issues/25)
-Status: In progress
+Status: Complete
 
 ##### Summary
 
@@ -222,17 +222,19 @@ Superseded Plan Artifacts: none
 
 ##### Closure Evidence
 
-- 2026-08-27: first-person retrospective, independent third-person review, and second-person reader-seat review passed with no accepted findings outstanding. Repository landing and issue #25 closure remain pending under separate Git and GitHub authority.
+- 2026-08-27: first-person retrospective, independent third-person review, and second-person reader-seat review passed with no accepted findings outstanding.
+- 2026-08-28T01:45:16Z: issue #25 was observed closed with labels `bug` and `P3-low`, milestone `1.2.0`, assignee `jeonghanlee`, checked completion criteria, and the closure comment for commit `6becf23f795efcced3f49807c816b9b85fc00d2b`.
+- 2026-08-28T01:55:29Z: after `git fetch`, `HEAD` and `origin/release-1.2.0` both resolved to commit `6becf23f795efcced3f49807c816b9b85fc00d2b`; the landed commit contains the reviewed helper, regression suite, test documentation, and milestone evidence.
 
 ##### GitHub Projection
 
 Title: test-common.bash resolves CON_BIN to /../con when sourced standalone (SC_TOP unset)
 Labels: `bug`, `P3-low`
 GitHub Milestone: `1.2.0`
-Observed State: open
+Observed State: closed
 Observed Labels: `bug`, `P3-low`
 Observed Milestone: `1.2.0`
-Last Compared: 2026-08-27T17:37:04Z; issue updated 2026-08-27T17:15:35Z
+Last Compared: 2026-08-28T01:55:40Z; issue updated 2026-08-28T01:45:16Z
 
 #### M3 - Add an explicit UNIX transport flag (#20)
 
@@ -267,7 +269,7 @@ Out of scope: changing flagless transport detection, changing flagless client/se
 
 Plan Status: accepted
 Plan Acceptance: owner approval and accepted third-person review findings in this conversation on 2026-08-26
-Implementation Authorization: none
+Implementation Authorization: owner approval in conversation on 2026-08-28
 Superseded Plan Artifacts: none
 
 1. Add short and long option parsing for one explicit UNIX-mode flag and update help output.
