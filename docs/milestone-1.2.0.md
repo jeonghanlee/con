@@ -14,11 +14,11 @@ Git upstream: `origin/release-1.2.0`
 Remote tracker: `github.com/jeonghanlee/con`, GitHub milestone `1.2.0` (#4)
 Default development verification host: `top`, Debian GNU/Linux 13.6, x86_64, repository binary `/data/gitsrc/con/con`
 
-Next session entry point: obtain commit/add authority for the reviewed M3 changes; after the commit, obtain push and issue authority to publish the branch and close issue #20.
+Next session entry point: review the accepted M4 plan and obtain implementation authorization for colonless UDS paths through explicit UNIX mode.
 
-Milestone tally: milestones Not started 1, In progress 1, Blocked 1, Complete 2; external gates Open 1, Complete 0; Ready milestones 0.
+Milestone tally: milestones Not started 1, In progress 0, Blocked 1, Complete 3; external gates Open 1, Complete 0; Ready milestones 1.
 
-Tracker reconciliation observed 2026-08-28T01:55:57Z: GitHub milestone `1.2.0` is open with two open issues and two closed issues. Issue #16 is open in GitHub `Backlog` with labels `P3-low` and `refactor`. Issues #20 and #22 remain open in `1.2.0`; issues #23 and #25 are closed. Their titles, labels, milestone assignments, assignees, and live states match the canonical details; issues #23 and #25 record checked completion criteria and closure evidence.
+Tracker reconciliation observed 2026-08-28T09:17:22Z: GitHub milestone `1.2.0` is open with one open issue and three closed issues. Issue #16 is open in GitHub `Backlog` with labels `P3-low` and `refactor`. Issue #20 is closed in `1.2.0` with state reason `completed`; issue #22 remains open in `1.2.0`; issues #23 and #25 are closed. Their titles, labels, milestone assignments, assignees, and live states match the canonical details; issues #20, #23, and #25 record checked completion criteria and closure evidence.
 
 ## Milestone
 
@@ -29,8 +29,8 @@ Tracker reconciliation observed 2026-08-28T01:55:57Z: GitHub milestone `1.2.0` i
 | External | G1 | Confirm epics-ioc-runner 1.2.4 with released con 1.1.0 | External gate | Open | No | D4, D11 | Released con 1.1.0 passes the epics-ioc-runner 1.2.4 gate on both pinned goldens; [detail](#g1---confirm-epics-ioc-runner-124-with-released-con-110) |
 | Test integrity | M1 | Restore real test outcomes and auto-discovery (#23) | Milestone | Complete | No | D4, D5 | Real connection failures remain nonzero, valid UDS echo passes under each selected backend, every `test-*.bash` suite is discovered, and `make test` returns the runner status; [detail](#m1---restore-real-test-outcomes-and-auto-discovery-23) |
 | Test integrity | M2 | Make common test setup safe when sourced standalone (#25) | Milestone | Complete | No | M1, D6 | A fresh shell resolves the real binary or fails clearly, and both suite backends pass; [detail](#m2---make-common-test-setup-safe-when-sourced-standalone-25) |
-| UDS client | M3 | Add an explicit UNIX transport flag (#20) | Milestone | In progress | No | M2, D7 | `-u` and `--unix` force AF_UNIX for client and server targets without changing flagless behavior; [detail](#m3---add-an-explicit-unix-transport-flag-20) |
-| UDS client | M4 | Reach colonless UDS paths through explicit UNIX mode (#22) | Milestone | Not started | No | M3, D7 | A colonless socket works through `-u` and serial auto-detection remains unchanged; [detail](#m4---reach-colonless-uds-paths-through-explicit-unix-mode-22) |
+| UDS client | M3 | Add an explicit UNIX transport flag (#20) | Milestone | Complete | No | M2, D7 | `-u` and `--unix` force AF_UNIX for client and server targets without changing flagless behavior; [detail](#m3---add-an-explicit-unix-transport-flag-20) |
+| UDS client | M4 | Reach colonless UDS paths through explicit UNIX mode (#22) | Milestone | Not started | Yes | M3, D7 | A colonless socket works through `-u` and serial auto-detection remains unchanged; [detail](#m4---reach-colonless-uds-paths-through-explicit-unix-mode-22) |
 | Release | M5 | Release con 1.2.0 | Milestone | Blocked | No | G1, M1, M2, M3, M4, D8 | Every Release Verification result passes and every separately authorized release action has immutable evidence; [detail](#m5---release-con-120) |
 
 ### Decisions
@@ -241,7 +241,7 @@ Last Compared: 2026-08-28T01:55:40Z; issue updated 2026-08-28T01:45:16Z
 Origin: 1.2.0 / M3
 Identity History: none
 GitHub Issue: [#20](https://github.com/jeonghanlee/con/issues/20)
-Status: In progress
+Status: Complete
 
 ##### Summary
 
@@ -303,10 +303,10 @@ Superseded Plan Artifacts: none
 Title: Add explicit -u/--unix flag to force UNIX socket transport
 Labels: `enhancement`, `P3-low`, `area/uds`
 GitHub Milestone: `1.2.0`
-Observed State: open
+Observed State: closed
 Observed Labels: `enhancement`, `P3-low`, `area/uds`
 Observed Milestone: `1.2.0`
-Last Compared: 2026-08-27T17:37:04Z; issue updated 2026-08-27T17:15:35Z
+Last Compared: 2026-08-28T09:17:22Z; issue updated 2026-08-28T09:17:22Z; state reason `completed`
 
 #### M4 - Reach colonless UDS paths through explicit UNIX mode (#22)
 
