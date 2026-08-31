@@ -14,7 +14,7 @@ Git upstream: `origin/release-1.2.0`
 Remote tracker: `github.com/jeonghanlee/con`, GitHub milestone `1.2.0` (#4)
 Default development verification host: `top`, Debian GNU/Linux 13.6, x86_64, repository binary `/data/gitsrc/con/con`
 
-Next session entry point: obtain commit/add authority for M5 phase 9 step 2, then commit the reviewed pre-change evidence.
+Next session entry point: obtain commit/add authority for M5 phase 9 step 4, then commit the reviewed readiness evidence.
 
 Milestone tally: milestones Not started 0, In progress 1, Blocked 0, Complete 4; external gates Open 0, Complete 1; Ready milestones 0.
 
@@ -513,9 +513,9 @@ Phase 9 prepares the release candidate. Phase 10 rows run in order, and every ch
 | Phase | Step | Action | Authorization | Expected Result | Evidence |
 | --- | --- | --- | --- | --- | --- |
 | 9 | 1 | Finalize `CHANGELOG.md`; create and review ignored file `work/release-notes-1.2.0.md`; commit only `CHANGELOG.md`. | Separate release-content edit and commit/add authority | The changelog is committed on `release-1.2.0`, and the reviewed notes remain outside the Git index for the later GitHub release action. | Complete; commit `9c8e07ca6aac189aaf8a4fcc60b648d5ef40f893` contains only `CHANGELOG.md`, and the reviewed release notes remain ignored at `work/release-notes-1.2.0.md`. |
-| 9 | 2 | Record all pre-change results in the canonical document and commit the checked evidence. | Separate canonical-update and commit/add authority | The pre-change evidence commit names every observed result and retained log. | Ready for commit; Release Verification 1 through 16, retained log hashes, native candidate identities, and the reconciled runner 1.2.4 gate were reviewed against the stored evidence. |
-| 9 | 3 | Change `GNUmakefile` `CON_VERSION` to 1.2.0 and commit only the verified version file. | Separate version-edit and commit/add authority | The version commit contains only the release version change. | pending |
-| 9 | 4 | Run the post-change checks, record the results, and commit the readiness evidence. | Separate canonical-update and commit/add authority | The readiness-evidence commit is the explicit release candidate. | pending |
+| 9 | 2 | Record all pre-change results in the canonical document and commit the checked evidence. | Separate canonical-update and commit/add authority | The pre-change evidence commit names every observed result and retained log. | Complete; commit `e090b173a553ec4f4a0d2ca841ff7966dfe6fc37` records Release Verification 1 through 16, retained log hashes, native candidate identities, and the reconciled runner 1.2.4 gate. |
+| 9 | 3 | Change `GNUmakefile` `CON_VERSION` to 1.2.0 and commit only the verified version file. | Separate version-edit and commit/add authority | The version commit contains only the release version change. | Complete; commit `ca9bc662a1b332dc412a3f932031467d1095874b` changes only `GNUmakefile` from version 1.1.0 to 1.2.0. |
+| 9 | 4 | Run the post-change checks, record the results, and commit the readiness evidence. | Separate canonical-update and commit/add authority | The readiness-evidence commit is the explicit release candidate. | Ready for commit; a clean build at `ca9bc662a1b332dc412a3f932031467d1095874b` passed and Release Verification 17 observed version 1.2.0 with the intended git identity. |
 | 10 | 5 | Merge reviewed `release-1.2.0` to `master` with the previewed non-fast-forward release procedure, naming the readiness-evidence commit. | Separate release authority | The recorded release merge contains the explicit candidate. | pending |
 | 10 | 6 | Record the merge object in the canonical document and create a checkpoint commit on `master`. | Separate canonical-update and commit/add authority | The next action can name the recorded release merge rather than implicit `HEAD`. | pending |
 | 10 | 7 | Create annotated tag `1.2.0` on the recorded release merge. | Separate release authority | The local annotated tag targets the verified release merge. | pending |
@@ -588,7 +588,7 @@ Phase 9 prepares the release candidate. Phase 10 rows run in order, and every ch
 | Release Verification 14 | 2026-08-31T07:48:54Z | `lab-rocky8-iocrunner-main`, Rocky Linux 8.10, x86_64, runner 1.2.4, candidate `4a3f55e` | Pass | The reconciled driver enforced runner `1.2.4 (1961fbf)`, matched native `/opt/con-rc/con` to `con version 1.1.0 (4a3f55e)` inside opb, and passed S10 attach and monitor access, socket modes, the two-con shared-console exchange, and S4 `remove --force` with clean EOF and removal. `work/m5-rv14-rocky8-downstream.log` reports `PASS=21 FAIL=0`, exit 0, SHA-256 `eed57d091117ca796291be278d5280532d6b58da2ebc303d776bfcc4198c622c`. |
 | Release Verification 15 | 2026-08-31T07:48:54Z | `lab-debian13-iocrunner-main`, Debian GNU/Linux 13, x86_64, runner 1.2.4, candidate `4a3f55e` | Pass | The same reconciled driver enforced runner `1.2.4 (1961fbf)`, matched the native candidate inside opb, and passed the same real S10, two-con, and S4 paths. `work/m5-rv15-debian13-downstream.log` reports `PASS=21 FAIL=0`, exit 0, SHA-256 `65ccf1ecab83996129e2acfada817f178e56dd22da28c13528cb5173dd916d9f`. |
 | Release Verification 16 | 2026-08-31T07:36:05Z | `top`, Debian GNU/Linux 13.6, x86_64, release branch `4a3f55e` | Pass | A clean shipped `make` build completed and `/data/gitsrc/con/con -V` reported `con version 1.1.0 (4a3f55e)` with build date `2026-08-31T07:29:31Z`. |
-| Release Verification 17 | Not run | Release branch build host | Pending | none |
+| Release Verification 17 | 2026-08-31T16:32:35Z | `top`, Debian GNU/Linux 13.6, x86_64, release branch `ca9bc66` | Pass | A clean shipped `make` build completed and `/data/gitsrc/con/con -V` reported `con version 1.2.0 (ca9bc66)` with build date `2026-08-31T16:32:22Z`. |
 | Release Verification 18 | Not run | Debian GNU/Linux 13 x86_64 | Pending | none |
 | Release Verification 19 | Not run | Rocky Linux 8.10 x86_64 | Pending | none |
 | Release Verification 20 | Not run | Git repository and origin | Pending | none |
