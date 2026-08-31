@@ -42,9 +42,9 @@
 #define RERR(...) do { fprintf(stderr, __VA_ARGS__); return;    } while(0)
 
 // SUN_LEN(&a) equals the former strlen(sun_path) + sizeof(sun_family) only when
-// sun_path begins exactly at the end of sun_family with no padding (M3/#6).
+// sun_path begins exactly at the end of sun_family with no padding (issue #6).
 static_assert(offsetof(struct sockaddr_un, sun_path) == sizeof(((struct sockaddr_un *)0)->sun_family),
-              "SUN_LEN identity (M3/#6): sun_path offset must equal sun_family size");
+              "SUN_LEN identity (#6): sun_path offset must equal sun_family size");
 
 
 Tty             *tty = 0;
@@ -86,14 +86,18 @@ void usage(const char *s)
         "       con -s :8080\n"
         "\n"
         "4. Communication program to UNIX socket in a client mode:\n"
-        "       con -c SOCKET_PATH\n"
+        "       con [-u] -c SOCKET_PATH\n"
         "   Example:\n"
         "       con -c /tmp/my_named_socket\n"
+        "       con -u -c cache:6379\n"
         "\n"
         "5. Communication program to UNIX socket in a server mode:\n"
-        "       con -s SOCKET_PATH\n"
+        "       con [-u] -s SOCKET_PATH\n"
+        "   Warning:\n"
+        "       Server mode removes an existing target path before binding.\n"
         "   Example:\n"
         "       con -s /tmp/my_named_socket\n"
+        "       con --unix -s listen:6380\n"
         "\n"
         "6. Read-only monitoring (observe without sending input):\n"
         "       con -r -c SOCKET_PATH\n"
@@ -124,6 +128,7 @@ void usage(const char *s)
         "Switches specific for socket connection:\n"
         "\t-s[erver]           - Accept connection to socket as server.\n"
         "\t-c[lient]           - Connection to socket as client.\n"
+        "\t-u, --unix          - Force UNIX socket transport; client/server selection is unchanged.\n"
         , stderr);
     exit(1);
 }
@@ -436,6 +441,7 @@ int main(int ac, char *av[])
 {
     int                  TargetBaud = 0, nparams=0;
     bool                 tty_flag=false, socket_flag=false, cli_flag=false, srv_flag=false, quiet_flag=false;
+    bool                 unix_flag=false;
     bool                 filter_colors = false;
     char                 *TargetCon = 0;
 
@@ -510,6 +516,12 @@ int main(int ac, char *av[])
             {
                 readonly_flag = true;
             }
+            else if (!strcmp(av[i], "u") || !strcmp(av[i], "unix")
+                     || !strcmp(av[i], "-unix"))
+            {
+                unix_flag = true;
+                socket_flag = true;
+            }
             else if (!strcmp(av[i], "X")  ||  !strcmp(av[i], "hexa"))
             {
                 hexa_flag = true;
@@ -563,7 +575,7 @@ int main(int ac, char *av[])
                         finish(1);
                     }
                 }
-                // M4 (#7): a configurable exit key must not shadow the fixed
+                // Issue #7: a configurable exit key must not shadow the fixed
                 // diagnostic key (diagChr, 0x14 Ctrl-T). The poll loop tests
                 // exitChr before diagChr, so an equal exit key silently disables
                 // the diagnostic. diagChr is a compile-time constant parsed
@@ -664,7 +676,7 @@ int main(int ac, char *av[])
             char       name[name_l];
             memset(name, 0, name_l);
 
-            char *p = tcp_separator(TargetCon);
+            char *p = unix_flag ? NULL : tcp_separator(TargetCon);
             if (!p)
             {
                 /*
@@ -688,9 +700,9 @@ int main(int ac, char *av[])
                 // Bind our local address so that the client can send to us.
                 memset((char *) &serv_addr, 0, sizeof(serv_addr));
                 serv_addr.sun_family = AF_UNIX;
-                // sun_path length is bounded here, in servlen (M3/#6), and at the
-                // client connect site (~841); keep all sizeof(serv_addr.sun_path)
-                // uses in agreement when any one changes.
+                // Keep this UNIX server guard/copy/SUN_LEN sequence aligned with
+                // the matching UNIX client sequence when the sun_path bound changes
+                // (issue #6).
                 if (strlen(TargetCon) >= sizeof(serv_addr.sun_path))
                     PERR("UNIX socket path exceeds %d bytes: \"%s\"\n", (int)(sizeof(serv_addr.sun_path) - 1), TargetCon);
                 strncpy(serv_addr.sun_path, TargetCon, sizeof(serv_addr.sun_path)-1);
@@ -854,7 +866,7 @@ int main(int ac, char *av[])
         }
         else if (cli_flag)
         {
-            char *p = tcp_separator(TargetCon);
+            char *p = unix_flag ? NULL : tcp_separator(TargetCon);
             if (!p)
             {
                 /*
@@ -867,9 +879,9 @@ int main(int ac, char *av[])
                 // Fill the "serv_addr" structure
                 memset((char *) &serv_addr, 0, sizeof(serv_addr));
                 serv_addr.sun_family      = AF_UNIX;
-                // sun_path length is bounded here, in servlen (M3/#6), and at the
-                // server bind site (~667); keep all sizeof(serv_addr.sun_path)
-                // uses in agreement when any one changes.
+                // Keep this UNIX client guard/copy/SUN_LEN sequence aligned with
+                // the matching UNIX server sequence when the sun_path bound changes
+                // (issue #6).
                 if (strlen(TargetCon) >= sizeof(serv_addr.sun_path))
                     PERR("UNIX socket path exceeds %d bytes: \"%s\"\n", (int)(sizeof(serv_addr.sun_path) - 1), TargetCon);
                 strncpy(serv_addr.sun_path, TargetCon, sizeof(serv_addr.sun_path)-1);

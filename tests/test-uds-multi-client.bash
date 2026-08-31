@@ -21,13 +21,13 @@
 # its real PID (= PGID) is known: a bare `setsid <srv> &` under a job-control
 # shell forks an intermediate whose PID dies instantly and a group kill would
 # miss (verified). The server-death case kills the group, which also reaches
-# the per-connection children of either backend. test-common.bash is
+# the per-connection children of either backend. common.bash is
 # deliberately not modified.
 set -e
 
 SC_RPATH="$(realpath "$0")"
 SC_TOP="${SC_RPATH%/*}"
-source "${SC_TOP}/test-common.bash"
+source "${SC_TOP}/common.bash"
 
 MC_SOCK=""
 MC_SRV_PIDFILE=""

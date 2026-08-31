@@ -110,3 +110,11 @@ vote was not the basis for the decision; a code fact was.
   review — was produced in review session `rs20260624_064432`, which is
   gitignored and removed at closure. The decisive facts are inlined above so
   this ADR stands alone.
+
+## Correction Note (2026-08-26)
+
+The Accepted body above is preserved as originally approved. Its bare `M2` and
+`M3` identifiers and `docs/milestone.md` path refer only to the 1.1.0 register
+state carried by commit `2fb9b8b1a90c45e75a9c46b57c61e7fd9ddacf75`; they do
+not identify work in `docs/milestone-1.2.0.md`. The implementation and status
+commits remain `ce10568` and `03ed2b5`.

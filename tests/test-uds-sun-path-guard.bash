@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 #
-# M2 (#5, U6): UNIX-domain socket sun_path length guard.
+# Issue #5: UNIX-domain socket sun_path length guard.
 #
 # con copies the target path into sockaddr_un.sun_path. A path of
 # sizeof(sun_path) bytes or more (108 on Linux) was silently truncated, so con
 # bound or connected to a different path with no diagnostic. The guard rejects
-# such a path with a message and a non-zero exit, at both the server bind site
-# (con.cpp:667) and the client connect site (con.cpp:841).
+# such a path with a message and a non-zero exit at both the UNIX server bind
+# and UNIX client connect copy sites.
 #
 # This suite asserts, for both -s and -c:
 #   1. an over-length path exits non-zero,
@@ -17,7 +17,7 @@ set -e
 
 SC_RPATH="$(realpath "$0")"
 SC_TOP="${SC_RPATH%/*}"
-source "${SC_TOP}/test-common.bash"
+source "${SC_TOP}/common.bash"
 
 function _handle_exit {
     local exit_code=$?
@@ -32,12 +32,10 @@ setup_tmpdir
 _log "INFO" "UDS sun_path Length Guard Tests (issue #5)"
 print_sub_divider
 
-# The guard sits after con opens /dev/tty (con.cpp:629), so con must run under a
+# The guard sits after con opens /dev/tty, so con must run under a
 # PTY to reach it. script(1) supplies the controlling terminal; -e returns the
-# child exit code (run_con in test-common.bash deliberately swallows it). No
-# input is needed: con exits at the guard before any read. The exit code is
-# captured inline below, not via a test-common.bash helper, to keep the shared
-# run_con contract unchanged.
+# child exit code. The commands below remain inline because the server case
+# requires a specific working directory and both cases assert the exact code.
 declare -g GUARD_RC=0
 declare -g GUARD_OUTPUT=""
 

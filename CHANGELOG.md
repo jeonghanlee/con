@@ -3,6 +3,24 @@
 Newest first. Each release section is sourced from the milestone's issues;
 internal-only refactors with no behavior change stay out.
 
+## 1.2.0 — Explicit UNIX Transport Release (2026-08-31)
+
+### Added
+
+- CLI: `-u` and `--unix` force UNIX socket transport for client and server
+  targets while leaving flagless transport selection unchanged (#20).
+- UDS: explicit UNIX mode supports colonless socket paths such as
+  `/tmp/foo.sock` and colon-bearing paths with numeric suffixes (#20, #22).
+
+### Fixed
+
+- Tests: the PTY helper preserves the real command status, UDS connection
+  checks require an observable round trip, suite discovery follows the
+  `test-*.bash` naming rule, explicit echo-backend selection is honored, and
+  `make test` propagates failures (#23).
+- Tests: the shared helper resolves the repository binary when sourced from
+  another directory and rejects a missing or non-executable binary (#25).
+
 ## 1.1.0 — UDS Hardening Release (2026-07-04)
 
 ### Fixed

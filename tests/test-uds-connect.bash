@@ -3,7 +3,7 @@ set -e
 
 SC_RPATH="$(realpath "$0")"
 SC_TOP="${SC_RPATH%/*}"
-source "${SC_TOP}/test-common.bash"
+source "${SC_TOP}/common.bash"
 
 function _handle_exit {
     local exit_code=$?
@@ -19,21 +19,36 @@ _log "INFO" "UDS Connection Tests"
 print_sub_divider
 
 SOCK_PATH="${TEST_TMPDIR}/connect-test.sock"
+CONNECT_STRING="UDS_CONNECT_OK_12345"
 
 start_echo_server "${SOCK_PATH}"
 
-# Send exit character (Ctrl-A) after brief delay
-run_con 1 "$(printf '\x01')" "-c ${SOCK_PATH} -q"
+# Send a payload, observe the echo, and exit with Ctrl-A.
+connect_rc=0
+run_con 1 "$(printf '%s\n\x01' "${CONNECT_STRING}")" "-c ${SOCK_PATH} -q" || connect_rc=$?
+verify_exit_code "0" "${connect_rc}" "Connect and disconnect via UDS"
 
-connect_ok="false"
-if [[ $? -eq 0 || $? -eq 124 ]]; then
-    connect_ok="true"
+connect_echo_ok="false"
+if printf "%s" "${RUN_CON_OUTPUT}" | grep -q "${CONNECT_STRING}"; then
+    connect_echo_ok="true"
 fi
-verify_state "true" "${connect_ok}" "Connect and disconnect via UDS"
+verify_state "true" "${connect_echo_ok}" "Connected UDS endpoint returned the payload"
 
 stop_echo_server
+rm -f "${SOCK_PATH}"
 
-# --- M1 (#4): a UDS path containing ':' must route UNIX, not TCP ---
+# A missing endpoint must remain non-zero through the PTY helper and cleanup.
+MISSING_SOCK="${TEST_TMPDIR}/missing-connect.sock"
+missing_rc=0
+run_con 0 "" "-c ${MISSING_SOCK} -q" || missing_rc=$?
+
+missing_failed="false"
+if [[ ${missing_rc} -ne 0 ]]; then
+    missing_failed="true"
+fi
+verify_state "true" "${missing_failed}" "Missing UDS endpoint returns non-zero"
+
+# --- Issue #4: a UDS path containing ':' must route UNIX, not TCP ---
 print_sub_divider
 _log "INFO" "Colon-in-path disambiguation (issue #4)"
 
@@ -57,7 +72,8 @@ colon_client_no_tcp="true"
 if printf "%s" "${RUN_CON_OUTPUT}" | grep -q "Invalid port"; then colon_client_no_tcp="false"; fi
 verify_state "true" "${colon_client_no_tcp}" "Client: colon path not misrouted to TCP"
 
-# Server: -s to a colon path binds a UNIX socket node (symmetry, con.cpp:620).
+# Server: -s follows the same tcp_separator() classification and binds a UNIX
+# socket node.
 SRV_SOCK="${TEST_TMPDIR}/srv:listen.sock"
 run_con 0 "$(printf '\x01')" "-s ${SRV_SOCK}"
 
