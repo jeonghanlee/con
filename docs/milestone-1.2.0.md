@@ -14,9 +14,9 @@ Git upstream: `origin/release-1.2.0`
 Remote tracker: `github.com/jeonghanlee/con`, GitHub milestone `1.2.0` (#4)
 Default development verification host: `top`, Debian GNU/Linux 13.6, x86_64, repository binary `/data/gitsrc/con/con`
 
-Next session entry point: obtain M5 implementation authorization, then begin the accepted release plan with the final-tree verification reruns.
+Next session entry point: continue M5 with the accepted release plan's final-tree verification reruns.
 
-Milestone tally: milestones Not started 1, In progress 0, Blocked 0, Complete 4; external gates Open 0, Complete 1; Ready milestones 1.
+Milestone tally: milestones Not started 0, In progress 1, Blocked 0, Complete 4; external gates Open 0, Complete 1; Ready milestones 0.
 
 Tracker reconciliation observed 2026-08-28T17:34:41Z: GitHub milestone `1.2.0` is open with zero open issues and four closed issues. Issue #16 is open in GitHub `Backlog` with labels `P3-low` and `refactor`. Issues #20, #22, #23, and #25 are closed in `1.2.0` with state reason `completed`. Their titles, labels, milestone assignments, assignees, and live states match the canonical details; all four issues record checked completion criteria and closure evidence.
 
@@ -31,7 +31,7 @@ Tracker reconciliation observed 2026-08-28T17:34:41Z: GitHub milestone `1.2.0` i
 | Test integrity | M2 | Make common test setup safe when sourced standalone (#25) | Milestone | Complete | No | M1, D6 | A fresh shell resolves the real binary or fails clearly, and both suite backends pass; [detail](#m2---make-common-test-setup-safe-when-sourced-standalone-25) |
 | UDS client | M3 | Add an explicit UNIX transport flag (#20) | Milestone | Complete | No | M2, D7 | `-u` and `--unix` force AF_UNIX for client and server targets without changing flagless behavior; [detail](#m3---add-an-explicit-unix-transport-flag-20) |
 | UDS client | M4 | Reach colonless UDS paths through explicit UNIX mode (#22) | Milestone | Complete | No | M3, D7 | A colonless socket works through `-u` and serial auto-detection remains unchanged; [detail](#m4---reach-colonless-uds-paths-through-explicit-unix-mode-22) |
-| Release | M5 | Release con 1.2.0 | Milestone | Not started | Yes | G1, M1, M2, M3, M4, D8 | Every Release Verification result passes and every separately authorized release action has immutable evidence; [detail](#m5---release-con-120) |
+| Release | M5 | Release con 1.2.0 | Milestone | In progress | No | G1, M1, M2, M3, M4, D8 | Every Release Verification result passes and every separately authorized release action has immutable evidence; [detail](#m5---release-con-120) |
 
 ### Decisions
 
@@ -392,7 +392,7 @@ Last Compared: 2026-08-28T17:34:41Z; issue updated 2026-08-28T17:31:21Z; state r
 Origin: 1.2.0 / M5
 Identity History: none
 GitHub Issue: none
-Status: Not started
+Status: In progress
 
 ##### Summary
 
@@ -425,7 +425,7 @@ Out of scope: Backlog work, implementation excluded by D1 through D3, and any ex
 
 Plan Status: accepted
 Plan Acceptance: owner approval in this conversation on 2026-08-27, retaining accepted third-person review findings from 2026-08-26
-Implementation Authorization: none
+Implementation Authorization: owner approval in conversation on 2026-08-31
 Superseded Plan Artifacts: none
 
 1. Execute gate step 1 by re-running every mapped M1 through M4 check on the final combined candidate.
