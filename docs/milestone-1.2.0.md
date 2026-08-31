@@ -14,9 +14,9 @@ Git upstream: `origin/release-1.2.0`
 Remote tracker: `github.com/jeonghanlee/con`, GitHub milestone `1.2.0` (#4)
 Default development verification host: `top`, Debian GNU/Linux 13.6, x86_64, repository binary `/data/gitsrc/con/con`
 
-Next session entry point: complete the G1 two-golden run with released con 1.1.0, record its evidence, then proceed to M5.
+Next session entry point: obtain M5 implementation authorization, then begin the accepted release plan with the final-tree verification reruns.
 
-Milestone tally: milestones Not started 0, In progress 0, Blocked 1, Complete 4; external gates Open 1, Complete 0; Ready milestones 0.
+Milestone tally: milestones Not started 1, In progress 0, Blocked 0, Complete 4; external gates Open 0, Complete 1; Ready milestones 1.
 
 Tracker reconciliation observed 2026-08-28T17:34:41Z: GitHub milestone `1.2.0` is open with zero open issues and four closed issues. Issue #16 is open in GitHub `Backlog` with labels `P3-low` and `refactor`. Issues #20, #22, #23, and #25 are closed in `1.2.0` with state reason `completed`. Their titles, labels, milestone assignments, assignees, and live states match the canonical details; all four issues record checked completion criteria and closure evidence.
 
@@ -26,12 +26,12 @@ Tracker reconciliation observed 2026-08-28T17:34:41Z: GitHub milestone `1.2.0` i
 
 | Group | ID | Work unit | Type | Status | Ready | Deps | Done when / Evidence |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| External | G1 | Confirm epics-ioc-runner 1.2.4 with released con 1.1.0 | External gate | Open | No | D4, D11 | Released con 1.1.0 passes the epics-ioc-runner 1.2.4 gate on both pinned goldens; [detail](#g1---confirm-epics-ioc-runner-124-with-released-con-110) |
+| External | G1 | Confirm epics-ioc-runner 1.2.4 with released con 1.1.0 | External gate | Complete | No | D4, D11 | Released con 1.1.0 passes the epics-ioc-runner 1.2.4 gate on both pinned goldens; [detail](#g1---confirm-epics-ioc-runner-124-with-released-con-110) |
 | Test integrity | M1 | Restore real test outcomes and auto-discovery (#23) | Milestone | Complete | No | D4, D5 | Real connection failures remain nonzero, valid UDS echo passes under each selected backend, every `test-*.bash` suite is discovered, and `make test` returns the runner status; [detail](#m1---restore-real-test-outcomes-and-auto-discovery-23) |
 | Test integrity | M2 | Make common test setup safe when sourced standalone (#25) | Milestone | Complete | No | M1, D6 | A fresh shell resolves the real binary or fails clearly, and both suite backends pass; [detail](#m2---make-common-test-setup-safe-when-sourced-standalone-25) |
 | UDS client | M3 | Add an explicit UNIX transport flag (#20) | Milestone | Complete | No | M2, D7 | `-u` and `--unix` force AF_UNIX for client and server targets without changing flagless behavior; [detail](#m3---add-an-explicit-unix-transport-flag-20) |
 | UDS client | M4 | Reach colonless UDS paths through explicit UNIX mode (#22) | Milestone | Complete | No | M3, D7 | A colonless socket works through `-u` and serial auto-detection remains unchanged; [detail](#m4---reach-colonless-uds-paths-through-explicit-unix-mode-22) |
-| Release | M5 | Release con 1.2.0 | Milestone | Blocked | No | G1, M1, M2, M3, M4, D8 | Every Release Verification result passes and every separately authorized release action has immutable evidence; [detail](#m5---release-con-120) |
+| Release | M5 | Release con 1.2.0 | Milestone | Not started | Yes | G1, M1, M2, M3, M4, D8 | Every Release Verification result passes and every separately authorized release action has immutable evidence; [detail](#m5---release-con-120) |
 
 ### Decisions
 
@@ -64,25 +64,32 @@ Tracker reconciliation observed 2026-08-28T17:34:41Z: GitHub milestone `1.2.0` i
 
 Origin: 1.2.0 / G1
 GitHub Issue: none
-Status: Open
+Status: Complete
 
 ##### Summary
 
-The release operator must confirm that released con 1.1.0 passes the epics-ioc-runner 1.2.4 gate on both pinned goldens before M5 can run. M5 owns the local downstream driver reconciliation and runner identity update.
+The release operator must create and accept a fresh Rocky Linux 8.10 and Debian 13 golden pair pinned to epics-ioc-runner 1.2.4, then confirm that released con 1.1.0 passes the current downstream compatibility driver on both consumers before M5 can run. M5 owns the local downstream driver reconciliation and runner identity update.
 
 ##### Completion Criteria
 
-- Run the current epics-ioc-runner 1.2.4 gate at commit `1961fbffbb1c650999b62d562f05363152c6a9cd` with released con 1.1.0 on Rocky Linux 8.10 and Debian 13 production-equivalent goldens.
+- Bake one Rocky Linux 8.10 golden and one Debian 13 golden from clean, synchronized `cloud-provision` and `ansible-provision` `origin/master` checkouts through `bin/bake_iocrunner_image.bash -o <os> -r 1.2.4`; each bake publishes a unique image, creation record, and manifest sidecar.
+- Recreate `rocky8-iocrunner.main` and `debian13-iocrunner.main` after both bakes. Each fresh consumer selects the newest valid image pair, passes manifest acceptance, and reports epics-ioc-runner 1.2.4 at commit `1961fbffbb1c650999b62d562f05363152c6a9cd`.
+- Build released con 1.1.0 at tag commit `0dfe4f2d7a85d688ca488ff2cbb8dfc5bb09bbdb`, stage it as `/opt/con-rc/con`, prepare the real `conrc` IOC, and run the current `tests/release-gate4-downstream.bash` advancement path on both consumers with the exact epics-ioc-runner 1.2.4 identity. Both runs must exit zero with no failed check.
 
 ##### Verification Results
 
 | Observed At | Result | Evidence |
 | --- | --- | --- |
 | 2026-08-26T17:12:37Z | Pending | Upstream release 1.2.4 is published at tag commit `1961fbffbb1c650999b62d562f05363152c6a9cd`; the required released-con run was not performed in this session. |
+| 2026-08-31T06:19:16Z | Pass | Clean synchronized `cloud-provision` commit `c1bb4b123f2dd3e9144d7d0170960731d24ccf02` and `ansible-provision` commit `c07658955d85feb4c62a721216846b936e65b29f` produced standalone 20 GiB images `iocrunner-rocky8-20260831T061149Z-117cb52abde6.qcow2` and `iocrunner-debian13-20260831T061626Z-bbcc2822319a.qcow2`; both Ansible runs reported `failed=0`, both proxy seals were clean, and both build VMs were removed. Fresh main consumers selected those exact images. The shipped provenance validator passed on both consumers, each remote manifest hash matched its sidecar, and both retained checkouts and installed runners reported commit `1961fbffbb1c650999b62d562f05363152c6a9cd` and `epics-ioc-runner version 1.2.4 (1961fbf)`. |
+| 2026-08-31T06:36:42Z | Pass | On Rocky Linux 8.10, released source tag `1.1.0` at commit `0dfe4f2d7a85d688ca488ff2cbb8dfc5bb09bbdb` was built natively, the staged `/opt/con-rc/con` was `root:root 755` and reported `con version 1.1.0 (0dfe4f2)`, and a real `softIoc`-based `conrc` IOC was installed and started as `opa`. The current downstream driver ran with `GATE_DEPS_EXPECT=epics-ioc-runner version 1.2.4 (1961fbf)`, exited 0, and reported `PASS=15 FAIL=0`. |
+| 2026-08-31T06:37:09Z | Pass | On Debian GNU/Linux 13, the same released tag and commit were built natively, the staged `/opt/con-rc/con` was `root:root 755` and reported `con version 1.1.0 (0dfe4f2)`, and a real `softIoc`-based `conrc` IOC was installed and started as `opa`. The same advancement driver invocation exited 0 and reported `PASS=15 FAIL=0`. |
 
 ##### Closure Evidence
 
-- None.
+- 2026-08-31: both unique image, creation-record, and manifest groups passed producer and fresh-consumer acceptance; Rocky manifest SHA-256 was `843ccc56880f546033a3e1869d6842432c8701640202016c3a7f54c831bc4afd`, and Debian manifest SHA-256 was `ab8dafdda6eefd7c2090ab3c849b20d7af4e7e6095f8b7aa9bea3fa285c8243c`.
+- 2026-08-31: the Rocky native con binary SHA-256 was `971c7b998403c6742a89cfc475279980026fecee304a293f44528e4e3313ee65`, and the Debian native con binary SHA-256 was `e6c4194925971aaa3954ea35cebcf6e9abf6b781d85e57ae09f02f08fa0e93e6`; each staged copy matched its source binary.
+- 2026-08-31: the retained driver logs `work/g1-rocky8-downstream.log` and `work/g1-debian13-downstream.log` have SHA-256 values `e1ec9cf68ed34d47d486880f2a0ca77e52558773326418c34d863ee1e90a1e72` and `eff07c45d18f733c2e8f1365e42d87a3edf3318deefab1cf8d17b5135e19aa2c`; each records `PASS=15 FAIL=0` from the real driver path.
 
 #### M1 - Restore real test outcomes and auto-discovery (#23)
 
@@ -385,7 +392,7 @@ Last Compared: 2026-08-28T17:34:41Z; issue updated 2026-08-28T17:31:21Z; state r
 Origin: 1.2.0 / M5
 Identity History: none
 GitHub Issue: none
-Status: Blocked
+Status: Not started
 
 ##### Summary
 
