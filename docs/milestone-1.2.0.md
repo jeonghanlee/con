@@ -14,7 +14,7 @@ Git upstream: `origin/release-1.2.0`
 Remote tracker: `github.com/jeonghanlee/con`, GitHub milestone `1.2.0` (#4)
 Default development verification host: `top`, Debian GNU/Linux 13.6, x86_64, repository binary `/data/gitsrc/con/con`
 
-Next session entry point: continue M5 with the accepted release plan's final-tree verification reruns.
+Next session entry point: obtain commit/add authority for M5 phase 9 step 2, then commit the reviewed pre-change evidence.
 
 Milestone tally: milestones Not started 0, In progress 1, Blocked 0, Complete 4; external gates Open 0, Complete 1; Ready milestones 0.
 
@@ -463,18 +463,18 @@ Last Compared: 2026-08-27T17:37:04Z; milestone updated 2026-08-27T17:15:32Z
 
 | Source Check | Re-run Trigger | Shared Surface | Release Verification Label | Expected Result | Result Evidence |
 | --- | --- | --- | --- | --- | --- |
-| M1 / T1 | M2 changes the shared helper | PTY status and helper cleanup | Release Verification 1 | A real failed UDS connection remains nonzero. | pending |
-| M1 / T2 | M3 and M4 change transport selection | UDS client connection and echo | Release Verification 2 | The real UDS echo payload returns. | pending |
-| M1 / T3 | M2 adds a new suite | Runner discovery convention | Release Verification 3 | The new suite runs without a registration edit. | pending |
-| M2 / T1 | Final combined candidate | Helper path and built binary | Release Verification 4 | Fresh-shell sourcing resolves and executes the real binary. | pending |
-| M2 / T2 | Final combined candidate | Helper executable guard | Release Verification 5 | An invalid binary path fails clearly and nonzero. | pending |
-| M2 / T3 | M3 and M4 change con and add tests | Complete suite | Release Verification 11 and Release Verification 12 | Both supported backends pass. | pending |
-| M3 / T1 | M4 adds the colonless explicit-mode use | UNIX client option and transport split | Release Verification 6 | A colon-bearing numeric-tail path uses AF_UNIX and echoes. | pending |
-| M3 / T2 | M4 shares explicit UNIX mode | UNIX server option and transport split | Release Verification 7 | Explicit UNIX server mode creates a socket and exchanges data. | pending |
-| M3 / T3 | M4 adds documentation and regression cases | CLI parsing and legacy transport selection | Release Verification 8 | New options work, the compiled PTY serial path passes, and legacy socket modes remain unchanged. | pending |
-| M4 / T1 | Final combined candidate | Colonless UDS explicit mode | Release Verification 9 | The colonless UDS echo round trip passes. | pending |
-| M4 / T2 | Final combined candidate | Serial versus socket selection | Release Verification 10 | The shipped PTY slave completes a flagless serial exchange. | pending |
-| M4 / T3 | Final combined candidate | Complete suite | Release Verification 11 and Release Verification 12 | Both supported backends pass. | pending |
+| M1 / T1 | M2 changes the shared helper | PTY status and helper cleanup | Release Verification 1 | A real failed UDS connection remains nonzero. | Pass; see the Release Verification 1 result row. |
+| M1 / T2 | M3 and M4 change transport selection | UDS client connection and echo | Release Verification 2 | The real UDS echo payload returns. | Pass; see the Release Verification 2 result row. |
+| M1 / T3 | M2 adds a new suite | Runner discovery convention | Release Verification 3 | The new suite runs without a registration edit. | Pass; see the Release Verification 3 result row. |
+| M2 / T1 | Final combined candidate | Helper path and built binary | Release Verification 4 | Fresh-shell sourcing resolves and executes the real binary. | Pass; see the Release Verification 4 result row. |
+| M2 / T2 | Final combined candidate | Helper executable guard | Release Verification 5 | An invalid binary path fails clearly and nonzero. | Pass; see the Release Verification 5 result row. |
+| M2 / T3 | M3 and M4 change con and add tests | Complete suite | Release Verification 11 and Release Verification 12 | Both supported backends pass. | Pass; see the Release Verification 11 and 12 result rows. |
+| M3 / T1 | M4 adds the colonless explicit-mode use | UNIX client option and transport split | Release Verification 6 | A colon-bearing numeric-tail path uses AF_UNIX and echoes. | Pass; see the Release Verification 6 result row. |
+| M3 / T2 | M4 shares explicit UNIX mode | UNIX server option and transport split | Release Verification 7 | Explicit UNIX server mode creates a socket and exchanges data. | Pass; see the Release Verification 7 result row. |
+| M3 / T3 | M4 adds documentation and regression cases | CLI parsing and legacy transport selection | Release Verification 8 | New options work, the compiled PTY serial path passes, and legacy socket modes remain unchanged. | Pass; see the Release Verification 8 result row. |
+| M4 / T1 | Final combined candidate | Colonless UDS explicit mode | Release Verification 9 | The colonless UDS echo round trip passes. | Pass; see the Release Verification 9 result row. |
+| M4 / T2 | Final combined candidate | Serial versus socket selection | Release Verification 10 | The shipped PTY slave completes a flagless serial exchange. | Pass; see the Release Verification 10 result row. |
+| M4 / T3 | Final combined candidate | Complete suite | Release Verification 11 and Release Verification 12 | Both supported backends pass. | Pass; see the Release Verification 11 and 12 result rows. |
 
 ##### Released-Object Storage Preflight
 
@@ -492,11 +492,11 @@ Each target host records the inputs, calculations, object identities, measured a
 
 | Release Verification Label | Timing | System | Version | Architecture | Deployment Path | Method | Expected Result | Evidence |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Release Verification 11 | pre-change | Dev host `top` | Debian GNU/Linux 13.6 | x86_64 | `/data/gitsrc/con/con` | Run the complete discovered suite with `ECHO_SERVER_MODE=socat` and the shipped con binary. | Every suite passes and reports the socat backend. | pending |
-| Release Verification 12 | pre-change | Dev host `top` | Debian GNU/Linux 13.6 | x86_64 | `/data/gitsrc/con/con` | Run the complete discovered suite with `ECHO_SERVER_MODE=echo_server` and the shipped con binary. | Every suite passes and reports the compiled backend. | pending |
-| Release Verification 13 | pre-change | Dev host `top` | Debian GNU/Linux 13.6 | x86_64 | `/data/gitsrc/con/con` | Run the real PTY diagnostic pause/resume path and one bounded flood that observes recv-q above zero without unbounded capture. | Diagnostic output is observed, input resumes, and bounded flood evidence records host, value, and candidate hash. | pending |
-| Release Verification 14 | pre-change | Golden `testbed-rocky8` | Rocky Linux 8.10, epics-ioc-runner 1.2.4 | x86_64 | `/opt/con-rc/con` | Run the reconciled upstream gate with candidate identity asserted inside the console-holding principal and execute the real shared-console path. | All pinned dependency, access, shared-console, and lifecycle checks pass. | pending |
-| Release Verification 15 | pre-change | Golden `debian13-iocrunner-server` | Debian GNU/Linux 13, epics-ioc-runner 1.2.4 | x86_64 | `/opt/con-rc/con` | Run the same reconciled gate and real candidate path on the Debian golden. | All pinned dependency, access, shared-console, and lifecycle checks pass. | pending |
+| Release Verification 11 | pre-change | Dev host `top` | Debian GNU/Linux 13.6 | x86_64 | `/data/gitsrc/con/con` | Run the complete discovered suite with `ECHO_SERVER_MODE=socat` and the shipped con binary. | Every suite passes and reports the socat backend. | Pass; see the Release Verification 11 result row. |
+| Release Verification 12 | pre-change | Dev host `top` | Debian GNU/Linux 13.6 | x86_64 | `/data/gitsrc/con/con` | Run the complete discovered suite with `ECHO_SERVER_MODE=echo_server` and the shipped con binary. | Every suite passes and reports the compiled backend. | Pass; see the Release Verification 12 result row. |
+| Release Verification 13 | pre-change | Dev host `top` | Debian GNU/Linux 13.6 | x86_64 | `/data/gitsrc/con/con` | Run the real PTY diagnostic pause/resume path and one bounded flood that observes recv-q above zero without unbounded capture. | Diagnostic output is observed, input resumes, and bounded flood evidence records host, value, and candidate hash. | Pass; see the Release Verification 13 result row. |
+| Release Verification 14 | pre-change | Golden consumer `lab-rocky8-iocrunner-main` | Rocky Linux 8.10, epics-ioc-runner 1.2.4 | x86_64 | `/opt/con-rc/con` | Run the reconciled upstream gate with candidate identity asserted inside the console-holding principal and execute the real shared-console path. | All pinned dependency, access, shared-console, and lifecycle checks pass. | Pass; see the Release Verification 14 result row. |
+| Release Verification 15 | pre-change | Golden consumer `lab-debian13-iocrunner-main` | Debian GNU/Linux 13, epics-ioc-runner 1.2.4 | x86_64 | `/opt/con-rc/con` | Run the same reconciled gate and real candidate path on the Debian golden. | All pinned dependency, access, shared-console, and lifecycle checks pass. | Pass; see the Release Verification 15 result row. |
 | Release Verification 18 | post-release | Fresh VM `con-release-install-debian13` | Debian GNU/Linux 13 | x86_64 | `/usr/local/bin/con` | Install the documented Debian prerequisites, complete the per-host Released-Object Storage Preflight, obtain the released source, follow the README build and install path, invoke installed `con -V`, and run the documented shipped-`echo_server` UDS test with `CON_BIN=/usr/local/bin/con`. | Both storage gates pass, installed con reports 1.2.0, and the real shipped-`echo_server` round trip passes. | pending |
 | Release Verification 19 | post-release | Fresh VM `con-release-install-rocky8` | Rocky Linux 8.10 | x86_64 | `/usr/local/bin/con` | Install the documented Rocky prerequisites, complete the per-host Released-Object Storage Preflight, obtain the released source, follow the README build and install path, invoke installed `con -V`, and run the documented shipped-`echo_server` UDS test with `CON_BIN=/usr/local/bin/con`. | Both storage gates pass, installed con reports 1.2.0, and the real shipped-`echo_server` round trip passes. | pending |
 
@@ -512,8 +512,8 @@ Phase 9 prepares the release candidate. Phase 10 rows run in order, and every ch
 
 | Phase | Step | Action | Authorization | Expected Result | Evidence |
 | --- | --- | --- | --- | --- | --- |
-| 9 | 1 | Finalize `CHANGELOG.md`; create and review ignored file `work/release-notes-1.2.0.md`; commit only `CHANGELOG.md`. | Separate release-content edit and commit/add authority | The changelog is committed on `release-1.2.0`, and the reviewed notes remain outside the Git index for the later GitHub release action. | pending |
-| 9 | 2 | Record all pre-change results in the canonical document and commit the checked evidence. | Separate canonical-update and commit/add authority | The pre-change evidence commit names every observed result and retained log. | pending |
+| 9 | 1 | Finalize `CHANGELOG.md`; create and review ignored file `work/release-notes-1.2.0.md`; commit only `CHANGELOG.md`. | Separate release-content edit and commit/add authority | The changelog is committed on `release-1.2.0`, and the reviewed notes remain outside the Git index for the later GitHub release action. | Complete; commit `9c8e07ca6aac189aaf8a4fcc60b648d5ef40f893` contains only `CHANGELOG.md`, and the reviewed release notes remain ignored at `work/release-notes-1.2.0.md`. |
+| 9 | 2 | Record all pre-change results in the canonical document and commit the checked evidence. | Separate canonical-update and commit/add authority | The pre-change evidence commit names every observed result and retained log. | Ready for commit; Release Verification 1 through 16, retained log hashes, native candidate identities, and the reconciled runner 1.2.4 gate were reviewed against the stored evidence. |
 | 9 | 3 | Change `GNUmakefile` `CON_VERSION` to 1.2.0 and commit only the verified version file. | Separate version-edit and commit/add authority | The version commit contains only the release version change. | pending |
 | 9 | 4 | Run the post-change checks, record the results, and commit the readiness evidence. | Separate canonical-update and commit/add authority | The readiness-evidence commit is the explicit release candidate. | pending |
 | 10 | 5 | Merge reviewed `release-1.2.0` to `master` with the previewed non-fast-forward release procedure, naming the readiness-evidence commit. | Separate release authority | The recorded release merge contains the explicit candidate. | pending |
@@ -557,8 +557,8 @@ Phase 9 prepares the release candidate. Phase 10 rows run in order, and every ch
 | Release Verification 11 | Automated suite | pre-change | Run the complete discovered suite with `ECHO_SERVER_MODE=socat`. | `top`, Debian GNU/Linux 13.6, x86_64 | Every shipped suite passes and reports the socat backend. | M5 result row and full runner log |
 | Release Verification 12 | Automated suite | pre-change | Run the complete discovered suite with `ECHO_SERVER_MODE=echo_server`. | `top`, Debian GNU/Linux 13.6, x86_64 | Every shipped suite passes and reports the compiled backend. | M5 result row and full runner log |
 | Release Verification 13 | Diagnostic integration | pre-change | Run the real PTY pause/resume test and one bounded flood diagnostic. | `top`, Debian GNU/Linux 13.6, x86_64 | Pause, diagnostic, resume, and recv-q above zero are observed on the candidate. | M5 result row with host, value, hash, and log |
-| Release Verification 14 | Downstream integration | pre-change | Run the reconciled gate with the staged candidate on `testbed-rocky8`. | Rocky Linux 8.10 x86_64 golden | All gate checks pass with the candidate identity observed in the real principal context. | M5 result row and retained golden log |
-| Release Verification 15 | Downstream integration | pre-change | Run the reconciled gate with the staged candidate on `debian13-iocrunner-server`. | Debian GNU/Linux 13 x86_64 golden | All gate checks pass with the candidate identity observed in the real principal context. | M5 result row and retained golden log |
+| Release Verification 14 | Downstream integration | pre-change | Run the reconciled gate with the staged candidate on `lab-rocky8-iocrunner-main`. | Rocky Linux 8.10 x86_64 golden consumer | All gate checks pass with the candidate identity observed in the real principal context. | M5 result row and retained golden log |
+| Release Verification 15 | Downstream integration | pre-change | Run the reconciled gate with the staged candidate on `lab-debian13-iocrunner-main`. | Debian GNU/Linux 13 x86_64 golden consumer | All gate checks pass with the candidate identity observed in the real principal context. | M5 result row and retained golden log |
 | Release Verification 16 | Version pre-check | pre-change | Build the final candidate before version mutation and inspect `con -V`. | Release branch build host | The binary reports 1.1.0 and the final pre-change git identity. | M5 result row and version output |
 | Release Verification 17 | Version post-check | post-change | Rebuild after the authorized version mutation and inspect `con -V`. | Release branch build host | The binary reports 1.2.0 and the intended release git identity. | M5 result row and version output |
 | Release Verification 18 | Debian installation integration | post-release | On fresh VM `con-release-install-debian13`, install the README prerequisites, complete the per-host Released-Object Storage Preflight, obtain, build, and install the released source, verify `/usr/local/bin/con -V`, and run the documented shipped-`echo_server` test with `CON_BIN=/usr/local/bin/con`. | Debian GNU/Linux 13 x86_64 | Both storage gates pass, installed con reports 1.2.0, and the real shipped-`echo_server` round trip passes. | M5 result row and Debian installation log |
@@ -572,22 +572,22 @@ Phase 9 prepares the release candidate. Phase 10 rows run in order, and every ch
 
 | Label | Observed At | Environment | Result | Evidence |
 | --- | --- | --- | --- | --- |
-| Release Verification 1 | Not run | Linux dev host | Pending | none |
-| Release Verification 2 | Not run | Linux dev host | Pending | none |
-| Release Verification 3 | Not run | Linux dev host | Pending | none |
-| Release Verification 4 | Not run | Linux dev host | Pending | none |
-| Release Verification 5 | Not run | Linux dev host | Pending | none |
-| Release Verification 6 | Not run | Linux dev host | Pending | none |
-| Release Verification 7 | Not run | Linux dev host | Pending | none |
-| Release Verification 8 | Not run | Linux dev host | Pending | none |
-| Release Verification 9 | Not run | Linux dev host | Pending | none |
-| Release Verification 10 | Not run | Linux dev host | Pending | none |
-| Release Verification 11 | Not run | `top`, Debian GNU/Linux 13.6, x86_64 | Pending | none |
-| Release Verification 12 | Not run | `top`, Debian GNU/Linux 13.6, x86_64 | Pending | none |
-| Release Verification 13 | Not run | `top`, Debian GNU/Linux 13.6, x86_64 | Pending | none |
-| Release Verification 14 | Not run | `testbed-rocky8`, Rocky Linux 8.10, x86_64 | Pending | none |
-| Release Verification 15 | Not run | `debian13-iocrunner-server`, Debian GNU/Linux 13, x86_64 | Pending | none |
-| Release Verification 16 | Not run | Release branch build host | Pending | none |
+| Release Verification 1 | 2026-08-31T07:36:05Z | `top`, Debian GNU/Linux 13.6, x86_64, candidate `4a3f55e` | Pass | Both full-suite logs show the real nonexistent-UDS connection returned nonzero in `test-error-handling.bash`. |
+| Release Verification 2 | 2026-08-31T07:36:05Z | `top`, Debian GNU/Linux 13.6, x86_64, candidate `4a3f55e` | Pass | Both full-suite logs show `test-uds-echo.bash` returned its payload through the real AF_UNIX path. |
+| Release Verification 3 | 2026-08-31T07:36:05Z | `top`, Debian GNU/Linux 13.6, x86_64, candidate `4a3f55e` | Pass | The shipped tree contained 16 sorted `test-*.bash` suites; each backend run discovered and passed all 16 exactly once. |
+| Release Verification 4 | 2026-08-31T07:36:05Z | `top`, Debian GNU/Linux 13.6, x86_64, candidate `4a3f55e` | Pass | `test-common-path.bash` resolved `/data/gitsrc/con/con` from a fresh shell and executed its real `-V` path under both backends. |
+| Release Verification 5 | 2026-08-31T07:36:05Z | `top`, Debian GNU/Linux 13.6, x86_64, candidate `4a3f55e` | Pass | `test-common-path.bash` rejected a non-executable `CON_BIN` with status 1 and reported the resolved path under both backends. |
+| Release Verification 6 | 2026-08-31T07:36:05Z | `top`, Debian GNU/Linux 13.6, x86_64, candidate `4a3f55e` | Pass | `test-unix-flag.bash` proved `-u -c` used AF_UNIX and echoed through the numeric-tail path under both backend runs. |
+| Release Verification 7 | 2026-08-31T07:36:05Z | `top`, Debian GNU/Linux 13.6, x86_64, candidate `4a3f55e` | Pass | `test-unix-flag.bash` created the explicit UNIX server socket, exchanged peer data, and exited cleanly under both backend runs. |
+| Release Verification 8 | 2026-08-31T07:36:05Z | `top`, Debian GNU/Linux 13.6, x86_64, candidate `4a3f55e` | Pass | Both 20-of-20 `test-unix-flag.bash` runs covered both option forms, help, the compiled PTY serial exchange, and unchanged flagless UDS and TCP behavior. |
+| Release Verification 9 | 2026-08-31T07:36:05Z | `top`, Debian GNU/Linux 13.6, x86_64, candidate `4a3f55e` | Pass | Both `test-unix-flag.bash` runs completed the exact colonless AF_UNIX echo round trip with `-u`. |
+| Release Verification 10 | 2026-08-31T07:36:05Z | `top`, Debian GNU/Linux 13.6, x86_64, candidate `4a3f55e` | Pass | Both `test-unix-flag.bash` runs exchanged observable peer data through the shipped compiled PTY fixture without `-u`. |
+| Release Verification 11 | 2026-08-31T07:36:05Z | `top`, Debian GNU/Linux 13.6, x86_64, candidate `4a3f55e` | Pass | `work/m5-rv11-socat.log` reports `Echo server backend: socat`, 16 passed suites, zero failed suites, and exit 0; SHA-256 `17e0a53ef4c30abdb506cdf3c734815b1ad5b0eaf86583fba83a1064924edda3`. |
+| Release Verification 12 | 2026-08-31T07:36:05Z | `top`, Debian GNU/Linux 13.6, x86_64, candidate `4a3f55e` | Pass | `work/m5-rv12-echo-server.log` reports `Echo server backend: echo_server`, 16 passed suites, zero failed suites, and exit 0; SHA-256 `6401574809772d982aae2828b532ecb8adc7a704d0961f05d97728d5336c46c3`. |
+| Release Verification 13 | 2026-08-31T07:36:05Z | `top`, Debian GNU/Linux 13.6, x86_64, candidate `4a3f55e` | Pass | Both full-suite runs passed the real PTY diagnostic pause/resume assertions. The shipped manual flood path received timed Ctrl-T, resume, and exit input while retaining only matching diagnostic lines; it observed recv-q `49152 / 212992` bytes and exited 0. The 178-byte `work/m5-rv13-bounded-flood.log` has SHA-256 `b986a7f5b083c58bedd9f94f567af0661cdc57d474e2dfc8bd97dbf05f066f67`. |
+| Release Verification 14 | 2026-08-31T07:48:54Z | `lab-rocky8-iocrunner-main`, Rocky Linux 8.10, x86_64, runner 1.2.4, candidate `4a3f55e` | Pass | The reconciled driver enforced runner `1.2.4 (1961fbf)`, matched native `/opt/con-rc/con` to `con version 1.1.0 (4a3f55e)` inside opb, and passed S10 attach and monitor access, socket modes, the two-con shared-console exchange, and S4 `remove --force` with clean EOF and removal. `work/m5-rv14-rocky8-downstream.log` reports `PASS=21 FAIL=0`, exit 0, SHA-256 `eed57d091117ca796291be278d5280532d6b58da2ebc303d776bfcc4198c622c`. |
+| Release Verification 15 | 2026-08-31T07:48:54Z | `lab-debian13-iocrunner-main`, Debian GNU/Linux 13, x86_64, runner 1.2.4, candidate `4a3f55e` | Pass | The same reconciled driver enforced runner `1.2.4 (1961fbf)`, matched the native candidate inside opb, and passed the same real S10, two-con, and S4 paths. `work/m5-rv15-debian13-downstream.log` reports `PASS=21 FAIL=0`, exit 0, SHA-256 `65ccf1ecab83996129e2acfada817f178e56dd22da28c13528cb5173dd916d9f`. |
+| Release Verification 16 | 2026-08-31T07:36:05Z | `top`, Debian GNU/Linux 13.6, x86_64, release branch `4a3f55e` | Pass | A clean shipped `make` build completed and `/data/gitsrc/con/con -V` reported `con version 1.1.0 (4a3f55e)` with build date `2026-08-31T07:29:31Z`. |
 | Release Verification 17 | Not run | Release branch build host | Pending | none |
 | Release Verification 18 | Not run | Debian GNU/Linux 13 x86_64 | Pending | none |
 | Release Verification 19 | Not run | Rocky Linux 8.10 x86_64 | Pending | none |
