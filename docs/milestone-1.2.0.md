@@ -9,12 +9,12 @@ Out of scope: implementation without explicit authorization, Git or GitHub mutat
 Release line: 1.2.0
 Milestone index: 1.2.0
 Canonical path: `docs/milestone-1.2.0.md`
-Canonical branch or ref: `release-1.2.0`
-Git upstream: `origin/release-1.2.0`
+Canonical branch or ref: `master`
+Git upstream: `origin/master`
 Remote tracker: `github.com/jeonghanlee/con`, GitHub milestone `1.2.0` (#4)
 Default development verification host: `top`, Debian GNU/Linux 13.6, x86_64, repository binary `/data/gitsrc/con/con`
 
-Next session entry point: obtain commit/add authority for M5 phase 9 step 4, then commit the reviewed readiness evidence.
+Next session entry point: obtain commit/add authority for M5 phase 10 step 6, then commit the merge-object checkpoint on `master`.
 
 Milestone tally: milestones Not started 0, In progress 1, Blocked 0, Complete 4; external gates Open 0, Complete 1; Ready milestones 0.
 
@@ -515,9 +515,9 @@ Phase 9 prepares the release candidate. Phase 10 rows run in order, and every ch
 | 9 | 1 | Finalize `CHANGELOG.md`; create and review ignored file `work/release-notes-1.2.0.md`; commit only `CHANGELOG.md`. | Separate release-content edit and commit/add authority | The changelog is committed on `release-1.2.0`, and the reviewed notes remain outside the Git index for the later GitHub release action. | Complete; commit `9c8e07ca6aac189aaf8a4fcc60b648d5ef40f893` contains only `CHANGELOG.md`, and the reviewed release notes remain ignored at `work/release-notes-1.2.0.md`. |
 | 9 | 2 | Record all pre-change results in the canonical document and commit the checked evidence. | Separate canonical-update and commit/add authority | The pre-change evidence commit names every observed result and retained log. | Complete; commit `e090b173a553ec4f4a0d2ca841ff7966dfe6fc37` records Release Verification 1 through 16, retained log hashes, native candidate identities, and the reconciled runner 1.2.4 gate. |
 | 9 | 3 | Change `GNUmakefile` `CON_VERSION` to 1.2.0 and commit only the verified version file. | Separate version-edit and commit/add authority | The version commit contains only the release version change. | Complete; commit `ca9bc662a1b332dc412a3f932031467d1095874b` changes only `GNUmakefile` from version 1.1.0 to 1.2.0. |
-| 9 | 4 | Run the post-change checks, record the results, and commit the readiness evidence. | Separate canonical-update and commit/add authority | The readiness-evidence commit is the explicit release candidate. | Ready for commit; a clean build at `ca9bc662a1b332dc412a3f932031467d1095874b` passed and Release Verification 17 observed version 1.2.0 with the intended git identity. |
-| 10 | 5 | Merge reviewed `release-1.2.0` to `master` with the previewed non-fast-forward release procedure, naming the readiness-evidence commit. | Separate release authority | The recorded release merge contains the explicit candidate. | pending |
-| 10 | 6 | Record the merge object in the canonical document and create a checkpoint commit on `master`. | Separate canonical-update and commit/add authority | The next action can name the recorded release merge rather than implicit `HEAD`. | pending |
+| 9 | 4 | Run the post-change checks, record the results, and commit the readiness evidence. | Separate canonical-update and commit/add authority | The readiness-evidence commit is the explicit release candidate. | Complete; commit `e11c07a7c07653c35e336111bfd0567e007899fa` records the version commit and passing Release Verification 17 result as the release candidate. |
+| 10 | 5 | Merge reviewed `release-1.2.0` to `master` with the previewed non-fast-forward release procedure, naming the readiness-evidence commit. | Separate release authority | The recorded release merge contains the explicit candidate. | Complete; authorized merge object `d1955986bf7758b653ace6dee1a094ba96263c9c` has first parent `2fb9b8b1a90c45e75a9c46b57c61e7fd9ddacf75` and candidate second parent `e11c07a7c07653c35e336111bfd0567e007899fa`. The immediate preflight rerun passed all 16 suites with each of `socat` and `echo_server`. |
+| 10 | 6 | Record the merge object in the canonical document and create a checkpoint commit on `master`. | Separate canonical-update and commit/add authority | The next action can name the recorded release merge rather than implicit `HEAD`. | Ready for commit; the explicit merge object and both parent objects are recorded above. |
 | 10 | 7 | Create annotated tag `1.2.0` on the recorded release merge. | Separate release authority | The local annotated tag targets the verified release merge. | pending |
 | 10 | 8 | Record the tag object and peeled merge object, then create a canonical checkpoint commit. | Separate canonical-update and commit/add authority | Both immutable tag identities are recorded before any push. | pending |
 | 10 | 9 | Push local `master` and the final `release-1.2.0` branch to `origin` as `refs/heads/master` and `refs/heads/release-1.2.0`; do not include any tag. | Separate push authority | Both `origin` branch refs resolve to the reviewed local branch objects. | pending |
