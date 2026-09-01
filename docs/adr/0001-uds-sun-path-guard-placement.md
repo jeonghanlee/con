@@ -116,5 +116,7 @@ vote was not the basis for the decision; a code fact was.
 The Accepted body above is preserved as originally approved. Its bare `M2` and
 `M3` identifiers and `docs/milestone.md` path refer only to the 1.1.0 register
 state carried by commit `2fb9b8b1a90c45e75a9c46b57c61e7fd9ddacf75`; they do
-not identify work in `docs/milestone-1.2.0.md`. The implementation and status
-commits remain `ce10568` and `03ed2b5`.
+not identify work in the 1.2.0 register carried by commit
+`bef067f99983b282cd06aff2cff8b2ec12e87f31` or in the current
+`docs/milestone-bef067f.md`. The implementation and status commits remain
+`ce10568` and `03ed2b5`.

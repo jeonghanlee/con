@@ -125,4 +125,6 @@ The Accepted body above is preserved as originally approved. The implementation
 later landed in commit `9fcf724` on `release-1.1.0`. Its bare `M4` identifier
 and `docs/milestone.md` path refer only to the 1.1.0 register state carried by
 commit `2fb9b8b1a90c45e75a9c46b57c61e7fd9ddacf75`; they do not identify work in
-`docs/milestone-1.2.0.md`.
+the 1.2.0 register carried by commit
+`bef067f99983b282cd06aff2cff8b2ec12e87f31` or in the current
+`docs/milestone-bef067f.md`.
