@@ -14,7 +14,7 @@ Git upstream: `origin/master`
 Remote tracker: `github.com/jeonghanlee/con`, GitHub milestone `1.2.0` (#4)
 Default development verification host: `top`, Debian GNU/Linux 13.6, x86_64, repository binary `/data/gitsrc/con/con`
 
-Next session entry point: create the separately authorized final closure commit, push it to `origin/master`, and complete the post-commit byte-for-byte comparison without another canonical edit.
+Next session entry point: no active 1.2.0 release work remains; use the retained Backlog only after a dated owner decision.
 
 Milestone tally: milestones Not started 0, In progress 0, Blocked 0, Complete 5; external gates Open 0, Complete 1; Ready milestones 0.
 
@@ -459,7 +459,7 @@ The final release uses only the Release Verification results below.
 - Published GitHub release ID `379985288` at `https://github.com/jeonghanlee/con/releases/tag/1.2.0` matches the reviewed release notes and verified tag.
 - Release Verification 18 and 19 pass on fresh Debian 13 and Rocky Linux 8.10 VMs with installed `/usr/local/bin/con` and the shipped `echo_server` path.
 - GitHub milestone `1.2.0` is closed with four closed issues and zero open issues; all 17 linked issues match their canonical assignments and are assigned to `jeonghanlee`.
-- D12 retains 12 Backlog rows without a 1.3.0 branch, document, or GitHub milestone. D14 leaves only the separately authorized final commit, push, and post-commit byte comparison.
+- D12 retains 12 Backlog rows without a 1.3.0 branch, document, or GitHub milestone. D14 keeps the final push and byte comparison outside this canonical document.
 
 ##### GitHub Projection
 
