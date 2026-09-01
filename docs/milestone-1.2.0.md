@@ -14,11 +14,11 @@ Git upstream: `origin/master`
 Remote tracker: `github.com/jeonghanlee/con`, GitHub milestone `1.2.0` (#4)
 Default development verification host: `top`, Debian GNU/Linux 13.6, x86_64, repository binary `/data/gitsrc/con/con`
 
-Next session entry point: run Release Verification 21 by reading the published GitHub release and comparing its tag and reviewed notes.
+Next session entry point: review and commit the phase 12 closure preparation record containing Release Verification 21 through 23 and the accepted early milestone-close order.
 
 Milestone tally: milestones Not started 0, In progress 1, Blocked 0, Complete 4; external gates Open 0, Complete 1; Ready milestones 0.
 
-Tracker reconciliation observed 2026-08-28T17:34:41Z: GitHub milestone `1.2.0` is open with zero open issues and four closed issues. Issue #16 is open in GitHub `Backlog` with labels `P3-low` and `refactor`. Issues #20, #22, #23, and #25 are closed in `1.2.0` with state reason `completed`. Their titles, labels, milestone assignments, assignees, and live states match the canonical details; all four issues record checked completion criteria and closure evidence.
+Tracker reconciliation observed 2026-09-01T05:40:20Z: GitHub milestone `1.2.0` is closed with zero open issues and four closed issues. Issue #16 is open in GitHub `Backlog` with labels `P3-low` and `refactor`. Issues #20, #22, #23, and #25 are closed in `1.2.0`; their closure states satisfy Release Verification 22.
 
 ## Milestone
 
@@ -49,6 +49,7 @@ Tracker reconciliation observed 2026-08-28T17:34:41Z: GitHub milestone `1.2.0` i
 | D10 | Run the post-release source build and `/usr/local/bin/con` install path on both clean Debian 13 x86_64 and Rocky Linux 8.10 x86_64 hosts, using the shipped `echo_server` path as the documented default UDS check. | 2026-08-26 |
 | D11 | Keep G1 limited to the released-con two-golden run; place local downstream driver reconciliation and runner identity update in M5. | 2026-08-27 |
 | D12 | Do not open a 1.3.0 release line during 1.2.0 closure; retain the Backlog in this canonical document and verify that decision in Release Verification 23. | 2026-08-31 |
+| D13 | Keep GitHub milestone 1.2.0 closed after its separately authorized close occurred before Release Verification 23 and the planned closure preparation steps; record the actual order and continue closure without reopening it. | 2026-08-31 |
 
 ### Assignment History
 
@@ -411,13 +412,14 @@ Out of scope: Backlog work, implementation excluded by D1 through D3, and any ex
 - `tests/release-gate4-downstream.bash` matches the epics-ioc-runner 1.2.4 runbook and drivers and enforces the 1.2.4 runner identity before Release Verification 14 and 15.
 - Release Verification 1 through Release Verification 23 are Pass with reachable evidence.
 - Every Release Execution row has separate authority and immutable evidence.
-- GitHub milestone `1.2.0` closes only in phase 12 after linked issues are reconciled and Release Verification 1 through 21 and 23 are Pass; Release Verification 22 immediately confirms the observed closure.
+- GitHub milestone `1.2.0` is closed with all assigned issues closed; D13 records the accepted early close, and Release Verification 22 confirms the observed closure.
 
 ##### Dependencies And Decisions
 
 - G1, M1, M2, M3, and M4 must be Complete.
 - D11 assigns the released-con two-golden run to G1 and the local driver and runner identity changes to M5.
 - D12 keeps the surviving Backlog in this document and closes 1.2.0 without opening a 1.3.0 release line.
+- D13 keeps GitHub milestone 1.2.0 closed after its close occurred before the planned Release Verification 23 and closure preparation steps.
 - D8 places the complete active cycle test plan here instead of a separate file.
 - D10 selects both clean Linux install environments as the default post-release path.
 - `docs/release-gate.md` is the standing five-step gate definition; this cycle records no amendment to its shape.
@@ -437,7 +439,7 @@ Superseded Plan Artifacts: none
 5. Complete gate step 5 by obtaining the exact authority for each release action, executing it, and capturing immutable evidence.
 6. Execute phase 10 with an explicit canonical checkpoint commit after every irreversible action and use explicit object targets for every dependent action.
 7. On each phase 11 host, install the documented source-acquisition, build, and UDS verification prerequisites, then complete the Released-Object Storage Preflight before creating any fresh clone or temporary verification tree.
-8. Obtain the released source through the completed preflight, perform the post-release source installations on both default hosts, verify release objects and the decision not to open a next release line, then complete phase 12 issue reconciliation, milestone closure, Release Verification 22, and canonical closure.
+8. Obtain the released source through the completed preflight, perform the post-release source installations on both default hosts, verify release objects and the decision not to open a next release line, record the D13 early milestone close and Release Verification 22, then complete the remaining phase 12 issue reconciliation and canonical closure.
 
 ##### Test Plan
 
@@ -458,8 +460,8 @@ Labels: none
 GitHub Milestone: `1.2.0`
 Observed State: none
 Observed Labels: none
-Observed Milestone: open, four open issues and zero closed issues
-Last Compared: 2026-08-27T17:37:04Z; milestone updated 2026-08-27T17:15:32Z
+Observed Milestone: closed, zero open issues and four closed issues
+Last Compared: 2026-09-01T05:38:15Z; milestone updated 2026-09-01T05:38:01Z
 
 ##### Integrated Verification
 
@@ -510,7 +512,7 @@ Each target host records the inputs, calculations, object identities, measured a
 
 ##### Release Execution
 
-Phase 9 prepares the release candidate. Phase 10 rows run in order, and every checkpoint row must complete before the next dependent action. Phase 11 then runs Release Verification 18 through 21 and 23. Phase 12 reconciles linked issues, closes the GitHub milestone, runs Release Verification 22 against the observed closure, and closes the canonical cycle only after Release Verification 1 through 23 are Pass.
+Phase 9 prepares the release candidate. Phase 10 rows run in order, and every checkpoint row must complete before the next dependent action. Phase 11 then runs Release Verification 18 through 21 and 23. In phase 12, the milestone close occurred before the planned preparation and issue-reconciliation steps; D13 retains that close, and the remaining rows record and publish the actual order before the canonical cycle closes.
 
 | Phase | Step | Action | Authorization | Expected Result | Evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -530,11 +532,11 @@ Phase 9 prepares the release candidate. Phase 10 rows run in order, and every ch
 | 10 | 14 | Re-read the GitHub release, record its URL and target, and create a canonical checkpoint commit. | Separate canonical-update and commit/add authority | Release-object evidence is committed before the next dependent action. | Complete; checkpoint commit `d8f71bdca7cf32bc2510b8925bc4c6dc3d6fb85a` records GitHub release ID `379985288`, URL `https://github.com/jeonghanlee/con/releases/tag/1.2.0`, tag, target, status, and reviewed notes. |
 | 10 | 15 | Check local branch `release-1.0.0` and `origin` ref `refs/heads/release-1.0.0`; record N/A while both are absent, and stop for an explicit owner instruction if either appears. | Read-only check; explicit owner instruction only if deletion becomes applicable | The two-back check is recorded without deleting an unverified branch. | Complete; N/A because local `refs/heads/release-1.0.0` and GitHub `refs/heads/release-1.0.0` were both absent, so no branch deletion was applicable. |
 | 10 | 16 | Record the observed retention result and any separately owner-executed deletion result in a canonical checkpoint commit. | Separate canonical-update and commit/add authority | Retention evidence completes phase 10 without opening a next release line. | Complete; checkpoint commit `bc2155065f628e041b19da267de4b63028e99ae6` records the observed two-back branch result as N/A without deletion. |
-| 12 | 17 | After Release Verification 18 through 21 and 23 pass, prepare the source-first closure record on `master` and commit all observed post-release results and issue intent. | Separate canonical-update and commit/add authority | The default branch contains the checked closure intent before any phase 12 issue mutation. | pending |
-| 12 | 18 | Push the source-first closure preparation commit from local `master` to `origin` ref `refs/heads/master`, then re-read that remote ref. | Separate push authority followed by a read-only remote check | `origin` resolves `refs/heads/master` to the source-first preparation commit before issue mutation. | pending |
+| 12 | 17 | After Release Verification 18 through 23 pass, prepare and commit the closure record on `master` with all observed post-release results, issue intent, and the D13 early-close order. | Separate canonical-update and commit/add authority | The checked closure preparation records the actual remote mutation order before remaining issue reconciliation and final closure. | pending |
+| 12 | 18 | Push the closure preparation commit from local `master` to `origin` ref `refs/heads/master`, then re-read that remote ref. | Separate push authority followed by a read-only remote check | `origin` resolves `refs/heads/master` to the closure preparation commit before remaining issue reconciliation and final closure. | pending |
 | 12 | 19 | Re-read every linked issue and apply only pending, separately authorized projection or close actions; issue #16 must remain open in GitHub `Backlog` with its existing labels. | Separate issue authority for each mutation | Every linked issue matches its canonical assignment and closure intent. | pending |
-| 12 | 20 | Close GitHub milestone `1.2.0` (#4) in `github.com/jeonghanlee/con` after all linked issues are reconciled and every Release Verification result other than the closure observation is Pass. | Separate release authority | The milestone closes with no unintended open assignment. | pending |
-| 12 | 21 | Re-read the milestone and assigned issues, record Release Verification 22, set M5 and the cycle to Complete, and create the final canonical closure commit. | Read-only observation followed by separate canonical-update and commit/add authority | Release Verification 1 through 23 are Pass, the tally and next entry point agree, and the committed canonical file is final. | pending |
+| 12 | 20 | Close GitHub milestone `1.2.0` (#4) in `github.com/jeonghanlee/con` after all linked issues are reconciled and every Release Verification result other than the closure observation is Pass. | Separate release authority | The milestone closes with no unintended open assignment. | Complete out of planned order under D13; separately authorized GitHub API action closed milestone #4 at `2026-09-01T05:38:01Z` after Release Verification 21, with four closed issues and zero open issues assigned. |
+| 12 | 21 | After steps 17 through 19 complete, re-read the milestone and assigned issues, confirm Release Verification 22 remains Pass, set M5 and the cycle to Complete, and create the final canonical closure commit. | Read-only observation followed by separate canonical-update and commit/add authority | Release Verification 1 through 23 are Pass, the tally and next entry point agree, and the committed canonical file is final. | pending |
 | 12 | 22 | Push the final canonical closure commit from local `master` to `origin` ref `refs/heads/master`; re-read that remote ref, then compare the committed canonical file byte-for-byte with the checked working-tree file. | Separate push authority followed by read-only remote and repository checks | Local `master` and `origin` ref `refs/heads/master` resolve to the same final closure commit with no remaining closure-path modification. | pending |
 
 ##### Release Verification Plan
@@ -589,9 +591,9 @@ Phase 9 prepares the release candidate. Phase 10 rows run in order, and every ch
 | Release Verification 18 | 2026-09-01T04:49:02Z | Fresh VM `con-release-install-debian13-main`; Debian GNU/Linux 13.4; x86_64; `/usr/local/bin/con` | Pass | Synchronized `cloud-provision` commit `669dd9427eb12699ea4be7eff2c8a3fcc69b5482` created the VM from an absent domain and disk with the refuse-existing option. The full-depth, non-partial preflight selected `master`, `release-1.2.0`, and tag `1.2.0` from `https://github.com/jeonghanlee/con.git`; advertised refs were `f8bb0ad2ef46c6796117382043cb9a5e1d2099d5`, `e11c07a7c07653c35e336111bfd0567e007899fa`, and annotated tag object `f9184bb0dc36ddddf504c569b9518f97c62543c7`, which peeled to release merge `d1955986bf7758b653ace6dee1a094ba96263c9c`. The conservative object bound was the `2,699,264`-byte allocation of the fetched, non-shallow, non-partial local repository for the same remote and matching selected refs. Gate 1 compared `18,537,811,968` available bytes with that bound plus the `1,073,741,824`-byte reserve, then created a `471,040`-byte `.git` allocation. Gate 2 compared `18,537,336,832` available bytes with the `507,904`-byte measured published tree, a `268,435,456`-byte conservative workspace and evidence bound, and the same reserve before checkout; both gates passed. Detached `HEAD` resolved to the release merge, and the target checkout later occupied `528,384` bytes within the combined bound. The README build and install path exited 0; root-owned mode-0755 `/usr/local/bin/con` reported `con version 1.2.0 (d195598)` and SHA-256 `4bb2fefc8878890680307afee0a947b9ce297dcb418484162b56e2f3fc1e76b0`. The documented installed-path test built the shipped `echo_server`, exercised `CON_BIN=/usr/local/bin/con`, reported one passed assertion and zero failures, and exited 0. Retained logs `work/m5-rv18-debian13-build-install.log` and `work/m5-rv18-debian13-uds.log` have SHA-256 values `80f7b7cf321f81ed5f8a88f47a738da4746dd2df9da183142d3573e0e892da4c` and `7b33842797ac47730f8a02215ae17cda0e41fb2e817c89df21df2fea471106d5`. |
 | Release Verification 19 | 2026-09-01T05:06:58Z | Fresh VM `con-release-install-rocky8-main`; Rocky Linux 8.10; x86_64; `/usr/local/bin/con` | Pass | Synchronized `cloud-provision` commit `669dd9427eb12699ea4be7eff2c8a3fcc69b5482` created the VM from an absent domain and disk with the refuse-existing option. The full-depth, non-partial preflight selected `master`, `release-1.2.0`, and tag `1.2.0` from `https://github.com/jeonghanlee/con.git`; advertised refs were `b27890a936a92714baa09d2e34c6b430dc062a69`, `e11c07a7c07653c35e336111bfd0567e007899fa`, and annotated tag object `f9184bb0dc36ddddf504c569b9518f97c62543c7`, which peeled to release merge `d1955986bf7758b653ace6dee1a094ba96263c9c`. The conservative object bound was the `2,744,320`-byte allocation of the fetched, non-shallow, non-partial local repository for the same remote and matching selected refs. Gate 1 compared `18,339,434,496` available bytes with that bound plus the `1,073,741,824`-byte reserve, then created a `413,696`-byte `.git` allocation. Gate 2 compared `18,369,110,016` available bytes with the `507,904`-byte measured published tree, a `268,435,456`-byte conservative workspace and evidence bound, and the same reserve before checkout; both gates passed. Detached `HEAD` resolved to the release merge, and the target checkout later occupied `516,096` bytes within the combined bound. The README build and install path exited 0; root-owned mode-0755 `/usr/local/bin/con` reported `con version 1.2.0 (d195598)` and SHA-256 `df126105169b32e66cf2e9694f5f53a3c11b3d14350c78cd8a5d77adb979572a`. The documented installed-path test built the shipped `echo_server`, exercised `CON_BIN=/usr/local/bin/con`, reported one passed assertion and zero failures, and exited 0. Retained logs `work/m5-rv19-rocky8-build-install.log` and `work/m5-rv19-rocky8-uds.log` have SHA-256 values `4b559db7fbf3664ea436f52d1e25317178842d1e5b9b15f22dd6350724a6a424` and `7b33842797ac47730f8a02215ae17cda0e41fb2e817c89df21df2fea471106d5`. |
 | Release Verification 20 | 2026-09-01T05:25:42Z | Git repository and origin | Pass | Local and origin `refs/tags/1.2.0` both resolved to annotated tag object `f9184bb0dc36ddddf504c569b9518f97c62543c7`; both peeled to release merge commit `d1955986bf7758b653ace6dee1a094ba96263c9c`. The merge has first parent `2fb9b8b1a90c45e75a9c46b57c61e7fd9ddacf75` and candidate second parent `e11c07a7c07653c35e336111bfd0567e007899fa`. Local `master`, `origin/master`, and live `refs/heads/master` all resolved to `74c70bac9efc4f17e8b212a29e5a0a5c1b84c27b`, and both local and fetched origin histories contained the release merge. |
-| Release Verification 21 | Not run | GitHub | Pending | none |
-| Release Verification 22 | Not run | GitHub | Pending | none |
-| Release Verification 23 | Not run | Repository and GitHub | Pending | none |
+| Release Verification 21 | 2026-09-01T05:34:26Z | GitHub | Pass | Published GitHub release ID `379985288` has URL `https://github.com/jeonghanlee/con/releases/tag/1.2.0`, tag and title `1.2.0`, `target_commitish` `master`, publication time `2026-08-31T19:03:02Z`, `draft=false`, and `prerelease=false`. Its 826-byte release-notes body has SHA-256 `bf12f1364c4cd1485930da0597a054524c4f787c9e89f948a570d7edc0d32214`, exactly matching reviewed `work/release-notes-1.2.0.md`. |
+| Release Verification 22 | 2026-09-01T05:38:15Z | GitHub | Pass | GitHub milestone `1.2.0` (#4), `https://github.com/jeonghanlee/con/milestone/4`, was observed `closed` with `closed_at` `2026-09-01T05:38:01Z`, four closed issues, and zero open issues. Assigned issues #20, #22, #23, and #25 were each observed `CLOSED`; D13 records the owner decision to retain the early milestone closure. |
+| Release Verification 23 | 2026-09-01T05:40:20Z | Repository and GitHub | Pass | No local `release-1.3.0` branch, live origin `refs/heads/release-1.3.0`, local `docs/milestone-1.3.0.md`, or GitHub milestone titled `1.3.0` exists. This canonical document retains all 12 Backlog rows. GitHub issue #16 remains `OPEN` in milestone `Backlog` with labels `P3-low` and `refactor`, as required by D3 and D12. |
 
 ## Backlog
 
