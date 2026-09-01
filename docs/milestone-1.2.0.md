@@ -14,11 +14,11 @@ Git upstream: `origin/master`
 Remote tracker: `github.com/jeonghanlee/con`, GitHub milestone `1.2.0` (#4)
 Default development verification host: `top`, Debian GNU/Linux 13.6, x86_64, repository binary `/data/gitsrc/con/con`
 
-Next session entry point: review and commit the phase 12 closure preparation record containing Release Verification 21 through 23 and the accepted early milestone-close order.
+Next session entry point: create the separately authorized final closure commit, push it to `origin/master`, and complete the post-commit byte-for-byte comparison without another canonical edit.
 
-Milestone tally: milestones Not started 0, In progress 1, Blocked 0, Complete 4; external gates Open 0, Complete 1; Ready milestones 0.
+Milestone tally: milestones Not started 0, In progress 0, Blocked 0, Complete 5; external gates Open 0, Complete 1; Ready milestones 0.
 
-Tracker reconciliation observed 2026-09-01T05:40:20Z: GitHub milestone `1.2.0` is closed with zero open issues and four closed issues. Issue #16 is open in GitHub `Backlog` with labels `P3-low` and `refactor`. Issues #20, #22, #23, and #25 are closed in `1.2.0`; their closure states satisfy Release Verification 22.
+Tracker reconciliation observed 2026-09-01T06:45:35Z: GitHub milestone `1.2.0` is closed with zero open issues and four closed issues. All 17 linked issues are assigned to `jeonghanlee`. Issues #8 through #15, #17 through #19, and #21 are open in their canonical Closed Door or Backlog assignments with synchronized bodies. Issue #16 remains open in GitHub `Backlog` with labels `P3-low` and `refactor`. Issues #20, #22, #23, and #25 are closed in `1.2.0` with every acceptance checkbox checked.
 
 ## Milestone
 
@@ -31,7 +31,7 @@ Tracker reconciliation observed 2026-09-01T05:40:20Z: GitHub milestone `1.2.0` i
 | Test integrity | M2 | Make common test setup safe when sourced standalone (#25) | Milestone | Complete | No | M1, D6 | A fresh shell resolves the real binary or fails clearly, and both suite backends pass; [detail](#m2---make-common-test-setup-safe-when-sourced-standalone-25) |
 | UDS client | M3 | Add an explicit UNIX transport flag (#20) | Milestone | Complete | No | M2, D7 | `-u` and `--unix` force AF_UNIX for client and server targets without changing flagless behavior; [detail](#m3---add-an-explicit-unix-transport-flag-20) |
 | UDS client | M4 | Reach colonless UDS paths through explicit UNIX mode (#22) | Milestone | Complete | No | M3, D7 | A colonless socket works through `-u` and serial auto-detection remains unchanged; [detail](#m4---reach-colonless-uds-paths-through-explicit-unix-mode-22) |
-| Release | M5 | Release con 1.2.0 | Milestone | In progress | No | G1, M1, M2, M3, M4, D8 | Every Release Verification result passes and every separately authorized release action has immutable evidence; [detail](#m5---release-con-120) |
+| Release | M5 | Release con 1.2.0 | Milestone | Complete | No | G1, M1, M2, M3, M4, D8 | Release Verification 1 through 23 pass; release objects, both install environments, tracker state, and the next-line decision are verified; [detail](#m5---release-con-120) |
 
 ### Decisions
 
@@ -50,6 +50,7 @@ Tracker reconciliation observed 2026-09-01T05:40:20Z: GitHub milestone `1.2.0` i
 | D11 | Keep G1 limited to the released-con two-golden run; place local downstream driver reconciliation and runner identity update in M5. | 2026-08-27 |
 | D12 | Do not open a 1.3.0 release line during 1.2.0 closure; retain the Backlog in this canonical document and verify that decision in Release Verification 23. | 2026-08-31 |
 | D13 | Keep GitHub milestone 1.2.0 closed after its separately authorized close occurred before Release Verification 23 and the planned closure preparation steps; record the actual order and continue closure without reopening it. | 2026-08-31 |
+| D14 | Complete the canonical cycle with one final closure commit, then verify its push and byte identity as a post-commit check without adding a self-referential Release Execution row. | 2026-08-31 |
 
 ### Assignment History
 
@@ -171,7 +172,7 @@ GitHub Milestone: `1.2.0`
 Observed State: closed
 Observed Labels: `bug`, `P2-medium`
 Observed Milestone: `1.2.0`
-Last Compared: 2026-08-27T20:01:48Z; issue updated 2026-08-27T19:58:54Z
+Last Compared: 2026-09-01T06:45:35Z; issue updated 2026-08-27T19:58:54Z
 
 #### M2 - Make common test setup safe when sourced standalone (#25)
 
@@ -243,7 +244,7 @@ GitHub Milestone: `1.2.0`
 Observed State: closed
 Observed Labels: `bug`, `P3-low`
 Observed Milestone: `1.2.0`
-Last Compared: 2026-08-28T01:55:40Z; issue updated 2026-08-28T01:45:16Z
+Last Compared: 2026-09-01T06:45:35Z; issue updated 2026-08-28T01:45:16Z
 
 #### M3 - Add an explicit UNIX transport flag (#20)
 
@@ -315,7 +316,7 @@ GitHub Milestone: `1.2.0`
 Observed State: closed
 Observed Labels: `enhancement`, `P3-low`, `area/uds`
 Observed Milestone: `1.2.0`
-Last Compared: 2026-08-28T09:17:22Z; issue updated 2026-08-28T09:17:22Z; state reason `completed`
+Last Compared: 2026-09-01T06:45:35Z; issue updated 2026-08-28T09:17:22Z; state reason `completed`
 
 #### M4 - Reach colonless UDS paths through explicit UNIX mode (#22)
 
@@ -387,14 +388,14 @@ GitHub Milestone: `1.2.0`
 Observed State: closed
 Observed Labels: `enhancement`, `P3-low`, `area/uds`
 Observed Milestone: `1.2.0`
-Last Compared: 2026-08-28T17:34:41Z; issue updated 2026-08-28T17:31:21Z; state reason `completed`
+Last Compared: 2026-09-01T06:45:35Z; issue updated 2026-08-28T17:31:21Z; state reason `completed`
 
 #### M5 - Release con 1.2.0
 
 Origin: 1.2.0 / M5
 Identity History: none
 GitHub Issue: none
-Status: In progress
+Status: Complete
 
 ##### Summary
 
@@ -411,8 +412,9 @@ Out of scope: Backlog work, implementation excluded by D1 through D3, and any ex
 - G1 and M1 through M4 are Complete.
 - `tests/release-gate4-downstream.bash` matches the epics-ioc-runner 1.2.4 runbook and drivers and enforces the 1.2.4 runner identity before Release Verification 14 and 15.
 - Release Verification 1 through Release Verification 23 are Pass with reachable evidence.
-- Every Release Execution row has separate authority and immutable evidence.
+- Every Release Execution row is Complete with its required authority and observed evidence.
 - GitHub milestone `1.2.0` is closed with all assigned issues closed; D13 records the accepted early close, and Release Verification 22 confirms the observed closure.
+- Under D14, the final closure commit is pushed and compared byte-for-byte as a post-commit check rather than recorded by a self-referential Release Execution row.
 
 ##### Dependencies And Decisions
 
@@ -420,6 +422,7 @@ Out of scope: Backlog work, implementation excluded by D1 through D3, and any ex
 - D11 assigns the released-con two-golden run to G1 and the local driver and runner identity changes to M5.
 - D12 keeps the surviving Backlog in this document and closes 1.2.0 without opening a 1.3.0 release line.
 - D13 keeps GitHub milestone 1.2.0 closed after its close occurred before the planned Release Verification 23 and closure preparation steps.
+- D14 places the final push and byte comparison after the final closure commit and outside the canonical Release Execution rows.
 - D8 places the complete active cycle test plan here instead of a separate file.
 - D10 selects both clean Linux install environments as the default post-release path.
 - `docs/release-gate.md` is the standing five-step gate definition; this cycle records no amendment to its shape.
@@ -428,7 +431,7 @@ Out of scope: Backlog work, implementation excluded by D1 through D3, and any ex
 ##### Implementation Plan
 
 Plan Status: accepted
-Plan Acceptance: owner approval on 2026-08-31 for the revision that closes 1.2.0 without opening a next release line, retaining accepted third-person review findings from 2026-08-26
+Plan Acceptance: owner approval on 2026-08-31 for the revision that closes 1.2.0 without opening a next release line and for D13 and D14, retaining accepted third-person review findings from 2026-08-26
 Implementation Authorization: owner approval on 2026-08-31 for the current revised plan
 Superseded Plan Artifacts: none
 
@@ -451,7 +454,12 @@ The final release uses only the Release Verification results below.
 
 ##### Closure Evidence
 
-- None.
+- 2026-08-31: first-person retrospective, independent third-person review, and second-person reader-seat review of the closure record completed with no accepted finding outstanding.
+- Release candidate `e11c07a7c07653c35e336111bfd0567e007899fa` is the second parent of release merge `d1955986bf7758b653ace6dee1a094ba96263c9c`; annotated tag object `f9184bb0dc36ddddf504c569b9518f97c62543c7` peels to that merge.
+- Published GitHub release ID `379985288` at `https://github.com/jeonghanlee/con/releases/tag/1.2.0` matches the reviewed release notes and verified tag.
+- Release Verification 18 and 19 pass on fresh Debian 13 and Rocky Linux 8.10 VMs with installed `/usr/local/bin/con` and the shipped `echo_server` path.
+- GitHub milestone `1.2.0` is closed with four closed issues and zero open issues; all 17 linked issues match their canonical assignments and are assigned to `jeonghanlee`.
+- D12 retains 12 Backlog rows without a 1.3.0 branch, document, or GitHub milestone. D14 leaves only the separately authorized final commit, push, and post-commit byte comparison.
 
 ##### GitHub Projection
 
@@ -461,7 +469,7 @@ GitHub Milestone: `1.2.0`
 Observed State: none
 Observed Labels: none
 Observed Milestone: closed, zero open issues and four closed issues
-Last Compared: 2026-09-01T05:38:15Z; milestone updated 2026-09-01T05:38:01Z
+Last Compared: 2026-09-01T06:45:35Z; milestone updated 2026-09-01T05:38:01Z
 
 ##### Integrated Verification
 
@@ -512,7 +520,7 @@ Each target host records the inputs, calculations, object identities, measured a
 
 ##### Release Execution
 
-Phase 9 prepares the release candidate. Phase 10 rows run in order, and every checkpoint row must complete before the next dependent action. Phase 11 then runs Release Verification 18 through 21 and 23. In phase 12, the milestone close occurred before the planned preparation and issue-reconciliation steps; D13 retains that close, and the remaining rows record and publish the actual order before the canonical cycle closes.
+Phase 9 prepares the release candidate. Phase 10 rows run in order, and every checkpoint row must complete before the next dependent action. Phase 11 then runs Release Verification 18 through 21 and 23. In phase 12, the milestone close occurred before the planned preparation and issue-reconciliation steps; D13 retains that close, and the remaining rows record the actual order. D14 places the final closure commit, push, and byte comparison after this table so the table does not refer to evidence created by its own commit.
 
 | Phase | Step | Action | Authorization | Expected Result | Evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -532,12 +540,11 @@ Phase 9 prepares the release candidate. Phase 10 rows run in order, and every ch
 | 10 | 14 | Re-read the GitHub release, record its URL and target, and create a canonical checkpoint commit. | Separate canonical-update and commit/add authority | Release-object evidence is committed before the next dependent action. | Complete; checkpoint commit `d8f71bdca7cf32bc2510b8925bc4c6dc3d6fb85a` records GitHub release ID `379985288`, URL `https://github.com/jeonghanlee/con/releases/tag/1.2.0`, tag, target, status, and reviewed notes. |
 | 10 | 15 | Check local branch `release-1.0.0` and `origin` ref `refs/heads/release-1.0.0`; record N/A while both are absent, and stop for an explicit owner instruction if either appears. | Read-only check; explicit owner instruction only if deletion becomes applicable | The two-back check is recorded without deleting an unverified branch. | Complete; N/A because local `refs/heads/release-1.0.0` and GitHub `refs/heads/release-1.0.0` were both absent, so no branch deletion was applicable. |
 | 10 | 16 | Record the observed retention result and any separately owner-executed deletion result in a canonical checkpoint commit. | Separate canonical-update and commit/add authority | Retention evidence completes phase 10 without opening a next release line. | Complete; checkpoint commit `bc2155065f628e041b19da267de4b63028e99ae6` records the observed two-back branch result as N/A without deletion. |
-| 12 | 17 | After Release Verification 18 through 23 pass, prepare and commit the closure record on `master` with all observed post-release results, issue intent, and the D13 early-close order. | Separate canonical-update and commit/add authority | The checked closure preparation records the actual remote mutation order before remaining issue reconciliation and final closure. | pending |
-| 12 | 18 | Push the closure preparation commit from local `master` to `origin` ref `refs/heads/master`, then re-read that remote ref. | Separate push authority followed by a read-only remote check | `origin` resolves `refs/heads/master` to the closure preparation commit before remaining issue reconciliation and final closure. | pending |
-| 12 | 19 | Re-read every linked issue and apply only pending, separately authorized projection or close actions; issue #16 must remain open in GitHub `Backlog` with its existing labels. | Separate issue authority for each mutation | Every linked issue matches its canonical assignment and closure intent. | pending |
-| 12 | 20 | Close GitHub milestone `1.2.0` (#4) in `github.com/jeonghanlee/con` after all linked issues are reconciled and every Release Verification result other than the closure observation is Pass. | Separate release authority | The milestone closes with no unintended open assignment. | Complete out of planned order under D13; separately authorized GitHub API action closed milestone #4 at `2026-09-01T05:38:01Z` after Release Verification 21, with four closed issues and zero open issues assigned. |
-| 12 | 21 | After steps 17 through 19 complete, re-read the milestone and assigned issues, confirm Release Verification 22 remains Pass, set M5 and the cycle to Complete, and create the final canonical closure commit. | Read-only observation followed by separate canonical-update and commit/add authority | Release Verification 1 through 23 are Pass, the tally and next entry point agree, and the committed canonical file is final. | pending |
-| 12 | 22 | Push the final canonical closure commit from local `master` to `origin` ref `refs/heads/master`; re-read that remote ref, then compare the committed canonical file byte-for-byte with the checked working-tree file. | Separate push authority followed by read-only remote and repository checks | Local `master` and `origin` ref `refs/heads/master` resolve to the same final closure commit with no remaining closure-path modification. | pending |
+| 12 | 17 | After Release Verification 18 through 23 pass, prepare and commit the closure record on `master` with all observed post-release results, issue intent, and the D13 early-close order. | Separate canonical-update and commit/add authority | The checked closure preparation records the actual remote mutation order before remaining issue reconciliation and final closure. | Complete; commit `375497e89b56b64e6ce8553587fac34728dad40d` records Release Verification 21 through 23, D13, and the actual early-close order. |
+| 12 | 18 | Push the closure preparation commit from local `master` to `origin` ref `refs/heads/master`, then re-read that remote ref. | Separate push authority followed by a read-only remote check | `origin` resolves `refs/heads/master` to the closure preparation commit before remaining issue reconciliation and final closure. | Complete; at `2026-09-01T06:45:35Z`, local `master`, `origin/master`, and live `refs/heads/master` all resolved to `375497e89b56b64e6ce8553587fac34728dad40d`. |
+| 12 | 19 | Re-read every linked issue and apply only pending, separately authorized projection or close actions; issue #16 must remain open in GitHub `Backlog` with its existing labels. | Separate issue authority for each mutation | Every linked issue matches its canonical assignment and closure intent. | Complete; at `2026-09-01T06:45:35Z`, all 17 linked issues matched their canonical state, labels, and milestone and were assigned to `jeonghanlee`; the 12 rewritten open issue bodies matched the reviewed local drafts byte-for-byte, and issue #16 remained unchanged as required. |
+| 12 | 20 | Close GitHub milestone `1.2.0` (#4) in `github.com/jeonghanlee/con` after all linked issues are reconciled and every Release Verification result other than the closure observation is Pass. | Separate release authority | The milestone closes with no unintended open assignment. | Complete; out of planned order under D13, a separately authorized GitHub API action closed milestone #4 at `2026-09-01T05:38:01Z` after Release Verification 21, with four closed issues and zero open issues assigned. |
+| 12 | 21 | After steps 17 through 20 complete, re-read the milestone and assigned issues, confirm Release Verification 22 remains Pass, set M5 and the cycle to Complete, and prepare the final canonical closure record. | Read-only observation followed by separate canonical-update authority | Release Verification 1 through 23 are Pass, the tally and next entry point agree, and the closure candidate is ready for a separately authorized commit. | Complete; the final re-read at `2026-09-01T06:45:35Z` confirmed all 23 results Pass, milestone #4 closed with four closed issues and zero open issues, all 17 linked issues reconciled, no 1.3.0 line present, and 12 Backlog rows retained. |
 
 ##### Release Verification Plan
 
@@ -682,7 +689,7 @@ GitHub Milestone: `Closed Door`
 Observed State: open
 Observed Labels: `bug`, `area/uds`, `P2-medium`, `closed-door`
 Observed Milestone: `Closed Door`
-Last Compared: 2026-08-26T17:12:37Z; issue updated 2026-08-13T07:45:23Z
+Last Compared: 2026-09-01T06:45:35Z; issue updated 2026-09-01T06:03:08Z
 
 #### M7 - Remove the UDS server socket on exit (#9)
 
@@ -748,7 +755,7 @@ GitHub Milestone: `Closed Door`
 Observed State: open
 Observed Labels: `bug`, `area/uds`, `P2-medium`, `closed-door`
 Observed Milestone: `Closed Door`
-Last Compared: 2026-08-26T17:12:37Z; issue updated 2026-08-13T07:45:16Z
+Last Compared: 2026-09-01T06:45:35Z; issue updated 2026-09-01T06:03:12Z
 
 #### M8 - Add UDS peer identity and socket permissions (#10)
 
@@ -814,7 +821,7 @@ GitHub Milestone: `Closed Door`
 Observed State: open
 Observed Labels: `enhancement`, `area/uds`, `P2-medium`, `closed-door`
 Observed Milestone: `Closed Door`
-Last Compared: 2026-08-26T17:12:37Z; issue updated 2026-08-13T07:45:23Z
+Last Compared: 2026-09-01T06:45:35Z; issue updated 2026-09-01T06:03:16Z
 
 #### M9 - Replace legacy host lookup for IPv6 (#11)
 
@@ -880,7 +887,7 @@ GitHub Milestone: `Closed Door`
 Observed State: open
 Observed Labels: `enhancement`, `P2-medium`, `closed-door`
 Observed Milestone: `Closed Door`
-Last Compared: 2026-08-26T17:12:37Z; issue updated 2026-08-13T07:45:25Z
+Last Compared: 2026-09-01T06:45:35Z; issue updated 2026-09-01T06:03:20Z
 
 #### M10 - Remove AF_UNIX SO_REUSEADDR (#12)
 
@@ -945,7 +952,7 @@ GitHub Milestone: `Closed Door`
 Observed State: open
 Observed Labels: `P3-low`, `area/uds`, `refactor`, `closed-door`
 Observed Milestone: `Closed Door`
-Last Compared: 2026-08-26T17:12:37Z; issue updated 2026-08-13T07:45:23Z
+Last Compared: 2026-09-01T06:45:35Z; issue updated 2026-09-01T06:03:23Z
 
 #### M11 - Correct minor UDS server defects (#13)
 
@@ -1011,7 +1018,7 @@ GitHub Milestone: `Closed Door`
 Observed State: open
 Observed Labels: `P3-low`, `area/uds`, `refactor`, `closed-door`
 Observed Milestone: `Closed Door`
-Last Compared: 2026-08-26T17:12:37Z; issue updated 2026-08-13T07:45:24Z
+Last Compared: 2026-09-01T06:45:35Z; issue updated 2026-09-01T06:03:28Z
 
 #### M12 - Evaluate shared UNIX and TCP accept-loop code (#14)
 
@@ -1076,7 +1083,7 @@ GitHub Milestone: `Closed Door`
 Observed State: open
 Observed Labels: `P3-low`, `refactor`, `closed-door`
 Observed Milestone: `Closed Door`
-Last Compared: 2026-08-26T17:12:37Z; issue updated 2026-08-13T07:45:23Z
+Last Compared: 2026-09-01T06:45:35Z; issue updated 2026-09-01T06:03:31Z
 
 #### M13 - Reset the hexa line counter per server connection (#17)
 
@@ -1141,7 +1148,7 @@ GitHub Milestone: `Closed Door`
 Observed State: open
 Observed Labels: `bug`, `P3-low`, `closed-door`
 Observed Milestone: `Closed Door`
-Last Compared: 2026-08-26T17:12:37Z; issue updated 2026-08-13T07:45:22Z
+Last Compared: 2026-09-01T06:45:35Z; issue updated 2026-09-01T06:03:40Z
 
 #### M14 - Define flagless host:port server direction (#21)
 
@@ -1207,7 +1214,7 @@ GitHub Milestone: `Closed Door`
 Observed State: open
 Observed Labels: `bug`, `P3-low`, `area/uds`, `closed-door`
 Observed Milestone: `Closed Door`
-Last Compared: 2026-08-26T17:12:37Z; issue updated 2026-08-13T07:45:23Z
+Last Compared: 2026-09-01T06:45:35Z; issue updated 2026-09-01T06:03:51Z
 
 #### M15 - Correct missing-argument errors for log flags (#15)
 
@@ -1272,7 +1279,7 @@ GitHub Milestone: `Backlog`
 Observed State: open
 Observed Labels: `bug`, `P3-low`
 Observed Milestone: `Backlog`
-Last Compared: 2026-08-26T17:12:37Z; issue updated 2026-08-13T07:45:43Z
+Last Compared: 2026-09-01T06:45:35Z; issue updated 2026-09-01T06:03:35Z
 
 #### M16 - Decide the fate of dormant str_utils APIs (#18)
 
@@ -1337,7 +1344,7 @@ GitHub Milestone: `Backlog`
 Observed State: open
 Observed Labels: `P3-low`, `refactor`
 Observed Milestone: `Backlog`
-Last Compared: 2026-08-26T17:12:37Z; issue updated 2026-08-13T07:45:40Z
+Last Compared: 2026-09-01T06:45:35Z; issue updated 2026-09-01T06:03:44Z
 
 #### M17 - Decide whether CLI parsers stay separate (#19)
 
@@ -1402,7 +1409,7 @@ GitHub Milestone: `Backlog`
 Observed State: open
 Observed Labels: `P3-low`, `refactor`
 Observed Milestone: `Backlog`
-Last Compared: 2026-08-26T17:12:37Z; issue updated 2026-08-13T07:45:34Z
+Last Compared: 2026-09-01T06:45:35Z; issue updated 2026-09-01T06:03:48Z
 
 ## History
 
